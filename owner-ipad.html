@@ -1,0 +1,2534 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f766e" />
+  <meta name="format-detection" content="telephone=no" />
+  <title>DPRO 修理受付 LINE｜受付iPad</title>
+  <style>
+    :root {
+      --bg: #eef5f3;
+      --card: #ffffff;
+      --text: #14231f;
+      --muted: #65756f;
+      --line: #d6e4e0;
+      --primary: #0f766e;
+      --primary-dark: #095d56;
+      --primary-soft: #e5f4f0;
+      --success: #147d64;
+      --success-soft: #e9f8f2;
+      --warning: #a86500;
+      --warning-soft: #fff6df;
+      --danger: #b94039;
+      --danger-soft: #fff0ef;
+      --blue: #2865a8;
+      --blue-soft: #edf5ff;
+      --shadow: 0 14px 34px rgba(31, 66, 58, .09);
+      --radius-lg: 22px;
+      --radius-md: 14px;
+      --safe-bottom: max(18px, env(safe-area-inset-bottom));
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      background: var(--bg);
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 0 0, rgba(15,118,110,.10), transparent 29%),
+        linear-gradient(180deg, #edf8f5 0, var(--bg) 380px);
+      font-family:
+        -apple-system, BlinkMacSystemFont, "Segoe UI",
+        "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button, input, select, textarea { font: inherit; }
+    button { -webkit-tap-highlight-color: transparent; }
+
+    .hidden { display: none !important; }
+
+    .login-page {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+    }
+
+    .login-card {
+      width: min(100%, 500px);
+      padding: 28px 24px;
+      border: 1px solid rgba(214,228,224,.96);
+      border-radius: 26px;
+      background: rgba(255,255,255,.97);
+      box-shadow: 0 24px 68px rgba(29,67,58,.15);
+    }
+
+    .login-mark {
+      display: grid;
+      place-items: center;
+      width: 62px;
+      height: 62px;
+      color: #fff;
+      border-radius: 19px;
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+      font-size: 23px;
+      font-weight: 950;
+    }
+
+    .login-card h1 {
+      margin: 17px 0 0;
+      font-size: 26px;
+      line-height: 1.35;
+    }
+
+    .login-card p {
+      margin: 7px 0 19px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 7px;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      color: var(--text);
+      border: 1px solid #c8d8d3;
+      border-radius: 12px;
+      outline: none;
+      background: #fff;
+    }
+
+    input, select {
+      min-height: 50px;
+      padding: 10px 12px;
+    }
+
+    textarea {
+      min-height: 105px;
+      padding: 11px 12px;
+      resize: vertical;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(15,118,110,.10);
+    }
+
+    .password-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto auto;
+      gap: 8px;
+    }
+
+    .password-action {
+      min-width: 62px;
+      color: var(--primary-dark);
+      border: 1px solid #c8d8d3;
+      border-radius: 12px;
+      background: var(--primary-soft);
+      font-size: 12px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .field-note {
+      margin: 6px 2px 0;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .field-error {
+      min-height: 18px;
+      margin-top: 4px;
+      color: var(--danger);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .btn {
+      min-height: 48px;
+      padding: 10px 15px;
+      border: 0;
+      border-radius: 12px;
+      font-weight: 950;
+      cursor: pointer;
+    }
+
+    .btn:disabled {
+      opacity: .55;
+      cursor: wait;
+    }
+
+    .btn-primary {
+      color: #fff;
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+      box-shadow: 0 9px 20px rgba(15,118,110,.18);
+    }
+
+    .btn-soft {
+      color: var(--primary-dark);
+      background: var(--primary-soft);
+    }
+
+    .btn-light {
+      color: #40504b;
+      background: #edf2f0;
+    }
+
+    .btn-warning {
+      color: #805200;
+      background: var(--warning-soft);
+    }
+
+    .btn-danger-soft {
+      color: #9c3731;
+      border: 1px solid #ecc4c0;
+      background: var(--danger-soft);
+    }
+
+    .login-button {
+      width: 100%;
+      margin-top: 5px;
+      min-height: 54px;
+    }
+
+    .app {
+      width: min(100%, 1180px);
+      margin: 0 auto;
+      padding: 14px 14px calc(32px + var(--safe-bottom));
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 18px 19px;
+      border: 1px solid rgba(214,228,224,.96);
+      border-radius: 21px;
+      background: rgba(255,255,255,.95);
+      box-shadow: var(--shadow);
+    }
+
+    .topbar h1 {
+      margin: 0;
+      font-size: clamp(22px, 3vw, 30px);
+      line-height: 1.32;
+    }
+
+    .topbar p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .connection {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .connection-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #a1aaa7;
+    }
+
+    .connection[data-status="ok"] .connection-dot { background: var(--success); }
+    .connection[data-status="error"] .connection-dot { background: var(--danger); }
+
+    .main-actions {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 11px;
+      margin-top: 13px;
+    }
+
+    .main-action {
+      min-height: 104px;
+      padding: 15px;
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 17px;
+      background: rgba(255,255,255,.96);
+      box-shadow: 0 9px 24px rgba(31,66,58,.06);
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .main-action.active {
+      color: var(--primary-dark);
+      border-color: #a9d8cf;
+      background: var(--primary-soft);
+      box-shadow: 0 0 0 3px rgba(15,118,110,.07);
+    }
+
+    .action-icon {
+      display: grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      color: var(--primary-dark);
+      border-radius: 12px;
+      background: var(--primary-soft);
+      font-size: 18px;
+      font-weight: 950;
+    }
+
+    .main-action.active .action-icon {
+      color: #fff;
+      background: var(--primary);
+    }
+
+    .action-title {
+      margin-top: 9px;
+      font-size: 15px;
+      font-weight: 950;
+    }
+
+    .action-sub {
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .count-badge {
+      float: right;
+      min-width: 29px;
+      padding: 3px 8px;
+      color: #fff;
+      border-radius: 999px;
+      background: var(--primary);
+      font-size: 11px;
+      text-align: center;
+    }
+
+    .content-card {
+      margin-top: 13px;
+      padding: 16px;
+      border: 1px solid rgba(214,228,224,.96);
+      border-radius: 20px;
+      background: rgba(255,255,255,.96);
+      box-shadow: var(--shadow);
+    }
+
+    .content-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .content-head h2 {
+      margin: 0;
+      font-size: 19px;
+    }
+
+    .content-head p {
+      margin: 3px 0 0;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .search-row {
+      display: grid;
+      grid-template-columns: minmax(180px, 1fr) auto;
+      gap: 9px;
+      margin-bottom: 12px;
+    }
+
+    .order-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 10px;
+    }
+
+    .order-card {
+      min-width: 0;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      background: #fbfdfc;
+    }
+
+    .order-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 9px;
+    }
+
+    .order-number {
+      color: var(--primary-dark);
+      font-size: 12px;
+      font-weight: 950;
+    }
+
+    .order-name {
+      margin-top: 3px;
+      font-size: 16px;
+      font-weight: 950;
+      overflow-wrap: anywhere;
+    }
+
+    .order-item {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 11px;
+      overflow-wrap: anywhere;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      min-height: 25px;
+      align-items: center;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .status-primary {
+      color: var(--primary-dark);
+      background: var(--primary-soft);
+    }
+
+    .status-warning {
+      color: #805300;
+      background: var(--warning-soft);
+    }
+
+    .status-success {
+      color: #0c6952;
+      background: var(--success-soft);
+    }
+
+    .status-danger {
+      color: #9e3731;
+      background: var(--danger-soft);
+    }
+
+    .status-gray {
+      color: #5c6864;
+      background: #edf1f0;
+    }
+
+    .order-meta {
+      display: grid;
+      grid-template-columns: 84px 1fr;
+      gap: 5px 8px;
+      margin-top: 11px;
+      font-size: 11px;
+    }
+
+    .order-meta dt {
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .order-meta dd {
+      min-width: 0;
+      margin: 0;
+      font-weight: 800;
+      overflow-wrap: anywhere;
+    }
+
+    .card-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 7px;
+      margin-top: 12px;
+    }
+
+    .card-actions .btn {
+      min-height: 42px;
+      padding: 8px 9px;
+      font-size: 11px;
+    }
+
+    .empty {
+      grid-column: 1 / -1;
+      padding: 34px 16px;
+      color: var(--muted);
+      border: 1px dashed #c9d9d4;
+      border-radius: 14px;
+      text-align: center;
+      font-size: 12px;
+    }
+
+    .customer-results {
+      display: grid;
+      gap: 9px;
+    }
+
+    .customer-card {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 13px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fbfdfc;
+    }
+
+    .customer-name {
+      font-size: 15px;
+      font-weight: 950;
+    }
+
+    .customer-info {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .drawer-backdrop {
+      position: fixed;
+      z-index: 90;
+      inset: 0;
+      background: rgba(20,35,31,.48);
+      backdrop-filter: blur(3px);
+    }
+
+    .drawer {
+      position: fixed;
+      z-index: 100;
+      top: 0;
+      right: 0;
+      width: min(680px, 100vw);
+      height: 100vh;
+      padding: 15px;
+      background: #f3f8f6;
+      box-shadow: -20px 0 55px rgba(0,0,0,.19);
+      overflow-y: auto;
+    }
+
+    .drawer-head {
+      position: sticky;
+      z-index: 4;
+      top: -15px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 11px;
+      margin: -15px -15px 13px;
+      padding: 15px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(243,248,246,.96);
+      backdrop-filter: blur(10px);
+    }
+
+    .drawer-head h2 {
+      margin: 0;
+      font-size: 21px;
+    }
+
+    .drawer-head p {
+      margin: 3px 0 0;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .icon-button {
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      flex: 0 0 auto;
+      border: 0;
+      border-radius: 12px;
+      background: #e5ece9;
+      font-size: 21px;
+      cursor: pointer;
+    }
+
+    .detail-card {
+      margin-top: 10px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+    }
+
+    .detail-title {
+      margin: 0 0 9px;
+      color: var(--primary-dark);
+      font-size: 14px;
+      font-weight: 950;
+    }
+
+    .detail-list {
+      display: grid;
+      grid-template-columns: 105px 1fr;
+      gap: 7px 9px;
+      margin: 0;
+      font-size: 12px;
+    }
+
+    .detail-list dt {
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .detail-list dd {
+      min-width: 0;
+      margin: 0;
+      font-weight: 800;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 8px;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      z-index: 130;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 14px;
+      background: rgba(20,35,31,.60);
+      backdrop-filter: blur(5px);
+    }
+
+    .modal {
+      width: min(100%, 790px);
+      max-height: 94vh;
+      overflow-y: auto;
+      padding: 18px;
+      border-radius: 22px;
+      background: #fff;
+      box-shadow: 0 28px 80px rgba(0,0,0,.27);
+    }
+
+    .modal-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .modal-head h2 {
+      margin: 0;
+      font-size: 21px;
+    }
+
+    .modal-head p {
+      margin: 3px 0 0;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .type-choice {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 9px;
+      margin-bottom: 14px;
+    }
+
+    .type-button {
+      min-height: 58px;
+      color: #52615c;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: #f7faf9;
+      font-weight: 950;
+      cursor: pointer;
+    }
+
+    .type-button.active {
+      color: var(--primary-dark);
+      border-color: #a9d8cf;
+      background: var(--primary-soft);
+      box-shadow: 0 0 0 3px rgba(15,118,110,.07);
+    }
+
+    .selected-customer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 13px;
+      padding: 12px;
+      color: var(--primary-dark);
+      border: 1px solid #b7ddd5;
+      border-radius: 13px;
+      background: var(--primary-soft);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .form-section {
+      margin-top: 13px;
+      padding-top: 13px;
+      border-top: 1px solid var(--line);
+    }
+
+    .form-section:first-of-type {
+      margin-top: 0;
+      padding-top: 0;
+      border-top: 0;
+    }
+
+    .form-section h3 {
+      margin: 0 0 10px;
+      font-size: 15px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 11px;
+    }
+
+    .form-grid .full { grid-column: 1 / -1; }
+
+    .required {
+      margin-left: 5px;
+      padding: 1px 6px;
+      color: #fff;
+      border-radius: 999px;
+      background: var(--danger);
+      font-size: 9px;
+    }
+
+    .check-line {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      min-height: 48px;
+      padding: 10px 11px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #f8fbfa;
+      cursor: pointer;
+    }
+
+    .check-line input {
+      width: 20px;
+      min-height: 20px;
+      margin: 1px 0 0;
+      accent-color: var(--primary);
+    }
+
+    .modal-actions {
+      display: grid;
+      grid-template-columns: .55fr 1fr;
+      gap: 9px;
+      margin-top: 15px;
+    }
+
+    .toast {
+      position: fixed;
+      z-index: 180;
+      left: 50%;
+      bottom: calc(19px + var(--safe-bottom));
+      width: min(calc(100% - 28px), 650px);
+      padding: 12px 14px;
+      color: #fff;
+      border-radius: 13px;
+      background: rgba(31,45,41,.97);
+      box-shadow: 0 12px 30px rgba(0,0,0,.18);
+      text-align: center;
+      font-size: 12px;
+      font-weight: 900;
+      opacity: 0;
+      transform: translate(-50%, 13px);
+      pointer-events: none;
+      transition: .2s;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%,0);
+    }
+
+    .toast.error { background: rgba(155,45,40,.97); }
+
+    .loading {
+      position: fixed;
+      z-index: 200;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      background: rgba(244,248,247,.74);
+      backdrop-filter: blur(4px);
+    }
+
+    .loading-box {
+      display: grid;
+      justify-items: center;
+      gap: 11px;
+      min-width: 195px;
+      padding: 23px;
+      border-radius: 18px;
+      background: #fff;
+      box-shadow: var(--shadow);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .spinner {
+      width: 32px;
+      height: 32px;
+      border: 4px solid #dcebe7;
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .version {
+      margin-top: 15px;
+      color: #83918c;
+      font-size: 9px;
+      text-align: center;
+    }
+
+    @media (max-width: 850px) {
+      .main-actions { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .order-list { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 620px) {
+      .app { padding-left: 9px; padding-right: 9px; }
+      .topbar { display: block; }
+      .top-actions {
+        margin-top: 10px;
+        justify-content: flex-start;
+      }
+      .main-actions { grid-template-columns: 1fr 1fr; }
+      .main-action { min-height: 94px; padding: 12px; }
+      .search-row { grid-template-columns: 1fr; }
+      .form-grid { grid-template-columns: 1fr; }
+      .form-grid .full { grid-column: auto; }
+      .modal-actions { grid-template-columns: 1fr; }
+      .detail-list { grid-template-columns: 90px 1fr; }
+    }
+
+    @media (max-width: 390px) {
+      .main-actions { grid-template-columns: 1fr; }
+      .card-actions, .quick-actions { grid-template-columns: 1fr; }
+      .password-row { grid-template-columns: 1fr 58px 58px; }
+    }
+  </style>
+</head>
+<body>
+  <section id="loginPage" class="login-page">
+    <form id="loginForm" class="login-card" novalidate>
+      <div class="login-mark">受</div>
+      <h1>DPRO 修理受付 LINE<br />受付iPad</h1>
+      <p>電話・来店受付や、本日の予定を大きなボタンで操作できます。</p>
+
+      <label for="adminCode">管理コード</label>
+      <div class="password-row">
+        <input
+          id="adminCode"
+          name="dpro_repair_ipad_admin_code"
+          type="password"
+          inputmode="numeric"
+          autocomplete="new-password"
+          autocapitalize="off"
+          autocorrect="off"
+          spellcheck="false"
+          maxlength="100"
+          placeholder="管理コードを入力"
+          data-lpignore="true"
+          data-1p-ignore="true"
+          readonly
+        />
+        <button id="clearAdminCodeButton" class="password-action" type="button">消去</button>
+        <button id="toggleAdminCodeButton" class="password-action" type="button">表示</button>
+      </div>
+      <div id="loginError" class="field-error"></div>
+
+      <button id="loginButton" class="btn btn-primary login-button" type="submit">
+        受付画面を開く
+      </button>
+    </form>
+  </section>
+
+  <main id="app" class="app hidden">
+    <header class="topbar">
+      <div>
+        <h1 id="shopName">修理受付</h1>
+        <p id="todayLabel">本日の受付と引き取り予定を確認できます。</p>
+      </div>
+
+      <div class="top-actions">
+        <div id="connection" class="connection" data-status="loading">
+          <span class="connection-dot"></span>
+          <span id="connectionText">読み込み中…</span>
+        </div>
+        <button id="refreshButton" class="btn btn-soft" type="button">更新</button>
+        <button id="logoutButton" class="btn btn-light" type="button">ログアウト</button>
+      </div>
+    </header>
+
+    <section id="mainActions" class="main-actions">
+      <button class="main-action" type="button" data-action="phone">
+        <span class="count-badge">＋</span>
+        <span class="action-icon">電</span>
+        <div class="action-title">電話受付</div>
+        <div class="action-sub">来店予定の相談を登録</div>
+      </button>
+
+      <button class="main-action" type="button" data-action="walk_in">
+        <span class="count-badge">＋</span>
+        <span class="action-icon">店</span>
+        <div class="action-title">来店受付</div>
+        <div class="action-sub">その場でお預かり登録</div>
+      </button>
+
+      <button class="main-action active" type="button" data-filter="new_consultation">
+        <span id="newCount" class="count-badge">0</span>
+        <span class="action-icon">新</span>
+        <div class="action-title">LINE仮受付</div>
+        <div class="action-sub">新しい相談を確認</div>
+      </button>
+
+      <button class="main-action" type="button" data-filter="today_visit">
+        <span id="todayVisitCount" class="count-badge">0</span>
+        <span class="action-icon">来</span>
+        <div class="action-title">本日の来店</div>
+        <div class="action-sub">来店予定を確認</div>
+      </button>
+
+      <button class="main-action" type="button" data-filter="today_pickup">
+        <span id="todayPickupCount" class="count-badge">0</span>
+        <span class="action-icon">渡</span>
+        <div class="action-title">本日の引き取り</div>
+        <div class="action-sub">お渡し予定を確認</div>
+      </button>
+
+      <button class="main-action" type="button" data-action="customer_search">
+        <span class="count-badge">⌕</span>
+        <span class="action-icon">顧</span>
+        <div class="action-title">顧客検索</div>
+        <div class="action-sub">電話番号・名前で検索</div>
+      </button>
+    </section>
+
+    <section id="ordersSection" class="content-card">
+      <div class="content-head">
+        <div>
+          <h2 id="listTitle">LINE仮受付</h2>
+          <p id="listSubTitle">新しく届いた修理相談を表示します。</p>
+        </div>
+        <button id="showAllButton" class="btn btn-light" type="button">全案件</button>
+      </div>
+
+      <div class="search-row">
+        <input
+          id="orderSearchInput"
+          type="search"
+          placeholder="受付番号・名前・電話番号・修理品で検索"
+        />
+        <button id="orderSearchClearButton" class="btn btn-light" type="button">検索を消去</button>
+      </div>
+
+      <div id="orderList" class="order-list"></div>
+    </section>
+
+    <section id="customerSearchSection" class="content-card hidden">
+      <div class="content-head">
+        <div>
+          <h2>顧客検索</h2>
+          <p>名前・電話番号・メールアドレスで検索できます。</p>
+        </div>
+        <button id="closeCustomerSearchButton" class="btn btn-light" type="button">閉じる</button>
+      </div>
+
+      <form id="customerSearchForm" class="search-row">
+        <input
+          id="customerSearchInput"
+          type="search"
+          placeholder="例：090-1111-2222、修理 太郎"
+        />
+        <button class="btn btn-primary" type="submit">検索</button>
+      </form>
+
+      <div id="customerResults" class="customer-results">
+        <div class="empty">検索文字を入力してください。</div>
+      </div>
+    </section>
+
+    <div class="version">
+      DPRO 修理受付 LINE｜STEP REPAIR-8｜REPAIR-8-OWNER-IPAD-20260712
+    </div>
+  </main>
+
+  <div id="drawerBackdrop" class="drawer-backdrop hidden"></div>
+  <aside id="orderDrawer" class="drawer hidden" aria-label="修理受付詳細">
+    <header class="drawer-head">
+      <div>
+        <h2 id="drawerTitle">修理受付詳細</h2>
+        <p id="drawerSubtitle">—</p>
+      </div>
+      <button id="drawerCloseButton" class="icon-button" type="button" aria-label="閉じる">×</button>
+    </header>
+
+    <div id="drawerContent"></div>
+  </aside>
+
+  <div id="receptionModalBackdrop" class="modal-backdrop hidden">
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="receptionModalTitle">
+      <header class="modal-head">
+        <div>
+          <h2 id="receptionModalTitle">電話受付</h2>
+          <p id="receptionModalSubTitle">お客様と修理品の情報を登録します。</p>
+        </div>
+        <button id="receptionModalCloseButton" class="icon-button" type="button" aria-label="閉じる">×</button>
+      </header>
+
+      <div class="type-choice">
+        <button class="type-button active" type="button" data-reception-type="phone">
+          電話受付
+        </button>
+        <button class="type-button" type="button" data-reception-type="walk_in">
+          来店受付・お預かり
+        </button>
+      </div>
+
+      <div id="selectedCustomerBox" class="selected-customer hidden">
+        <span id="selectedCustomerText">既存顧客を使用</span>
+        <button id="clearSelectedCustomerButton" class="btn btn-light" type="button">解除</button>
+      </div>
+
+      <form id="receptionForm" novalidate>
+        <section id="newCustomerSection" class="form-section">
+          <h3>お客様情報</h3>
+          <div class="form-grid">
+            <div>
+              <label for="customerName">お名前<span class="required">必須</span></label>
+              <input id="customerName" type="text" maxlength="100" placeholder="例：修理 太郎" />
+            </div>
+
+            <div>
+              <label for="customerKana">フリガナ</label>
+              <input id="customerKana" type="text" maxlength="100" placeholder="例：シュウリ タロウ" />
+            </div>
+
+            <div>
+              <label for="customerPhone">電話番号<span class="required">必須</span></label>
+              <input id="customerPhone" type="tel" inputmode="tel" maxlength="30" placeholder="例：090-1111-2222" />
+            </div>
+
+            <div>
+              <label for="preferredContact">希望連絡方法</label>
+              <select id="preferredContact">
+                <option value="phone">電話</option>
+                <option value="line">LINE</option>
+                <option value="email">メール</option>
+                <option value="in_person">対面</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <section class="form-section">
+          <h3>修理品情報</h3>
+
+          <div id="existingItemField" class="hidden" style="margin-bottom:11px">
+            <label for="existingItemSelect">登録済み修理品</label>
+            <select id="existingItemSelect">
+              <option value="">新しい修理品を登録</option>
+            </select>
+          </div>
+
+          <div id="newItemFields" class="form-grid">
+            <div>
+              <label for="itemCategory">カテゴリー<span class="required">必須</span></label>
+              <select id="itemCategory">
+                <option value="">選択してください</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="itemManufacturer">メーカー・ブランド</label>
+              <input id="itemManufacturer" type="text" maxlength="100" placeholder="例：Apple、任天堂" />
+            </div>
+
+            <div>
+              <label for="itemProductName">商品名<span class="required">必須</span></label>
+              <input id="itemProductName" type="text" maxlength="200" placeholder="例：iPhone、腕時計" />
+            </div>
+
+            <div>
+              <label for="itemModelNumber">型番</label>
+              <input id="itemModelNumber" type="text" maxlength="150" placeholder="分かる場合のみ" />
+            </div>
+
+            <div class="full">
+              <label for="itemColor">色・特徴</label>
+              <input id="itemColor" type="text" maxlength="100" placeholder="例：黒、ケースにシールあり" />
+            </div>
+          </div>
+        </section>
+
+        <section class="form-section">
+          <h3>受付内容</h3>
+          <div class="form-grid">
+            <div class="full">
+              <label for="symptom">症状・現在の状態<span class="required">必須</span></label>
+              <textarea id="symptom" maxlength="5000" placeholder="例：画面が割れて操作しづらい。電源は入る。"></textarea>
+            </div>
+
+            <div class="full">
+              <label for="requestedWork">ご希望・相談内容</label>
+              <textarea id="requestedWork" maxlength="3000" placeholder="例：見積もりを確認してから修理したい。"></textarea>
+            </div>
+
+            <div id="visitDateField">
+              <label for="visitDate">来店希望日</label>
+              <input id="visitDate" type="date" />
+            </div>
+
+            <div id="visitTimeField">
+              <label for="visitTime">来店希望時間</label>
+              <input id="visitTime" type="time" step="1800" />
+            </div>
+          </div>
+        </section>
+
+        <section id="walkInFields" class="form-section hidden">
+          <h3>お預かり確認</h3>
+          <div class="form-grid">
+            <div>
+              <label for="powerState">電源状態</label>
+              <select id="powerState">
+                <option value="unknown">未確認</option>
+                <option value="power_on">電源が入る</option>
+                <option value="power_off">電源が入らない</option>
+                <option value="not_applicable">対象外</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="exteriorCondition">外観</label>
+              <input id="exteriorCondition" type="text" maxlength="3000" placeholder="例：全体に使用感あり" />
+            </div>
+
+            <div class="full">
+              <label for="damageNote">既存の傷・破損</label>
+              <textarea id="damageNote" maxlength="3000" placeholder="例：右上にひび、背面に擦り傷あり"></textarea>
+            </div>
+
+            <label class="check-line full">
+              <input id="intakeConfirmed" type="checkbox" />
+              <span>お客様と一緒に、お預かり内容を確認しました</span>
+            </label>
+          </div>
+        </section>
+
+        <label class="check-line form-section">
+          <input id="privacyGuided" type="checkbox" checked />
+          <span>個人情報を修理受付・店舗連絡・履歴管理に使用することを案内済み</span>
+        </label>
+
+        <div id="receptionError" class="field-error"></div>
+
+        <div class="modal-actions">
+          <button id="receptionCancelButton" class="btn btn-light" type="button">キャンセル</button>
+          <button id="receptionSaveButton" class="btn btn-primary" type="submit">受付を保存</button>
+        </div>
+      </form>
+    </section>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <div id="loadingOverlay" class="loading hidden">
+    <div class="loading-box">
+      <div class="spinner"></div>
+      <div id="loadingText">読み込んでいます…</div>
+    </div>
+  </div>
+
+  <script>
+    "use strict";
+
+    const API_BASE = "https://dpro-repair-line-api.dpromstk2000.workers.dev";
+    const DEFAULT_SHOP_CODE = "repair_demo";
+    const ADMIN_SESSION_KEY = "dpro_repair_ipad_admin_session_v1";
+
+    const STATUS_LABELS = {
+      consultation_received: "相談受付",
+      provisional_received: "仮受付",
+      visit_scheduled: "来店予定",
+      item_received: "お預かり済み",
+      diagnosing: "診断中",
+      estimate_preparing: "見積もり作成中",
+      estimate_waiting_customer: "お客様確認待ち",
+      estimate_approved: "修理承認済み",
+      estimate_declined: "修理見送り",
+      customer_consultation_requested: "お客様相談希望",
+      parts_ordering: "部品手配中",
+      parts_waiting: "部品待ち",
+      repairing: "修理中",
+      final_check: "最終確認中",
+      repair_completed: "修理完了",
+      completion_notified: "完了連絡済み",
+      pickup_scheduled: "引き取り予約済み",
+      awaiting_pickup: "引き取り待ち",
+      delivered: "引き渡し完了",
+      cancelled: "キャンセル",
+      unrepairable: "修理不可",
+      return_waiting: "返却待ち",
+      closed: "完了・終了",
+    };
+
+    const STATUS_TRANSITIONS = {
+      consultation_received: ["provisional_received", "visit_scheduled", "cancelled"],
+      provisional_received: ["visit_scheduled", "item_received", "cancelled"],
+      visit_scheduled: ["item_received", "cancelled"],
+      item_received: ["diagnosing", "estimate_preparing", "cancelled", "return_waiting"],
+      diagnosing: ["estimate_preparing", "unrepairable", "return_waiting", "cancelled"],
+      estimate_preparing: ["estimate_waiting_customer", "unrepairable", "return_waiting", "cancelled"],
+      estimate_waiting_customer: ["estimate_approved", "estimate_declined", "customer_consultation_requested", "cancelled"],
+      customer_consultation_requested: ["estimate_preparing", "estimate_waiting_customer", "estimate_approved", "estimate_declined", "cancelled"],
+      estimate_approved: ["parts_ordering", "parts_waiting", "repairing", "cancelled"],
+      estimate_declined: ["return_waiting", "closed"],
+      parts_ordering: ["parts_waiting", "repairing", "cancelled"],
+      parts_waiting: ["repairing", "cancelled"],
+      repairing: ["final_check", "unrepairable", "cancelled"],
+      final_check: ["repair_completed", "repairing", "unrepairable"],
+      repair_completed: ["completion_notified", "pickup_scheduled", "awaiting_pickup"],
+      completion_notified: ["pickup_scheduled", "awaiting_pickup", "delivered"],
+      pickup_scheduled: ["awaiting_pickup", "delivered", "completion_notified"],
+      awaiting_pickup: ["pickup_scheduled", "delivered", "return_waiting"],
+      return_waiting: ["pickup_scheduled", "awaiting_pickup", "delivered", "closed"],
+      delivered: ["closed"],
+      unrepairable: ["return_waiting", "closed"],
+      cancelled: ["return_waiting", "closed"],
+      closed: [],
+    };
+
+    const FILTER_INFO = {
+      new_consultation: ["LINE仮受付", "新しく届いた修理相談を表示します。"],
+      today_visit: ["本日の来店", "本日来店予定の受付を表示します。"],
+      today_pickup: ["本日の引き取り", "本日お渡し予定の案件を表示します。"],
+      all: ["全案件", "対応中の修理案件をまとめて表示します。"],
+    };
+
+    const FALLBACK_CATEGORIES = [
+      ["smartphone", "スマートフォン"],
+      ["computer", "パソコン"],
+      ["tablet", "タブレット"],
+      ["game_console", "ゲーム機"],
+      ["home_appliance", "家電"],
+      ["watch", "時計"],
+      ["bag_wallet", "バッグ・財布"],
+      ["shoes", "靴"],
+      ["bicycle", "自転車"],
+      ["instrument", "楽器"],
+      ["other", "その他"],
+    ];
+
+    const state = {
+      shopCode:
+        new URLSearchParams(location.search).get("shop_code") ||
+        DEFAULT_SHOP_CODE,
+      adminKey: "",
+      dashboard: null,
+      orders: [],
+      settings: null,
+      filter: "new_consultation",
+      orderSearch: "",
+      selectedOrderId: null,
+      selectedDetail: null,
+      receptionType: "phone",
+      selectedCustomer: null,
+      selectedCustomerItems: [],
+      loading: false,
+    };
+
+    const el = {
+      loginPage: document.getElementById("loginPage"),
+      loginForm: document.getElementById("loginForm"),
+      adminCode: document.getElementById("adminCode"),
+      clearAdminCodeButton: document.getElementById("clearAdminCodeButton"),
+      toggleAdminCodeButton: document.getElementById("toggleAdminCodeButton"),
+      loginError: document.getElementById("loginError"),
+      loginButton: document.getElementById("loginButton"),
+      app: document.getElementById("app"),
+      shopName: document.getElementById("shopName"),
+      todayLabel: document.getElementById("todayLabel"),
+      connection: document.getElementById("connection"),
+      connectionText: document.getElementById("connectionText"),
+      refreshButton: document.getElementById("refreshButton"),
+      logoutButton: document.getElementById("logoutButton"),
+      mainActions: document.getElementById("mainActions"),
+      newCount: document.getElementById("newCount"),
+      todayVisitCount: document.getElementById("todayVisitCount"),
+      todayPickupCount: document.getElementById("todayPickupCount"),
+      ordersSection: document.getElementById("ordersSection"),
+      listTitle: document.getElementById("listTitle"),
+      listSubTitle: document.getElementById("listSubTitle"),
+      showAllButton: document.getElementById("showAllButton"),
+      orderSearchInput: document.getElementById("orderSearchInput"),
+      orderSearchClearButton: document.getElementById("orderSearchClearButton"),
+      orderList: document.getElementById("orderList"),
+      customerSearchSection: document.getElementById("customerSearchSection"),
+      closeCustomerSearchButton: document.getElementById("closeCustomerSearchButton"),
+      customerSearchForm: document.getElementById("customerSearchForm"),
+      customerSearchInput: document.getElementById("customerSearchInput"),
+      customerResults: document.getElementById("customerResults"),
+      drawerBackdrop: document.getElementById("drawerBackdrop"),
+      orderDrawer: document.getElementById("orderDrawer"),
+      drawerTitle: document.getElementById("drawerTitle"),
+      drawerSubtitle: document.getElementById("drawerSubtitle"),
+      drawerCloseButton: document.getElementById("drawerCloseButton"),
+      drawerContent: document.getElementById("drawerContent"),
+      receptionModalBackdrop: document.getElementById("receptionModalBackdrop"),
+      receptionModalTitle: document.getElementById("receptionModalTitle"),
+      receptionModalSubTitle: document.getElementById("receptionModalSubTitle"),
+      receptionModalCloseButton: document.getElementById("receptionModalCloseButton"),
+      receptionForm: document.getElementById("receptionForm"),
+      selectedCustomerBox: document.getElementById("selectedCustomerBox"),
+      selectedCustomerText: document.getElementById("selectedCustomerText"),
+      clearSelectedCustomerButton: document.getElementById("clearSelectedCustomerButton"),
+      newCustomerSection: document.getElementById("newCustomerSection"),
+      customerName: document.getElementById("customerName"),
+      customerKana: document.getElementById("customerKana"),
+      customerPhone: document.getElementById("customerPhone"),
+      preferredContact: document.getElementById("preferredContact"),
+      existingItemField: document.getElementById("existingItemField"),
+      existingItemSelect: document.getElementById("existingItemSelect"),
+      newItemFields: document.getElementById("newItemFields"),
+      itemCategory: document.getElementById("itemCategory"),
+      itemManufacturer: document.getElementById("itemManufacturer"),
+      itemProductName: document.getElementById("itemProductName"),
+      itemModelNumber: document.getElementById("itemModelNumber"),
+      itemColor: document.getElementById("itemColor"),
+      symptom: document.getElementById("symptom"),
+      requestedWork: document.getElementById("requestedWork"),
+      visitDateField: document.getElementById("visitDateField"),
+      visitTimeField: document.getElementById("visitTimeField"),
+      visitDate: document.getElementById("visitDate"),
+      visitTime: document.getElementById("visitTime"),
+      walkInFields: document.getElementById("walkInFields"),
+      powerState: document.getElementById("powerState"),
+      exteriorCondition: document.getElementById("exteriorCondition"),
+      damageNote: document.getElementById("damageNote"),
+      intakeConfirmed: document.getElementById("intakeConfirmed"),
+      privacyGuided: document.getElementById("privacyGuided"),
+      receptionError: document.getElementById("receptionError"),
+      receptionCancelButton: document.getElementById("receptionCancelButton"),
+      receptionSaveButton: document.getElementById("receptionSaveButton"),
+      toast: document.getElementById("toast"),
+      loadingOverlay: document.getElementById("loadingOverlay"),
+      loadingText: document.getElementById("loadingText"),
+    };
+
+    document.addEventListener("DOMContentLoaded", initialize);
+
+    async function initialize() {
+      bindEvents();
+      setTodayLabel();
+      configureVisitDate();
+
+      const session = readAdminSession();
+      if (session?.admin_key) {
+        state.adminKey = session.admin_key;
+        await verifyAndOpen(false);
+        return;
+      }
+
+      clearAdminCodeInput();
+      setTimeout(clearAdminCodeInput, 80);
+      setTimeout(clearAdminCodeInput, 350);
+    }
+
+    function bindEvents() {
+      el.loginForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        state.adminKey = el.adminCode.value.trim();
+        await verifyAndOpen(true);
+      });
+
+      const enableAdminCodeInput = () => {
+        el.adminCode.removeAttribute("readonly");
+      };
+
+      el.adminCode.addEventListener("focus", enableAdminCodeInput);
+      el.adminCode.addEventListener("pointerdown", enableAdminCodeInput);
+
+      el.clearAdminCodeButton.addEventListener("click", () => {
+        clearAdminCodeInput();
+        enableAdminCodeInput();
+        el.adminCode.focus();
+      });
+
+      el.toggleAdminCodeButton.addEventListener("click", () => {
+        const showing = el.adminCode.type === "text";
+        el.adminCode.type = showing ? "password" : "text";
+        el.toggleAdminCodeButton.textContent = showing ? "表示" : "隠す";
+        enableAdminCodeInput();
+        el.adminCode.focus();
+      });
+
+      el.refreshButton.addEventListener("click", loadDashboard);
+      el.logoutButton.addEventListener("click", logout);
+
+      el.mainActions.addEventListener("click", (event) => {
+        const actionButton = event.target.closest("[data-action]");
+        const filterButton = event.target.closest("[data-filter]");
+
+        if (actionButton) {
+          const action = actionButton.dataset.action;
+          if (action === "phone" || action === "walk_in") {
+            openReceptionModal(action);
+          } else if (action === "customer_search") {
+            showCustomerSearch();
+          }
+          return;
+        }
+
+        if (filterButton) {
+          setFilter(filterButton.dataset.filter);
+        }
+      });
+
+      el.showAllButton.addEventListener("click", () => setFilter("all"));
+      el.orderSearchInput.addEventListener("input", () => {
+        state.orderSearch = el.orderSearchInput.value.trim().toLowerCase();
+        renderOrders();
+      });
+      el.orderSearchClearButton.addEventListener("click", () => {
+        state.orderSearch = "";
+        el.orderSearchInput.value = "";
+        renderOrders();
+      });
+
+      el.orderList.addEventListener("click", handleOrderListClick);
+      el.closeCustomerSearchButton.addEventListener("click", closeCustomerSearch);
+      el.customerSearchForm.addEventListener("submit", searchCustomers);
+      el.customerResults.addEventListener("click", handleCustomerResultClick);
+
+      el.drawerCloseButton.addEventListener("click", closeDrawer);
+      el.drawerBackdrop.addEventListener("click", closeDrawer);
+      el.drawerContent.addEventListener("click", handleDrawerClick);
+
+      document.querySelectorAll("[data-reception-type]").forEach((button) => {
+        button.addEventListener("click", () => setReceptionType(button.dataset.receptionType));
+      });
+
+      el.receptionModalCloseButton.addEventListener("click", closeReceptionModal);
+      el.receptionCancelButton.addEventListener("click", closeReceptionModal);
+      el.receptionModalBackdrop.addEventListener("click", (event) => {
+        if (event.target === el.receptionModalBackdrop) closeReceptionModal();
+      });
+      el.receptionForm.addEventListener("submit", saveReception);
+      el.clearSelectedCustomerButton.addEventListener("click", clearSelectedCustomer);
+      el.existingItemSelect.addEventListener("change", renderExistingItemSelection);
+    }
+
+    async function verifyAndOpen(showError) {
+      if (!state.adminKey) {
+        if (showError) el.loginError.textContent = "管理コードを入力してください。";
+        return;
+      }
+
+      setLoading(true, "管理コードを確認しています…");
+      el.loginButton.disabled = true;
+      el.loginError.textContent = "";
+
+      try {
+        await fetchJson(`${API_BASE}/api/admin/verify`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            shop_code: state.shopCode,
+            admin_key: state.adminKey,
+          }),
+        });
+
+        saveAdminSession();
+        el.loginPage.classList.add("hidden");
+        el.app.classList.remove("hidden");
+
+        await Promise.all([
+          loadDashboard(),
+          loadSettings(),
+        ]);
+      } catch (error) {
+        clearAdminSession();
+        if (showError) {
+          el.loginError.textContent =
+            error.message || "管理コードが正しくありません。";
+        }
+      } finally {
+        setLoading(false);
+        el.loginButton.disabled = false;
+      }
+    }
+
+    async function loadDashboard() {
+      if (state.loading) return;
+
+      state.loading = true;
+      setLoading(true, "本日の受付状況を読み込んでいます…");
+      setConnection("loading", "更新しています…");
+      el.refreshButton.disabled = true;
+      el.refreshButton.textContent = "更新中…";
+
+      try {
+        const response = await fetchJson(
+          `${API_BASE}/api/admin/dashboard?shop_code=${encodeURIComponent(state.shopCode)}&admin_key=${encodeURIComponent(state.adminKey)}`
+        );
+
+        state.dashboard = response;
+        state.orders = Array.isArray(response.orders) ? response.orders : [];
+
+        el.shopName.textContent =
+          `${response.shop?.shop_name || "修理受付"}｜受付iPad`;
+
+        const counts = response.counts || {};
+        el.newCount.textContent = counts.new_consultation || 0;
+        el.todayVisitCount.textContent = counts.today_visit || 0;
+        el.todayPickupCount.textContent = counts.today_pickup || 0;
+
+        renderOrders();
+        setConnection("ok", `更新しました ${formatTime(response.refreshed_at)}`);
+      } catch (error) {
+        setConnection("error", "更新に失敗しました");
+        if (error.status === 401) logout();
+        showToast(error.message || "受付状況を取得できませんでした。", true);
+      } finally {
+        state.loading = false;
+        setLoading(false);
+        el.refreshButton.disabled = false;
+        el.refreshButton.textContent = "更新";
+      }
+    }
+
+    async function loadSettings() {
+      try {
+        const response = await fetchJson(
+          `${API_BASE}/api/settings?shop_code=${encodeURIComponent(state.shopCode)}`
+        );
+        state.settings = response.settings || null;
+      } catch (error) {
+        console.error(error);
+        state.settings = null;
+      } finally {
+        populateCategories();
+      }
+    }
+
+    function setFilter(filter) {
+      state.filter = FILTER_INFO[filter] ? filter : "all";
+      const info = FILTER_INFO[state.filter];
+      el.listTitle.textContent = info[0];
+      el.listSubTitle.textContent = info[1];
+
+      document.querySelectorAll("[data-filter]").forEach((button) => {
+        button.classList.toggle("active", button.dataset.filter === state.filter);
+      });
+
+      closeCustomerSearch();
+      renderOrders();
+    }
+
+    function renderOrders() {
+      const filtered = state.orders.filter((order) => {
+        if (!matchesFilter(order, state.filter)) return false;
+
+        if (state.orderSearch) {
+          const text = [
+            order.order_number,
+            order.customer_name,
+            order.customer_name_kana,
+            order.phone_raw,
+            order.phone_normalized,
+            order.category,
+            order.manufacturer,
+            order.brand,
+            order.product_name,
+            order.model_number,
+            STATUS_LABELS[order.status],
+          ].filter(Boolean).join(" ").toLowerCase();
+
+          if (!text.includes(state.orderSearch)) return false;
+        }
+
+        return true;
+      });
+
+      if (!filtered.length) {
+        el.orderList.innerHTML = `
+          <div class="empty">
+            条件に一致する受付はありません。
+          </div>
+        `;
+        return;
+      }
+
+      el.orderList.innerHTML = filtered.map((order) => {
+        const nextStatus = getReceptionQuickStatus(order.status);
+        return `
+          <article class="order-card" data-order-id="${escapeHtml(order.order_id)}">
+            <div class="order-head">
+              <div>
+                <div class="order-number">${escapeHtml(order.order_number || "—")}</div>
+                <div class="order-name">${escapeHtml(order.customer_name || "お客様")}</div>
+                <div class="order-item">${escapeHtml(itemName(order))}</div>
+              </div>
+              <span class="status-badge ${statusClass(order.status)}">
+                ${escapeHtml(STATUS_LABELS[order.status] || order.status)}
+              </span>
+            </div>
+
+            <dl class="order-meta">
+              <dt>電話番号</dt>
+              <dd>${escapeHtml(order.phone_raw || "—")}</dd>
+              <dt>来店予定</dt>
+              <dd>${escapeHtml(order.visit_requested_at ? formatDateTime(order.visit_requested_at) : "未定")}</dd>
+              <dt>完成予定</dt>
+              <dd>${escapeHtml(order.promised_date ? formatDate(order.promised_date) : "未定")}</dd>
+            </dl>
+
+            <div class="card-actions">
+              <button
+                class="btn btn-light"
+                type="button"
+                data-order-action="detail"
+              >
+                詳細を見る
+              </button>
+              ${
+                nextStatus
+                  ? `<button
+                      class="btn btn-primary"
+                      type="button"
+                      data-order-action="quick-status"
+                      data-next-status="${escapeHtml(nextStatus.value)}"
+                    >
+                      ${escapeHtml(nextStatus.label)}
+                    </button>`
+                  : `<button
+                      class="btn btn-soft"
+                      type="button"
+                      data-order-action="copy"
+                    >
+                      文面コピー
+                    </button>`
+              }
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function matchesFilter(order, filter) {
+      if (filter === "all") {
+        return !["delivered", "cancelled", "closed"].includes(order.status);
+      }
+      if (filter === "new_consultation") return order.is_new_consultation === true;
+      if (filter === "today_visit") return order.is_today_visit === true;
+      if (filter === "today_pickup") return order.is_today_pickup === true;
+      return true;
+    }
+
+    function getReceptionQuickStatus(status) {
+      return {
+        consultation_received: { value: "visit_scheduled", label: "来店予定にする" },
+        provisional_received: { value: "item_received", label: "お預かり済みにする" },
+        visit_scheduled: { value: "item_received", label: "お預かり済みにする" },
+        item_received: { value: "diagnosing", label: "診断を開始" },
+        repair_completed: { value: "completion_notified", label: "完了連絡済みにする" },
+        completion_notified: { value: "awaiting_pickup", label: "引き取り待ちにする" },
+        pickup_scheduled: { value: "delivered", label: "引き渡し完了" },
+        awaiting_pickup: { value: "delivered", label: "引き渡し完了" },
+        return_waiting: { value: "delivered", label: "返却完了" },
+      }[status] || null;
+    }
+
+    async function handleOrderListClick(event) {
+      const card = event.target.closest("[data-order-id]");
+      const button = event.target.closest("[data-order-action]");
+      if (!card || !button) return;
+
+      const orderId = card.dataset.orderId;
+      const action = button.dataset.orderAction;
+
+      if (action === "detail") {
+        await openOrder(orderId);
+      } else if (action === "quick-status") {
+        await updateOrderStatus(
+          orderId,
+          button.dataset.nextStatus,
+          button.textContent.trim()
+        );
+      } else if (action === "copy") {
+        const order = state.orders.find((item) => item.order_id === orderId);
+        if (order) await copyOrderMessage(order);
+      }
+    }
+
+    async function openOrder(orderId) {
+      if (!orderId) return;
+
+      setLoading(true, "受付詳細を読み込んでいます…");
+
+      try {
+        const detail = await fetchJson(
+          `${API_BASE}/api/orders/${encodeURIComponent(orderId)}?shop_code=${encodeURIComponent(state.shopCode)}&admin_key=${encodeURIComponent(state.adminKey)}`
+        );
+
+        state.selectedOrderId = orderId;
+        state.selectedDetail = detail;
+        renderDrawer();
+        showDrawer();
+      } catch (error) {
+        showToast(error.message || "受付詳細を取得できませんでした。", true);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    function renderDrawer() {
+      const detail = state.selectedDetail;
+      if (!detail) return;
+
+      const order = detail.order;
+      const customer = detail.customer;
+      const item = detail.item;
+      const nextStatuses = STATUS_TRANSITIONS[order.status] || [];
+
+      el.drawerTitle.textContent = order.order_number || "修理受付詳細";
+      el.drawerSubtitle.textContent =
+        `${customer.customer_name || "お客様"}｜${itemName(item)}`;
+
+      el.drawerContent.innerHTML = `
+        <section class="detail-card">
+          <div class="detail-title">お客様・修理品</div>
+          <dl class="detail-list">
+            ${detailRows([
+              ["お名前", customer.customer_name],
+              ["電話番号", customer.phone_raw],
+              ["連絡方法", contactLabel(customer.preferred_contact)],
+              ["修理品", itemName(item)],
+              ["カテゴリー", item.category],
+              ["型番", item.model_number || "未入力"],
+              ["色・特徴", [item.color, item.item_features].filter(Boolean).join("／") || "未入力"],
+            ])}
+          </dl>
+        </section>
+
+        <section class="detail-card">
+          <div class="detail-title">受付内容</div>
+          <dl class="detail-list">
+            ${detailRows([
+              ["現在の状態", STATUS_LABELS[order.status] || order.status],
+              ["症状", order.symptom],
+              ["ご希望", order.requested_work || "未入力"],
+              ["来店希望", order.visit_requested_at ? formatDateTime(order.visit_requested_at) : "未定"],
+              ["お預かり", order.received_at ? formatDateTime(order.received_at) : "未登録"],
+              ["外観", order.received_exterior_condition || "未入力"],
+              ["既存の傷", order.received_damage_note || "未入力"],
+              ["完成予定", order.promised_date ? formatDate(order.promised_date) : "未定"],
+              ["店舗案内", order.customer_notice || "なし"],
+            ])}
+          </dl>
+        </section>
+
+        <section class="detail-card">
+          <div class="detail-title">かんたん操作</div>
+          <div class="quick-actions">
+            ${nextStatuses.slice(0, 4).map((status) => `
+              <button
+                class="btn ${status === "cancelled" ? "btn-danger-soft" : "btn-primary"}"
+                type="button"
+                data-drawer-action="status"
+                data-next-status="${escapeHtml(status)}"
+              >
+                ${escapeHtml(STATUS_LABELS[status] || status)}
+              </button>
+            `).join("")}
+            <button class="btn btn-soft" type="button" data-drawer-action="copy">
+              状況連絡文をコピー
+            </button>
+            <button class="btn btn-light" type="button" data-drawer-action="member">
+              お客様画面を開く
+            </button>
+          </div>
+        </section>
+      `;
+    }
+
+    async function handleDrawerClick(event) {
+      const button = event.target.closest("[data-drawer-action]");
+      if (!button || !state.selectedDetail) return;
+
+      const action = button.dataset.drawerAction;
+
+      if (action === "status") {
+        await updateOrderStatus(
+          state.selectedDetail.order.id,
+          button.dataset.nextStatus,
+          STATUS_LABELS[button.dataset.nextStatus] || "状態更新"
+        );
+      } else if (action === "copy") {
+        await copyDetailMessage();
+      } else if (action === "member") {
+        openMemberPage();
+      }
+    }
+
+    async function updateOrderStatus(orderId, nextStatus, label) {
+      if (!orderId || !nextStatus) return;
+
+      setLoading(true, `${label}へ更新しています…`);
+
+      try {
+        await fetchJson(
+          `${API_BASE}/api/orders/${encodeURIComponent(orderId)}/status`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              shop_code: state.shopCode,
+              admin_key: state.adminKey,
+              status: nextStatus,
+              comment: `受付iPadから「${STATUS_LABELS[nextStatus] || nextStatus}」へ更新しました。`,
+              source_screen: "owner-ipad.html",
+              customer_notified: false,
+            }),
+          }
+        );
+
+        showToast(`「${STATUS_LABELS[nextStatus] || nextStatus}」へ更新しました。`);
+        await loadDashboard();
+
+        if (state.selectedOrderId === orderId && !el.orderDrawer.classList.contains("hidden")) {
+          await openOrder(orderId);
+        }
+      } catch (error) {
+        showToast(error.message || "状態を更新できませんでした。", true);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    function showCustomerSearch() {
+      el.customerSearchSection.classList.remove("hidden");
+      el.ordersSection.classList.add("hidden");
+      el.customerSearchInput.focus();
+      window.scrollTo({ top: el.customerSearchSection.offsetTop - 10, behavior: "smooth" });
+    }
+
+    function closeCustomerSearch() {
+      el.customerSearchSection.classList.add("hidden");
+      el.ordersSection.classList.remove("hidden");
+    }
+
+    async function searchCustomers(event) {
+      event.preventDefault();
+      const query = el.customerSearchInput.value.trim();
+
+      if (!query) {
+        el.customerResults.innerHTML =
+          '<div class="empty">検索文字を入力してください。</div>';
+        return;
+      }
+
+      setLoading(true, "顧客を検索しています…");
+
+      try {
+        const response = await fetchJson(
+          `${API_BASE}/api/customers/search?shop_code=${encodeURIComponent(state.shopCode)}&admin_key=${encodeURIComponent(state.adminKey)}&q=${encodeURIComponent(query)}&limit=30`
+        );
+
+        const customers = response.customers || [];
+
+        if (!customers.length) {
+          el.customerResults.innerHTML =
+            '<div class="empty">一致する顧客は見つかりませんでした。</div>';
+          return;
+        }
+
+        el.customerResults.innerHTML = customers.map((customer) => `
+          <article class="customer-card" data-customer-id="${escapeHtml(customer.id)}">
+            <div>
+              <div class="customer-name">${escapeHtml(customer.customer_name)}</div>
+              <div class="customer-info">
+                ${escapeHtml(customer.phone_raw || "電話番号なし")}
+                ${customer.email ? `｜${escapeHtml(customer.email)}` : ""}
+              </div>
+            </div>
+            <button class="btn btn-primary" type="button" data-customer-action="reception">
+              この顧客で受付
+            </button>
+          </article>
+        `).join("");
+      } catch (error) {
+        el.customerResults.innerHTML =
+          `<div class="empty">${escapeHtml(error.message || "検索に失敗しました。")}</div>`;
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    async function handleCustomerResultClick(event) {
+      const card = event.target.closest("[data-customer-id]");
+      const button = event.target.closest("[data-customer-action]");
+      if (!card || !button) return;
+
+      const customerId = card.dataset.customerId;
+      const customer = await getCustomerFromSearch(customerId);
+
+      if (!customer) {
+        showToast("顧客情報を確認できませんでした。", true);
+        return;
+      }
+
+      setLoading(true, "登録済み修理品を確認しています…");
+
+      try {
+        const itemsResponse = await fetchJson(
+          `${API_BASE}/api/customers/${encodeURIComponent(customerId)}/items?shop_code=${encodeURIComponent(state.shopCode)}&admin_key=${encodeURIComponent(state.adminKey)}`
+        );
+
+        state.selectedCustomer = customer;
+        state.selectedCustomerItems = itemsResponse.items || [];
+        closeCustomerSearch();
+        openReceptionModal("phone");
+        renderSelectedCustomer();
+      } catch (error) {
+        showToast(error.message || "修理品情報を取得できませんでした。", true);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    function getCustomerFromSearch(customerId) {
+      const card = el.customerResults.querySelector(`[data-customer-id="${cssEscape(customerId)}"]`);
+      if (!card) return null;
+
+      return {
+        id: customerId,
+        customer_name: card.querySelector(".customer-name")?.textContent.trim() || "お客様",
+        phone_raw:
+          card.querySelector(".customer-info")?.textContent.trim().split("｜")[0].trim() || "",
+      };
+    }
+
+    function openReceptionModal(type = "phone") {
+      resetReceptionForm();
+      setReceptionType(type);
+
+      if (state.selectedCustomer) {
+        renderSelectedCustomer();
+      }
+
+      el.receptionModalBackdrop.classList.remove("hidden");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeReceptionModal() {
+      if (state.loading) return;
+      el.receptionModalBackdrop.classList.add("hidden");
+      document.body.style.overflow = "";
+      clearSelectedCustomer();
+      resetReceptionForm();
+    }
+
+    function setReceptionType(type) {
+      state.receptionType = type === "walk_in" ? "walk_in" : "phone";
+
+      document.querySelectorAll("[data-reception-type]").forEach((button) => {
+        button.classList.toggle("active", button.dataset.receptionType === state.receptionType);
+      });
+
+      const walkIn = state.receptionType === "walk_in";
+      el.receptionModalTitle.textContent = walkIn ? "来店受付・お預かり" : "電話受付";
+      el.receptionModalSubTitle.textContent = walkIn
+        ? "その場で修理品をお預かりする受付です。"
+        : "来店予定や修理相談を登録します。";
+
+      el.walkInFields.classList.toggle("hidden", !walkIn);
+      el.visitDateField.classList.toggle("hidden", walkIn);
+      el.visitTimeField.classList.toggle("hidden", walkIn);
+      el.preferredContact.value = walkIn ? "in_person" : "phone";
+      el.receptionSaveButton.textContent = walkIn
+        ? "お預かり受付を保存"
+        : "電話受付を保存";
+    }
+
+    function renderSelectedCustomer() {
+      if (!state.selectedCustomer) {
+        el.selectedCustomerBox.classList.add("hidden");
+        el.newCustomerSection.classList.remove("hidden");
+        el.existingItemField.classList.add("hidden");
+        return;
+      }
+
+      el.selectedCustomerText.textContent =
+        `${state.selectedCustomer.customer_name}｜${state.selectedCustomer.phone_raw || "電話番号未登録"}`;
+      el.selectedCustomerBox.classList.remove("hidden");
+      el.newCustomerSection.classList.add("hidden");
+
+      el.existingItemSelect.innerHTML =
+        '<option value="">新しい修理品を登録</option>' +
+        state.selectedCustomerItems.map((item) => `
+          <option value="${escapeHtml(item.id)}">
+            ${escapeHtml(itemName(item))}
+            ${item.model_number ? `（${escapeHtml(item.model_number)}）` : ""}
+          </option>
+        `).join("");
+
+      el.existingItemField.classList.remove("hidden");
+      renderExistingItemSelection();
+    }
+
+    function clearSelectedCustomer() {
+      state.selectedCustomer = null;
+      state.selectedCustomerItems = [];
+      el.selectedCustomerBox.classList.add("hidden");
+      el.newCustomerSection.classList.remove("hidden");
+      el.existingItemField.classList.add("hidden");
+      el.existingItemSelect.innerHTML =
+        '<option value="">新しい修理品を登録</option>';
+      el.newItemFields.classList.remove("hidden");
+    }
+
+    function renderExistingItemSelection() {
+      el.newItemFields.classList.toggle(
+        "hidden",
+        Boolean(el.existingItemSelect.value)
+      );
+    }
+
+    function resetReceptionForm() {
+      el.receptionForm.reset();
+      el.receptionError.textContent = "";
+      el.privacyGuided.checked = true;
+      el.powerState.value = "unknown";
+      el.preferredContact.value = "phone";
+      configureVisitDate();
+      populateCategories();
+    }
+
+    async function saveReception(event) {
+      event.preventDefault();
+      el.receptionError.textContent = "";
+
+      const existingItemId =
+        state.selectedCustomer ? el.existingItemSelect.value : "";
+
+      if (!state.selectedCustomer) {
+        if (!el.customerName.value.trim()) {
+          el.receptionError.textContent = "お名前を入力してください。";
+          return;
+        }
+
+        const phone = normalizePhone(el.customerPhone.value);
+        if (phone.length < 10 || phone.length > 15) {
+          el.receptionError.textContent = "電話番号を正しく入力してください。";
+          return;
+        }
+      }
+
+      if (!existingItemId) {
+        if (!el.itemCategory.value) {
+          el.receptionError.textContent = "修理品カテゴリーを選択してください。";
+          return;
+        }
+        if (!el.itemProductName.value.trim()) {
+          el.receptionError.textContent = "商品名を入力してください。";
+          return;
+        }
+      }
+
+      if (!el.symptom.value.trim()) {
+        el.receptionError.textContent = "症状・現在の状態を入力してください。";
+        return;
+      }
+
+      if (state.receptionType === "phone" && el.visitTime.value && !el.visitDate.value) {
+        el.receptionError.textContent = "来店希望日を選択してください。";
+        return;
+      }
+
+      if (!el.privacyGuided.checked) {
+        el.receptionError.textContent = "個人情報利用の案内確認が必要です。";
+        return;
+      }
+
+      const payload = {
+        shop_code: state.shopCode,
+        admin_key: state.adminKey,
+        source: state.receptionType,
+        symptom: el.symptom.value.trim(),
+        requested_work: el.requestedWork.value.trim() || null,
+        preferred_contact: state.selectedCustomer
+          ? null
+          : el.preferredContact.value,
+      };
+
+      if (state.selectedCustomer) {
+        payload.customer_id = state.selectedCustomer.id;
+      } else {
+        payload.customer = {
+          customer_name: el.customerName.value.trim(),
+          customer_name_kana: el.customerKana.value.trim() || null,
+          phone: el.customerPhone.value.trim(),
+          preferred_contact: el.preferredContact.value,
+          privacy_consent: true,
+          privacy_consented_at: new Date().toISOString(),
+        };
+      }
+
+      if (existingItemId) {
+        payload.item_id = existingItemId;
+      } else {
+        payload.item = {
+          category: el.itemCategory.value,
+          manufacturer: el.itemManufacturer.value.trim() || null,
+          brand: el.itemManufacturer.value.trim() || null,
+          product_name: el.itemProductName.value.trim(),
+          model_number: el.itemModelNumber.value.trim() || null,
+          color: el.itemColor.value.trim() || null,
+        };
+      }
+
+      if (
+        state.receptionType === "phone" &&
+        el.visitDate.value &&
+        el.visitTime.value
+      ) {
+        payload.visit_requested_at =
+          new Date(`${el.visitDate.value}T${el.visitTime.value}:00+09:00`).toISOString();
+      }
+
+      if (state.receptionType === "walk_in") {
+        payload.power_state = el.powerState.value;
+        payload.received_exterior_condition =
+          el.exteriorCondition.value.trim() || null;
+        payload.received_damage_note =
+          el.damageNote.value.trim() || null;
+        payload.intake_customer_confirmed =
+          el.intakeConfirmed.checked;
+        payload.intake_customer_confirmed_at =
+          el.intakeConfirmed.checked
+            ? new Date().toISOString()
+            : null;
+      }
+
+      state.loading = true;
+      setLoading(
+        true,
+        state.receptionType === "walk_in"
+          ? "お預かり受付を保存しています…"
+          : "電話受付を保存しています…"
+      );
+      el.receptionSaveButton.disabled = true;
+      el.receptionSaveButton.textContent = "保存中…";
+
+      try {
+        const response = await fetchJson(`${API_BASE}/api/orders`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        state.loading = false;
+        closeReceptionModal();
+        showToast(
+          `${response.order.order_number} を登録しました。`
+        );
+        await loadDashboard();
+        await openOrder(response.order.id);
+      } catch (error) {
+        state.loading = false;
+        el.receptionError.textContent =
+          error.message || "受付の保存に失敗しました。";
+      } finally {
+        setLoading(false);
+        el.receptionSaveButton.disabled = false;
+        el.receptionSaveButton.textContent =
+          state.receptionType === "walk_in"
+            ? "お預かり受付を保存"
+            : "電話受付を保存";
+      }
+    }
+
+    async function copyOrderMessage(order) {
+      const text = [
+        `${order.customer_name || "お客様"}様`,
+        "",
+        "修理受付についてご案内します。",
+        `受付番号：${order.order_number}`,
+        `修理品：${itemName(order)}`,
+        `現在の状況：${STATUS_LABELS[order.status] || order.status}`,
+        "",
+        "変更がある場合は店舗までご連絡ください。",
+      ].join("\n");
+
+      await copyText(text);
+      showToast("状況連絡文をコピーしました。");
+    }
+
+    async function copyDetailMessage() {
+      const detail = state.selectedDetail;
+      if (!detail) return;
+
+      await copyOrderMessage({
+        customer_name: detail.customer.customer_name,
+        order_number: detail.order.order_number,
+        manufacturer: detail.item.manufacturer,
+        brand: detail.item.brand,
+        product_name: detail.item.product_name,
+        status: detail.order.status,
+      });
+    }
+
+    function openMemberPage() {
+      const detail = state.selectedDetail;
+      if (!detail?.order) return;
+
+      const url =
+        `member.html?shop_code=${encodeURIComponent(state.shopCode)}` +
+        `&order_id=${encodeURIComponent(detail.order.id)}` +
+        `&order_number=${encodeURIComponent(detail.order.order_number)}` +
+        `&public_token=${encodeURIComponent(detail.order.public_token)}`;
+
+      window.open(url, "_blank", "noopener");
+    }
+
+    function showDrawer() {
+      el.drawerBackdrop.classList.remove("hidden");
+      el.orderDrawer.classList.remove("hidden");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeDrawer() {
+      if (state.loading) return;
+      el.drawerBackdrop.classList.add("hidden");
+      el.orderDrawer.classList.add("hidden");
+      document.body.style.overflow = "";
+      state.selectedOrderId = null;
+      state.selectedDetail = null;
+    }
+
+    function populateCategories() {
+      const categories =
+        Array.isArray(state.settings?.category_options)
+          ? state.settings.category_options
+              .filter((item) => item && item.enabled !== false)
+              .sort((a, b) => Number(a.display_order || 999) - Number(b.display_order || 999))
+              .map((item) => [item.key, item.label])
+          : FALLBACK_CATEGORIES;
+
+      const current = el.itemCategory.value;
+      el.itemCategory.innerHTML =
+        '<option value="">選択してください</option>' +
+        categories.map(([value, label]) => `
+          <option value="${escapeHtml(value)}">${escapeHtml(label)}</option>
+        `).join("");
+
+      if (
+        current &&
+        Array.from(el.itemCategory.options).some((option) => option.value === current)
+      ) {
+        el.itemCategory.value = current;
+      }
+    }
+
+    function configureVisitDate() {
+      const today = getLocalDate(new Date());
+      const max = new Date();
+      max.setDate(max.getDate() + 60);
+      el.visitDate.min = today;
+      el.visitDate.max = getLocalDate(max);
+    }
+
+    function setTodayLabel() {
+      const today = new Intl.DateTimeFormat("ja-JP", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        weekday: "short",
+        timeZone: "Asia/Tokyo",
+      }).format(new Date());
+
+      el.todayLabel.textContent =
+        `${today}｜電話・来店受付と本日の予定を確認できます。`;
+    }
+
+    function clearAdminCodeInput() {
+      el.adminCode.value = "";
+      el.adminCode.type = "password";
+      el.adminCode.setAttribute("readonly", "");
+      el.toggleAdminCodeButton.textContent = "表示";
+      el.loginError.textContent = "";
+    }
+
+    function logout() {
+      clearAdminSession();
+      state.adminKey = "";
+      state.dashboard = null;
+      state.orders = [];
+      closeDrawer();
+      closeCustomerSearch();
+      el.app.classList.add("hidden");
+      el.loginPage.classList.remove("hidden");
+      clearAdminCodeInput();
+    }
+
+    function saveAdminSession() {
+      sessionStorage.setItem(
+        ADMIN_SESSION_KEY,
+        JSON.stringify({
+          shop_code: state.shopCode,
+          admin_key: state.adminKey,
+          saved_at: new Date().toISOString(),
+        })
+      );
+    }
+
+    function readAdminSession() {
+      try {
+        const raw = sessionStorage.getItem(ADMIN_SESSION_KEY);
+        if (!raw) return null;
+        const data = JSON.parse(raw);
+        if (data.shop_code !== state.shopCode) return null;
+        return data;
+      } catch {
+        return null;
+      }
+    }
+
+    function clearAdminSession() {
+      sessionStorage.removeItem(ADMIN_SESSION_KEY);
+    }
+
+    async function fetchJson(url, options = {}) {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 20000);
+
+      try {
+        const response = await fetch(url, {
+          cache: "no-store",
+          ...options,
+          signal: controller.signal,
+        });
+
+        const text = await response.text();
+        let data = null;
+
+        try {
+          data = text ? JSON.parse(text) : null;
+        } catch {
+          data = null;
+        }
+
+        if (!response.ok || !data?.ok) {
+          const error = new Error(
+            data?.error?.message ||
+              `通信に失敗しました（${response.status}）`
+          );
+          error.status = response.status;
+          error.code = data?.error?.code || null;
+          throw error;
+        }
+
+        return data;
+      } catch (error) {
+        if (error.name === "AbortError") {
+          throw new Error(
+            "通信がタイムアウトしました。もう一度お試しください。"
+          );
+        }
+        throw error;
+      } finally {
+        clearTimeout(timeout);
+      }
+    }
+
+    function setLoading(show, message = "処理しています…") {
+      el.loadingText.textContent = message;
+      el.loadingOverlay.classList.toggle("hidden", !show);
+    }
+
+    function setConnection(status, message) {
+      el.connection.dataset.status = status;
+      el.connectionText.textContent = message;
+    }
+
+    let toastTimer = null;
+    function showToast(message, isError = false) {
+      clearTimeout(toastTimer);
+      el.toast.textContent = message;
+      el.toast.classList.toggle("error", isError);
+      el.toast.classList.add("show");
+      toastTimer = setTimeout(
+        () => el.toast.classList.remove("show"),
+        3300
+      );
+    }
+
+    function itemName(item) {
+      return [item.manufacturer || item.brand, item.product_name]
+        .filter(Boolean)
+        .join(" ") || "修理品";
+    }
+
+    function contactLabel(value) {
+      return {
+        line: "LINE",
+        phone: "電話",
+        email: "メール",
+        in_person: "対面",
+      }[value] || value || "未設定";
+    }
+
+    function statusClass(status) {
+      if (["repair_completed", "completion_notified", "delivered", "closed"].includes(status)) {
+        return "status-success";
+      }
+      if (["estimate_waiting_customer", "customer_consultation_requested", "parts_waiting", "awaiting_pickup"].includes(status)) {
+        return "status-warning";
+      }
+      if (["cancelled", "unrepairable", "estimate_declined"].includes(status)) {
+        return "status-danger";
+      }
+      if (["consultation_received", "provisional_received", "visit_scheduled"].includes(status)) {
+        return "status-primary";
+      }
+      return "status-gray";
+    }
+
+    function detailRows(rows) {
+      return rows.map(([label, value]) => `
+        <dt>${escapeHtml(label)}</dt>
+        <dd>${escapeHtml(String(value ?? "—"))}</dd>
+      `).join("");
+    }
+
+    function normalizePhone(value) {
+      return String(value || "")
+        .normalize("NFKC")
+        .replace(/[ー－―‐‑‒–—−]/g, "-")
+        .replace(/[^0-9+]/g, "")
+        .replace(/^\+81/, "0")
+        .replace(/\D/g, "");
+    }
+
+    function getLocalDate(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    }
+
+    function formatDate(value) {
+      if (!value) return "未定";
+      const source = /^\d{4}-\d{2}-\d{2}$/.test(value)
+        ? `${value}T12:00:00+09:00`
+        : value;
+      const date = new Date(source);
+      if (Number.isNaN(date.getTime())) return String(value);
+
+      return new Intl.DateTimeFormat("ja-JP", {
+        year: "numeric",
+        month: "numeric",
+        day: "numeric",
+        weekday: "short",
+        timeZone: "Asia/Tokyo",
+      }).format(date);
+    }
+
+    function formatDateTime(value) {
+      if (!value) return "未定";
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return String(value);
+
+      return new Intl.DateTimeFormat("ja-JP", {
+        year: "numeric",
+        month: "numeric",
+        day: "numeric",
+        weekday: "short",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+        timeZone: "Asia/Tokyo",
+      }).format(date);
+    }
+
+    function formatTime(value) {
+      const date = new Date(value || Date.now());
+      return new Intl.DateTimeFormat("ja-JP", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+        timeZone: "Asia/Tokyo",
+      }).format(date);
+    }
+
+    async function copyText(text) {
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch {
+        const area = document.createElement("textarea");
+        area.value = text;
+        document.body.appendChild(area);
+        area.select();
+        document.execCommand("copy");
+        area.remove();
+      }
+    }
+
+    function cssEscape(value) {
+      if (window.CSS?.escape) return CSS.escape(value);
+      return String(value).replace(/["\\]/g, "\\$&");
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+  </script>
+</body>
+</html>
