@@ -512,6 +512,118 @@
       background: #f7faf9;
     }
 
+    .estimate-response {
+      display: grid;
+      gap: 9px;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+    }
+
+    .estimate-response-title {
+      font-size: 13px;
+      font-weight: 950;
+    }
+
+    .estimate-response-note {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .estimate-response-buttons {
+      display: grid;
+      gap: 8px;
+    }
+
+    .btn-danger-soft {
+      color: #9c3731;
+      border: 1px solid #efc5c1;
+      background: #fff1f0;
+    }
+
+    .response-result {
+      padding: 13px 14px;
+      color: var(--primary-dark);
+      border: 1px solid #b8ddd6;
+      border-radius: 13px;
+      background: var(--primary-soft);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .modal {
+      position: fixed;
+      z-index: 140;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 16px;
+      background: rgba(18,33,29,.58);
+      backdrop-filter: blur(5px);
+    }
+
+    .modal-card {
+      width: min(100%, 520px);
+      max-height: min(86vh, 720px);
+      overflow-y: auto;
+      padding: 20px 17px;
+      border-radius: 20px;
+      background: #fff;
+      box-shadow: 0 24px 70px rgba(0,0,0,.24);
+    }
+
+    .modal-card h2 {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.4;
+    }
+
+    .modal-card p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .modal-summary {
+      margin-top: 14px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: #f8fbfa;
+      font-size: 12px;
+    }
+
+    .modal-summary strong {
+      display: block;
+      color: var(--primary-dark);
+      font-size: 18px;
+    }
+
+    .modal textarea {
+      width: 100%;
+      min-height: 100px;
+      margin-top: 14px;
+      padding: 11px 12px;
+      color: var(--text);
+      border: 1px solid #cbdad5;
+      border-radius: 12px;
+      outline: none;
+      resize: vertical;
+      font: inherit;
+    }
+
+    .modal textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(15,118,110,.11);
+    }
+
+    .modal-actions {
+      display: grid;
+      grid-template-columns: .65fr 1fr;
+      gap: 9px;
+      margin-top: 14px;
+    }
+
     .action-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0,1fr));
@@ -769,9 +881,37 @@
     </section>
 
     <div class="version">
-      DPRO 修理受付 LINE｜STEP REPAIR-5｜REPAIR-5-MEMBER-20260712
+      DPRO 修理受付 LINE｜STEP REPAIR-6｜REPAIR-6-ESTIMATE-APPROVAL-20260712
     </div>
   </main>
+
+  <div id="estimateResponseModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="responseModalTitle">
+    <div class="modal-card">
+      <h2 id="responseModalTitle">見積もりへの回答</h2>
+      <p id="responseModalDescription">内容をご確認ください。</p>
+
+      <div class="modal-summary">
+        <span>対象のお見積もり</span>
+        <strong id="responseModalAmount">¥0</strong>
+        <span id="responseModalEstimateNumber">—</span>
+      </div>
+
+      <textarea
+        id="responseComment"
+        maxlength="2000"
+        placeholder="店舗への伝達事項があれば入力してください（任意）"
+      ></textarea>
+
+      <div class="modal-actions">
+        <button id="responseCancelButton" class="btn btn-light" type="button">
+          戻る
+        </button>
+        <button id="responseConfirmButton" class="btn btn-primary" type="button">
+          回答を確定
+        </button>
+      </div>
+    </div>
+  </div>
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
@@ -797,6 +937,7 @@
       orderData: null,
       historyData: null,
       loading: false,
+      pendingEstimateResponse: null,
     };
 
     const el = {
@@ -822,6 +963,22 @@
       estimateContent: document.getElementById("estimateContent"),
       pickupContent: document.getElementById("pickupContent"),
       warrantyContent: document.getElementById("warrantyContent"),
+      estimateResponseModal:
+        document.getElementById("estimateResponseModal"),
+      responseModalTitle:
+        document.getElementById("responseModalTitle"),
+      responseModalDescription:
+        document.getElementById("responseModalDescription"),
+      responseModalAmount:
+        document.getElementById("responseModalAmount"),
+      responseModalEstimateNumber:
+        document.getElementById("responseModalEstimateNumber"),
+      responseComment:
+        document.getElementById("responseComment"),
+      responseCancelButton:
+        document.getElementById("responseCancelButton"),
+      responseConfirmButton:
+        document.getElementById("responseConfirmButton"),
       copyInquiryButton: document.getElementById("copyInquiryButton"),
       newRequestButton: document.getElementById("newRequestButton"),
       loadingOverlay: document.getElementById("loadingOverlay"),
@@ -858,6 +1015,34 @@
       el.newRequestButton.addEventListener("click", () => {
         location.href = `index.html?shop_code=${encodeURIComponent(state.shopCode)}`;
       });
+      el.responseCancelButton.addEventListener(
+        "click",
+        closeEstimateResponseModal
+      );
+      el.responseConfirmButton.addEventListener(
+        "click",
+        submitEstimateResponse
+      );
+      el.estimateResponseModal.addEventListener(
+        "click",
+        (event) => {
+          if (event.target === el.estimateResponseModal) {
+            closeEstimateResponseModal();
+          }
+        }
+      );
+      el.estimateContent.addEventListener(
+        "click",
+        (event) => {
+          const button = event.target.closest(
+            "[data-estimate-response]"
+          );
+          if (!button) return;
+          openEstimateResponseModal(
+            button.dataset.estimateResponse
+          );
+        }
+      );
 
       document.querySelectorAll("[data-tab]").forEach((button) => {
         button.addEventListener("click", () => openTab(button.dataset.tab));
@@ -1084,14 +1269,23 @@
       }
 
       const responseLabel = {
-        approved: "修理を依頼済み",
-        declined: "修理見送り",
-        consultation_requested: "店舗へ相談希望",
+        approved: "この内容で修理を依頼済み",
+        declined: "修理せず返却を希望済み",
+        consultation_requested: "店舗へ相談を希望済み",
       }[estimate.customer_response] || "回答待ち";
 
       const items = Array.isArray(estimate.items)
         ? estimate.items
         : [];
+
+      const expired =
+        estimate.expires_at &&
+        new Date(estimate.expires_at).getTime() < Date.now();
+
+      const canRespond =
+        estimate.can_respond === true &&
+        !expired &&
+        !estimate.customer_response;
 
       el.estimateContent.innerHTML = `
         <div class="estimate-total">
@@ -1118,6 +1312,15 @@
                               ? `<div class="note">${escapeHtml(item.description)}</div>`
                               : ""
                           }
+                          <div class="note">
+                            ${escapeHtml(String(item.quantity))} ×
+                            ${formatMoney(item.unit_price)}
+                            ${
+                              Number(item.tax_rate) > 0
+                                ? `／税率 ${escapeHtml(String(item.tax_rate))}%`
+                                : "／非課税"
+                            }
+                          </div>
                         </div>
                         <div>${formatMoney(item.line_subtotal)}</div>
                       </div>
@@ -1128,34 +1331,94 @@
             : ""
         }
 
-        <div class="alert alert-soft" style="margin-top:14px">
-          有効期限：${
-            estimate.expires_at
-              ? escapeHtml(formatDateTime(estimate.expires_at))
-              : "設定なし"
-          }<br />
-          完成予定：${
-            estimate.estimated_completion_date
-              ? escapeHtml(formatDate(estimate.estimated_completion_date))
-              : "未定"
-          }
-        </div>
+        <dl class="info-list" style="margin-top:14px">
+          ${infoRows([
+            ["小計", formatMoney(estimate.subtotal_amount)],
+            ["値引き", formatMoney(estimate.discount_amount)],
+            ["消費税", formatMoney(estimate.tax_amount)],
+            [
+              "有効期限",
+              estimate.expires_at
+                ? formatDateTime(estimate.expires_at)
+                : "設定なし"
+            ],
+            [
+              "完成予定",
+              estimate.estimated_completion_date
+                ? formatDate(estimate.estimated_completion_date)
+                : "未定"
+            ],
+          ])}
+        </dl>
 
         ${
           estimate.customer_note
-            ? `<div class="alert alert-warning" style="margin-top:10px">${escapeHtml(
+            ? `<div class="alert alert-warning" style="margin-top:14px">${escapeHtml(
                 estimate.customer_note
               )}</div>`
             : ""
         }
 
         ${
-          ["waiting_customer", "issued"].includes(estimate.status) &&
-          !estimate.customer_response
-            ? `<div class="alert alert-warning" style="margin-top:10px">
-                見積もりへの回答機能はSTEP REPAIR-6で追加されます。
+          expired && !estimate.customer_response
+            ? `<div class="alert alert-warning" style="margin-top:12px">
+                この見積もりの有効期限は終了しています。店舗へお問い合わせください。
               </div>`
             : ""
+        }
+
+        ${
+          canRespond
+            ? `<div class="estimate-response">
+                <div class="estimate-response-title">
+                  お見積もりへの回答
+                </div>
+                <div class="estimate-response-note">
+                  回答後は店舗へ内容が保存されます。金額・修理内容を確認して選択してください。
+                </div>
+                <div class="estimate-response-buttons">
+                  <button
+                    class="btn btn-primary"
+                    type="button"
+                    data-estimate-response="approved"
+                  >
+                    この内容で修理を依頼する
+                  </button>
+                  <button
+                    class="btn btn-soft"
+                    type="button"
+                    data-estimate-response="consultation_requested"
+                  >
+                    店舗へ相談する
+                  </button>
+                  <button
+                    class="btn btn-danger-soft"
+                    type="button"
+                    data-estimate-response="declined"
+                  >
+                    修理せず返却を希望する
+                  </button>
+                </div>
+              </div>`
+            : estimate.customer_response
+              ? `<div class="response-result" style="margin-top:14px">
+                  ${escapeHtml(responseLabel)}
+                  ${
+                    estimate.responded_at
+                      ? `<br />回答日時：${escapeHtml(
+                          formatDateTime(estimate.responded_at)
+                        )}`
+                      : ""
+                  }
+                  ${
+                    estimate.customer_response_comment
+                      ? `<br />コメント：${escapeHtml(
+                          estimate.customer_response_comment
+                        )}`
+                      : ""
+                  }
+                </div>`
+              : ""
         }
       `;
     }
@@ -1197,6 +1460,154 @@
           ])}
         </dl>
       `;
+    }
+
+    function openEstimateResponseModal(responseValue) {
+      const estimate = state.orderData?.estimate;
+      if (
+        !estimate ||
+        estimate.can_respond !== true
+      ) {
+        showToast(
+          "現在、この見積もりには回答できません。",
+          true
+        );
+        return;
+      }
+
+      const config = {
+        approved: {
+          title: "この内容で修理を依頼しますか？",
+          description:
+            "表示されている見積もり金額と修理内容で、店舗へ修理依頼を送信します。",
+          button: "修理依頼を確定",
+          className: "btn-primary",
+        },
+        consultation_requested: {
+          title: "店舗へ相談しますか？",
+          description:
+            "確認したい点や変更希望をコメント欄へ入力できます。",
+          button: "相談希望を送信",
+          className: "btn-primary",
+        },
+        declined: {
+          title: "修理せず返却を希望しますか？",
+          description:
+            "修理を進めず、修理品の返却を希望する内容を店舗へ送信します。",
+          button: "返却希望を確定",
+          className: "btn-danger-soft",
+        },
+      }[responseValue];
+
+      if (!config) return;
+
+      state.pendingEstimateResponse =
+        responseValue;
+      el.responseModalTitle.textContent =
+        config.title;
+      el.responseModalDescription.textContent =
+        config.description;
+      el.responseModalAmount.textContent =
+        formatMoney(estimate.total_amount);
+      el.responseModalEstimateNumber.textContent =
+        estimate.estimate_number ||
+        `見積もり Ver.${estimate.version || 1}`;
+      el.responseComment.value = "";
+
+      el.responseConfirmButton.className =
+        `btn ${config.className}`;
+      el.responseConfirmButton.textContent =
+        config.button;
+      el.estimateResponseModal.classList.remove(
+        "hidden"
+      );
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeEstimateResponseModal(force = false) {
+      if (state.loading && !force) return;
+
+      state.pendingEstimateResponse = null;
+      el.estimateResponseModal.classList.add(
+        "hidden"
+      );
+      el.responseComment.value = "";
+      document.body.style.overflow = "";
+    }
+
+    async function submitEstimateResponse() {
+      const estimate = state.orderData?.estimate;
+      const responseValue =
+        state.pendingEstimateResponse;
+
+      if (
+        !estimate?.id ||
+        !responseValue ||
+        !state.access?.order_id ||
+        !state.access?.public_token
+      ) {
+        showToast(
+          "見積もり情報を確認できませんでした。",
+          true
+        );
+        return;
+      }
+
+      state.loading = true;
+      el.responseConfirmButton.disabled = true;
+      el.responseCancelButton.disabled = true;
+      setLoading(true, "回答を保存しています…");
+
+      try {
+        await fetchJson(
+          `${API_BASE}/api/estimates/${encodeURIComponent(
+            estimate.id
+          )}/customer-response`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              shop_code: state.shopCode,
+              order_id: state.access.order_id,
+              public_token:
+                state.access.public_token,
+              response: responseValue,
+              comment:
+                el.responseComment.value.trim() ||
+                null,
+            }),
+          }
+        );
+
+        closeEstimateResponseModal(true);
+        state.loading = false;
+        await loadMemberData();
+        openTab("estimate");
+
+        const message = {
+          approved:
+            "修理依頼を店舗へ送信しました。",
+          declined:
+            "返却希望を店舗へ送信しました。",
+          consultation_requested:
+            "相談希望を店舗へ送信しました。",
+        }[responseValue];
+
+        showToast(message);
+      } catch (error) {
+        state.loading = false;
+        showToast(
+          error.message ||
+            "回答の保存に失敗しました。",
+          true
+        );
+      } finally {
+        setLoading(false);
+        el.responseConfirmButton.disabled = false;
+        el.responseCancelButton.disabled = false;
+      }
     }
 
     function showAccessPanel() {
