@@ -1,0 +1,1538 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f766e" />
+  <meta name="format-detection" content="telephone=no" />
+  <title>DPRO 修理受付 LINE｜修理状況</title>
+  <style>
+    :root {
+      --bg: #f2f7f5;
+      --card: #ffffff;
+      --text: #152421;
+      --muted: #667670;
+      --line: #dae7e3;
+      --primary: #0f766e;
+      --primary-dark: #0a5e57;
+      --primary-soft: #e7f5f2;
+      --success: #128064;
+      --warning: #b77605;
+      --warning-soft: #fff8e8;
+      --danger: #bf453e;
+      --shadow: 0 14px 34px rgba(29, 66, 58, 0.10);
+      --radius-lg: 22px;
+      --radius-md: 15px;
+      --safe-bottom: max(18px, env(safe-area-inset-bottom));
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      background: var(--bg);
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 10% 0%, rgba(15,118,110,.10), transparent 30%),
+        linear-gradient(180deg, #edf8f5 0, var(--bg) 360px);
+      font-family:
+        -apple-system, BlinkMacSystemFont, "Segoe UI",
+        "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button, input { font: inherit; }
+
+    button { -webkit-tap-highlight-color: transparent; }
+
+    .page {
+      width: min(100%, 760px);
+      margin: 0 auto;
+      padding: 16px 12px calc(34px + var(--safe-bottom));
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 22px 20px;
+      color: #fff;
+      border-radius: 25px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.12), transparent 45%),
+        linear-gradient(135deg, #0a5e57, #0f766e 58%, #159183);
+      box-shadow: 0 18px 42px rgba(15,118,110,.22);
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 165px;
+      height: 165px;
+      right: -55px;
+      bottom: -80px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.08);
+    }
+
+    .kicker {
+      position: relative;
+      z-index: 1;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .09em;
+      opacity: .9;
+    }
+
+    .hero h1 {
+      position: relative;
+      z-index: 1;
+      margin: 7px 0 0;
+      font-size: clamp(23px, 6vw, 32px);
+      line-height: 1.3;
+    }
+
+    .hero p {
+      position: relative;
+      z-index: 1;
+      margin: 7px 0 0;
+      font-size: 13px;
+      opacity: .93;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 14px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .top-button {
+      padding: 7px 11px;
+      color: #fff;
+      border: 1px solid rgba(255,255,255,.28);
+      border-radius: 999px;
+      background: rgba(255,255,255,.12);
+      font-size: 11px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .connection {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin: 13px 4px 0;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .connection-dot {
+      width: 9px;
+      height: 9px;
+      flex: 0 0 auto;
+      border-radius: 50%;
+      background: #9ca3af;
+      box-shadow: 0 0 0 4px rgba(156,163,175,.14);
+    }
+
+    .connection[data-status="ok"] .connection-dot {
+      background: var(--success);
+      box-shadow: 0 0 0 4px rgba(18,128,100,.14);
+    }
+
+    .connection[data-status="error"] .connection-dot {
+      background: var(--danger);
+      box-shadow: 0 0 0 4px rgba(191,69,62,.14);
+    }
+
+    .card {
+      margin-top: 14px;
+      padding: 19px 17px;
+      border: 1px solid rgba(218,231,227,.96);
+      border-radius: var(--radius-lg);
+      background: rgba(255,255,255,.97);
+      box-shadow: var(--shadow);
+    }
+
+    .section-head {
+      display: flex;
+      align-items: flex-start;
+      gap: 11px;
+      margin-bottom: 15px;
+    }
+
+    .section-icon {
+      display: grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      flex: 0 0 auto;
+      color: var(--primary-dark);
+      border-radius: 13px;
+      background: var(--primary-soft);
+      font-weight: 900;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.35;
+    }
+
+    .section-head p {
+      margin: 3px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .access-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 7px;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    input {
+      width: 100%;
+      min-height: 50px;
+      padding: 10px 12px;
+      color: var(--text);
+      border: 1px solid #cbdad5;
+      border-radius: 12px;
+      outline: none;
+      background: #fff;
+    }
+
+    input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(15,118,110,.11);
+    }
+
+    input[aria-invalid="true"] {
+      border-color: var(--danger);
+      background: #fff1f0;
+    }
+
+    .note {
+      margin: 6px 2px 0;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .error {
+      min-height: 18px;
+      margin: 4px 2px 0;
+      color: var(--danger);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .btn {
+      width: 100%;
+      min-height: 51px;
+      padding: 12px 15px;
+      border: 0;
+      border-radius: 14px;
+      font-weight: 950;
+      cursor: pointer;
+    }
+
+    .btn:disabled {
+      opacity: .55;
+      cursor: wait;
+    }
+
+    .btn-primary {
+      color: #fff;
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+      box-shadow: 0 10px 22px rgba(15,118,110,.21);
+    }
+
+    .btn-soft {
+      color: var(--primary-dark);
+      background: var(--primary-soft);
+    }
+
+    .btn-light {
+      color: #41504b;
+      background: #edf2f0;
+    }
+
+    .status-card {
+      overflow: hidden;
+      padding: 0;
+    }
+
+    .status-main {
+      padding: 21px 18px 18px;
+      color: #fff;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.10), transparent 48%),
+        linear-gradient(135deg, #0b665d, #0f766e);
+    }
+
+    .status-label {
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      opacity: .86;
+    }
+
+    .status-title {
+      margin: 7px 0 0;
+      font-size: clamp(22px, 6vw, 30px);
+      line-height: 1.35;
+    }
+
+    .status-next {
+      margin-top: 9px;
+      padding: 11px 12px;
+      border: 1px solid rgba(255,255,255,.20);
+      border-radius: 12px;
+      background: rgba(255,255,255,.10);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .status-meta {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 10px;
+      padding: 14px 17px 17px;
+    }
+
+    .meta {
+      min-width: 0;
+      padding: 11px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fbfdfc;
+    }
+
+    .meta-label {
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 800;
+    }
+
+    .meta-value {
+      margin-top: 3px;
+      font-size: 13px;
+      font-weight: 900;
+      overflow-wrap: anywhere;
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 7px;
+      margin-top: 14px;
+    }
+
+    .tab {
+      min-height: 43px;
+      padding: 8px 5px;
+      color: #667670;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(255,255,255,.75);
+      font-size: 12px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .tab.active {
+      color: var(--primary-dark);
+      border-color: #acd8d0;
+      background: var(--primary-soft);
+    }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    .info-list {
+      display: grid;
+      grid-template-columns: 108px 1fr;
+      gap: 8px 10px;
+      margin: 0;
+      font-size: 12px;
+    }
+
+    .info-list dt {
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .info-list dd {
+      min-width: 0;
+      margin: 0;
+      font-weight: 800;
+      overflow-wrap: anywhere;
+      white-space: pre-wrap;
+    }
+
+    .timeline {
+      position: relative;
+      display: grid;
+      gap: 0;
+      margin-top: 4px;
+    }
+
+    .timeline-item {
+      position: relative;
+      display: grid;
+      grid-template-columns: 27px 1fr;
+      gap: 10px;
+      padding-bottom: 18px;
+    }
+
+    .timeline-item:last-child { padding-bottom: 0; }
+
+    .timeline-mark {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      place-items: center;
+      width: 25px;
+      height: 25px;
+      color: #fff;
+      border-radius: 50%;
+      background: var(--primary);
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .timeline-item:not(:last-child) .timeline-mark::after {
+      content: "";
+      position: absolute;
+      top: 25px;
+      bottom: -18px;
+      left: 12px;
+      width: 2px;
+      background: #cee2dd;
+    }
+
+    .timeline-content {
+      padding-top: 1px;
+    }
+
+    .timeline-title {
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .timeline-date {
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .empty {
+      padding: 18px 14px;
+      color: var(--muted);
+      border: 1px dashed #cbdad5;
+      border-radius: 13px;
+      background: #fbfdfc;
+      text-align: center;
+      font-size: 12px;
+    }
+
+    .estimate-total {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 14px;
+      padding: 14px;
+      color: var(--primary-dark);
+      border: 1px solid #b8ddd6;
+      border-radius: 14px;
+      background: var(--primary-soft);
+    }
+
+    .estimate-total-label {
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .estimate-total-value {
+      font-size: 25px;
+      font-weight: 950;
+    }
+
+    .estimate-lines {
+      display: grid;
+      gap: 8px;
+    }
+
+    .estimate-line {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #edf2f0;
+      font-size: 12px;
+    }
+
+    .estimate-line:last-child {
+      padding-bottom: 0;
+      border-bottom: 0;
+    }
+
+    .estimate-line strong { font-weight: 900; }
+
+    .alert {
+      padding: 13px 14px;
+      border-radius: 13px;
+      font-size: 12px;
+    }
+
+    .alert-warning {
+      color: #6c4a0c;
+      border: 1px solid #ead59e;
+      background: var(--warning-soft);
+    }
+
+    .alert-soft {
+      color: #40504b;
+      border: 1px solid var(--line);
+      background: #f7faf9;
+    }
+
+    .action-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 9px;
+      margin-top: 14px;
+    }
+
+    .version {
+      margin: 17px 4px 0;
+      color: #879590;
+      font-size: 10px;
+      text-align: center;
+    }
+
+    .toast {
+      position: fixed;
+      z-index: 100;
+      left: 50%;
+      bottom: calc(22px + var(--safe-bottom));
+      width: min(calc(100% - 28px), 640px);
+      padding: 12px 14px;
+      color: #fff;
+      border-radius: 13px;
+      background: rgba(31,45,41,.96);
+      box-shadow: 0 12px 30px rgba(0,0,0,.18);
+      text-align: center;
+      font-size: 13px;
+      font-weight: 900;
+      opacity: 0;
+      transform: translate(-50%, 14px);
+      pointer-events: none;
+      transition: .2s;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%,0);
+    }
+
+    .toast.error { background: rgba(156,45,40,.97); }
+
+    .loading {
+      position: fixed;
+      z-index: 120;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background: rgba(244,248,247,.76);
+      backdrop-filter: blur(5px);
+    }
+
+    .loading-box {
+      display: grid;
+      justify-items: center;
+      gap: 12px;
+      min-width: 200px;
+      padding: 23px;
+      border-radius: 18px;
+      background: #fff;
+      box-shadow: var(--shadow);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .spinner {
+      width: 31px;
+      height: 31px;
+      border: 4px solid #dcebe7;
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 520px) {
+      .page { padding-left: 10px; padding-right: 10px; }
+      .card { padding: 17px 14px; border-radius: 19px; }
+      .status-meta { grid-template-columns: 1fr; }
+      .info-list { grid-template-columns: 92px 1fr; }
+    }
+
+    @media (max-width: 390px) {
+      .tabs { grid-template-columns: 1fr; }
+      .action-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <div class="kicker">DPRO REPAIR MEMBER PAGE</div>
+      <h1 id="heroTitle">修理状況の確認</h1>
+      <p>現在の進捗、見積もり、引き取り・保証情報を確認できます。</p>
+      <div class="top-actions">
+        <button id="refreshTopButton" class="top-button hidden" type="button">最新情報に更新</button>
+        <button id="changeOrderButton" class="top-button hidden" type="button">別の受付を確認</button>
+      </div>
+    </header>
+
+    <div id="connection" class="connection" data-status="loading" role="status" aria-live="polite">
+      <span class="connection-dot"></span>
+      <span id="connectionText">修理状況を確認しています…</span>
+    </div>
+
+    <section id="accessPanel" class="card hidden">
+      <div class="section-head">
+        <div class="section-icon">鍵</div>
+        <div>
+          <h2>受付情報を入力</h2>
+          <p>受付番号と、受付時に登録した電話番号を入力してください。</p>
+        </div>
+      </div>
+
+      <form id="accessForm" class="access-grid" novalidate>
+        <div>
+          <label for="orderNumberInput">受付番号</label>
+          <input
+            id="orderNumberInput"
+            type="text"
+            inputmode="latin"
+            autocomplete="off"
+            maxlength="40"
+            placeholder="例：RP-20260712-D001"
+          />
+          <div class="error" data-error-for="orderNumberInput"></div>
+        </div>
+
+        <div>
+          <label for="phoneInput">電話番号</label>
+          <input
+            id="phoneInput"
+            type="tel"
+            inputmode="tel"
+            autocomplete="tel"
+            maxlength="30"
+            placeholder="例：090-1111-2222"
+          />
+          <p class="note">ハイフンあり・なし、全角入力でも確認できます。</p>
+          <div class="error" data-error-for="phoneInput"></div>
+        </div>
+
+        <button id="accessButton" class="btn btn-primary" type="submit">
+          修理状況を表示
+        </button>
+      </form>
+    </section>
+
+    <section id="memberPanel" class="hidden">
+      <article class="card status-card">
+        <div class="status-main">
+          <div class="status-label">現在の修理状況</div>
+          <h2 id="statusTitle" class="status-title">確認中です</h2>
+          <div id="nextAction" class="status-next">最新情報を取得しています。</div>
+        </div>
+
+        <div class="status-meta">
+          <div class="meta">
+            <div class="meta-label">受付番号</div>
+            <div id="orderNumber" class="meta-value">—</div>
+          </div>
+          <div class="meta">
+            <div class="meta-label">修理品</div>
+            <div id="itemName" class="meta-value">—</div>
+          </div>
+          <div class="meta">
+            <div class="meta-label">受付日</div>
+            <div id="receivedDate" class="meta-value">—</div>
+          </div>
+          <div class="meta">
+            <div class="meta-label">完成予定</div>
+            <div id="promisedDate" class="meta-value">未定</div>
+          </div>
+        </div>
+      </article>
+
+      <nav class="tabs" aria-label="修理情報">
+        <button class="tab active" type="button" data-tab="status">状況・履歴</button>
+        <button class="tab" type="button" data-tab="estimate">見積もり</button>
+        <button class="tab" type="button" data-tab="pickup">引き取り・保証</button>
+      </nav>
+
+      <section class="tab-panel active" data-tab-panel="status">
+        <div class="card">
+          <div class="section-head">
+            <div class="section-icon">品</div>
+            <div>
+              <h2>受付内容</h2>
+              <p>修理品と症状の確認です。</p>
+            </div>
+          </div>
+          <dl id="orderDetails" class="info-list"></dl>
+        </div>
+
+        <div class="card">
+          <div class="section-head">
+            <div class="section-icon">歴</div>
+            <div>
+              <h2>進捗履歴</h2>
+              <p>店舗で更新された修理状況を表示します。</p>
+            </div>
+          </div>
+          <div id="timeline" class="timeline"></div>
+        </div>
+      </section>
+
+      <section class="tab-panel" data-tab-panel="estimate">
+        <div class="card">
+          <div class="section-head">
+            <div class="section-icon">見</div>
+            <div>
+              <h2>お見積もり</h2>
+              <p>店舗から発行された最新のお見積もりです。</p>
+            </div>
+          </div>
+          <div id="estimateContent"></div>
+        </div>
+      </section>
+
+      <section class="tab-panel" data-tab-panel="pickup">
+        <div class="card">
+          <div class="section-head">
+            <div class="section-icon">受</div>
+            <div>
+              <h2>引き取り情報</h2>
+              <p>引き取り可能日・予定日時を確認できます。</p>
+            </div>
+          </div>
+          <div id="pickupContent"></div>
+        </div>
+
+        <div class="card">
+          <div class="section-head">
+            <div class="section-icon">保</div>
+            <div>
+              <h2>修理保証</h2>
+              <p>修理完了後に保証内容が表示されます。</p>
+            </div>
+          </div>
+          <div id="warrantyContent"></div>
+        </div>
+      </section>
+
+      <div class="action-grid">
+        <button id="copyInquiryButton" class="btn btn-primary" type="button">
+          問い合わせ文をコピー
+        </button>
+        <button id="newRequestButton" class="btn btn-light" type="button">
+          新しい修理相談
+        </button>
+      </div>
+    </section>
+
+    <div class="version">
+      DPRO 修理受付 LINE｜STEP REPAIR-5｜REPAIR-5-MEMBER-20260712
+    </div>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <div id="loadingOverlay" class="loading hidden">
+    <div class="loading-box">
+      <div class="spinner"></div>
+      <div id="loadingText">確認しています…</div>
+    </div>
+  </div>
+
+  <script>
+    "use strict";
+
+    const API_BASE = "https://dpro-repair-line-api.dpromstk2000.workers.dev";
+    const DEFAULT_SHOP_CODE = "repair_demo";
+    const MEMBER_ACCESS_KEY = "dpro_repair_member_access_v1";
+
+    const state = {
+      shopCode:
+        new URLSearchParams(location.search).get("shop_code") ||
+        DEFAULT_SHOP_CODE,
+      access: null,
+      orderData: null,
+      historyData: null,
+      loading: false,
+    };
+
+    const el = {
+      heroTitle: document.getElementById("heroTitle"),
+      connection: document.getElementById("connection"),
+      connectionText: document.getElementById("connectionText"),
+      accessPanel: document.getElementById("accessPanel"),
+      memberPanel: document.getElementById("memberPanel"),
+      accessForm: document.getElementById("accessForm"),
+      orderNumberInput: document.getElementById("orderNumberInput"),
+      phoneInput: document.getElementById("phoneInput"),
+      accessButton: document.getElementById("accessButton"),
+      refreshTopButton: document.getElementById("refreshTopButton"),
+      changeOrderButton: document.getElementById("changeOrderButton"),
+      statusTitle: document.getElementById("statusTitle"),
+      nextAction: document.getElementById("nextAction"),
+      orderNumber: document.getElementById("orderNumber"),
+      itemName: document.getElementById("itemName"),
+      receivedDate: document.getElementById("receivedDate"),
+      promisedDate: document.getElementById("promisedDate"),
+      orderDetails: document.getElementById("orderDetails"),
+      timeline: document.getElementById("timeline"),
+      estimateContent: document.getElementById("estimateContent"),
+      pickupContent: document.getElementById("pickupContent"),
+      warrantyContent: document.getElementById("warrantyContent"),
+      copyInquiryButton: document.getElementById("copyInquiryButton"),
+      newRequestButton: document.getElementById("newRequestButton"),
+      loadingOverlay: document.getElementById("loadingOverlay"),
+      loadingText: document.getElementById("loadingText"),
+      toast: document.getElementById("toast"),
+    };
+
+    document.addEventListener("DOMContentLoaded", initialize);
+
+    async function initialize() {
+      bindEvents();
+
+      const queryAccess = readAccessFromQuery();
+      const savedAccess = readSavedAccess();
+      state.access = queryAccess || savedAccess;
+
+      if (queryAccess) {
+        saveAccess(queryAccess);
+        removeSensitiveQuery();
+      }
+
+      if (state.access?.order_id && state.access?.public_token) {
+        await loadMemberData();
+      } else {
+        showAccessPanel();
+      }
+    }
+
+    function bindEvents() {
+      el.accessForm.addEventListener("submit", handleAccessSubmit);
+      el.refreshTopButton.addEventListener("click", loadMemberData);
+      el.changeOrderButton.addEventListener("click", clearAccessAndShowForm);
+      el.copyInquiryButton.addEventListener("click", copyInquiry);
+      el.newRequestButton.addEventListener("click", () => {
+        location.href = `index.html?shop_code=${encodeURIComponent(state.shopCode)}`;
+      });
+
+      document.querySelectorAll("[data-tab]").forEach((button) => {
+        button.addEventListener("click", () => openTab(button.dataset.tab));
+      });
+    }
+
+    async function handleAccessSubmit(event) {
+      event.preventDefault();
+      clearErrors();
+
+      const orderNumber = el.orderNumberInput.value.trim().toUpperCase();
+      const phone = el.phoneInput.value.trim();
+
+      let valid = true;
+
+      if (!/^RP-\d{8}-D\d{3,6}$/.test(orderNumber)) {
+        setError(
+          "orderNumberInput",
+          "受付番号を正しく入力してください。"
+        );
+        valid = false;
+      }
+
+      const normalizedPhone = normalizePhone(phone);
+      if (normalizedPhone.length < 10 || normalizedPhone.length > 15) {
+        setError(
+          "phoneInput",
+          "電話番号を正しく入力してください。"
+        );
+        valid = false;
+      }
+
+      if (!valid) {
+        showToast("入力内容をご確認ください。", true);
+        return;
+      }
+
+      setLoading(true, "受付情報を確認しています…");
+      el.accessButton.disabled = true;
+      el.accessButton.textContent = "確認中…";
+
+      try {
+        const response = await fetchJson(`${API_BASE}/api/member/access`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            shop_code: state.shopCode,
+            order_number: orderNumber,
+            phone,
+          }),
+        });
+
+        state.access = {
+          shop_code: state.shopCode,
+          order_id: response.access.order_id,
+          order_number: response.access.order_number,
+          public_token: response.access.public_token,
+          saved_at: new Date().toISOString(),
+        };
+
+        saveAccess(state.access);
+        await loadMemberData();
+      } catch (error) {
+        showToast(
+          error.message ||
+            "受付番号または電話番号を確認できませんでした。",
+          true
+        );
+      } finally {
+        setLoading(false);
+        el.accessButton.disabled = false;
+        el.accessButton.textContent = "修理状況を表示";
+      }
+    }
+
+    async function loadMemberData() {
+      if (
+        state.loading ||
+        !state.access?.order_id ||
+        !state.access?.public_token
+      ) {
+        return;
+      }
+
+      state.loading = true;
+      setLoading(true, "最新の修理状況を取得しています…");
+      setConnection("loading", "修理状況を確認しています…");
+
+      try {
+        const orderId = encodeURIComponent(state.access.order_id);
+        const token = encodeURIComponent(state.access.public_token);
+        const shop = encodeURIComponent(state.shopCode);
+
+        const [orderData, historyData] = await Promise.all([
+          fetchJson(
+            `${API_BASE}/api/orders/${orderId}?shop_code=${shop}&public_token=${token}`
+          ),
+          fetchJson(
+            `${API_BASE}/api/orders/${orderId}/history?shop_code=${shop}&public_token=${token}`
+          ),
+        ]);
+
+        state.orderData = orderData;
+        state.historyData = historyData;
+        renderMember();
+
+        showMemberPanel();
+        setConnection(
+          "ok",
+          `最新情報を取得しました ${formatTime(new Date())}`
+        );
+      } catch (error) {
+        console.error(error);
+        setConnection("error", "修理状況を取得できませんでした");
+
+        if (
+          error.code === "order_access_denied" ||
+          error.status === 401 ||
+          error.status === 404
+        ) {
+          localStorage.removeItem(MEMBER_ACCESS_KEY);
+          state.access = null;
+          showAccessPanel();
+        }
+
+        showToast(
+          error.message ||
+            "修理状況の取得に失敗しました。",
+          true
+        );
+      } finally {
+        state.loading = false;
+        setLoading(false);
+      }
+    }
+
+    function renderMember() {
+      const data = state.orderData;
+      const order = data.order || {};
+      const item = data.item || {};
+      const estimate = data.estimate || null;
+      const warranty = data.warranty || null;
+
+      el.heroTitle.textContent =
+        `${data.customer?.customer_name || "お客様"}の修理状況`;
+      el.statusTitle.textContent =
+        data.customer_status || order.customer_status || "確認中です";
+      el.nextAction.textContent =
+        data.next_action || "店舗からの更新をお待ちください。";
+      el.orderNumber.textContent = order.order_number || "—";
+      el.itemName.textContent = itemDisplayName(item);
+      el.receivedDate.textContent =
+        formatDate(order.received_at || order.created_at);
+      el.promisedDate.textContent =
+        order.promised_date
+          ? formatDate(order.promised_date)
+          : "未定";
+
+      el.orderDetails.innerHTML = infoRows([
+        ["修理品", itemDisplayName(item)],
+        ["カテゴリー", item.category || "—"],
+        ["型番", item.model_number || "未入力"],
+        ["色・特徴", [item.color, item.item_features].filter(Boolean).join("／") || "未入力"],
+        ["症状", order.symptom || "—"],
+        ["ご希望", order.requested_work || "未入力"],
+        ["来店希望", order.visit_requested_at ? formatDateTime(order.visit_requested_at) : "未定"],
+        ["店舗からの案内", order.customer_notice || "現在、個別のお知らせはありません。"],
+      ]);
+
+      renderTimeline(state.historyData?.history || []);
+      renderEstimate(estimate);
+      renderPickup(order);
+      renderWarranty(warranty);
+    }
+
+    function renderTimeline(history) {
+      if (!Array.isArray(history) || history.length === 0) {
+        el.timeline.innerHTML =
+          '<div class="empty">進捗履歴はまだありません。</div>';
+        return;
+      }
+
+      const compact = [];
+      for (const row of history) {
+        const previous = compact[compact.length - 1];
+        if (
+          previous &&
+          previous.customer_status === row.customer_status
+        ) {
+          previous.created_at = row.created_at;
+        } else {
+          compact.push({ ...row });
+        }
+      }
+
+      el.timeline.innerHTML = compact
+        .map(
+          (row, index) => `
+            <div class="timeline-item">
+              <div class="timeline-mark">${index + 1}</div>
+              <div class="timeline-content">
+                <div class="timeline-title">${escapeHtml(
+                  row.customer_status || "状況を更新しました"
+                )}</div>
+                <div class="timeline-date">${escapeHtml(
+                  formatDateTime(row.created_at)
+                )}</div>
+              </div>
+            </div>
+          `
+        )
+        .join("");
+    }
+
+    function renderEstimate(estimate) {
+      if (!estimate) {
+        el.estimateContent.innerHTML = `
+          <div class="empty">
+            お見積もりはまだ発行されていません。<br />
+            店舗で診断・確認後に表示されます。
+          </div>
+        `;
+        return;
+      }
+
+      const responseLabel = {
+        approved: "修理を依頼済み",
+        declined: "修理見送り",
+        consultation_requested: "店舗へ相談希望",
+      }[estimate.customer_response] || "回答待ち";
+
+      const items = Array.isArray(estimate.items)
+        ? estimate.items
+        : [];
+
+      el.estimateContent.innerHTML = `
+        <div class="estimate-total">
+          <div>
+            <div class="estimate-total-label">お見積もり合計</div>
+            <div>${escapeHtml(responseLabel)}</div>
+          </div>
+          <div class="estimate-total-value">${formatMoney(
+            estimate.total_amount
+          )}</div>
+        </div>
+
+        ${
+          items.length
+            ? `<div class="estimate-lines">
+                ${items
+                  .map(
+                    (item) => `
+                      <div class="estimate-line">
+                        <div>
+                          <strong>${escapeHtml(item.item_name || "明細")}</strong>
+                          ${
+                            item.description
+                              ? `<div class="note">${escapeHtml(item.description)}</div>`
+                              : ""
+                          }
+                        </div>
+                        <div>${formatMoney(item.line_subtotal)}</div>
+                      </div>
+                    `
+                  )
+                  .join("")}
+              </div>`
+            : ""
+        }
+
+        <div class="alert alert-soft" style="margin-top:14px">
+          有効期限：${
+            estimate.expires_at
+              ? escapeHtml(formatDateTime(estimate.expires_at))
+              : "設定なし"
+          }<br />
+          完成予定：${
+            estimate.estimated_completion_date
+              ? escapeHtml(formatDate(estimate.estimated_completion_date))
+              : "未定"
+          }
+        </div>
+
+        ${
+          estimate.customer_note
+            ? `<div class="alert alert-warning" style="margin-top:10px">${escapeHtml(
+                estimate.customer_note
+              )}</div>`
+            : ""
+        }
+
+        ${
+          ["waiting_customer", "issued"].includes(estimate.status) &&
+          !estimate.customer_response
+            ? `<div class="alert alert-warning" style="margin-top:10px">
+                見積もりへの回答機能はSTEP REPAIR-6で追加されます。
+              </div>`
+            : ""
+        }
+      `;
+    }
+
+    function renderPickup(order) {
+      const rows = [
+        ["修理完了日", order.completed_at ? formatDateTime(order.completed_at) : "未定"],
+        ["引き取り予定", order.pickup_due_at ? formatDateTime(order.pickup_due_at) : "未定"],
+        ["支払い状況", paymentLabel(order.payment_status)],
+        ["保管期限", order.storage_deadline ? formatDate(order.storage_deadline) : "未定"],
+      ];
+
+      el.pickupContent.innerHTML = `
+        <dl class="info-list">${infoRows(rows)}</dl>
+        <div class="alert alert-soft" style="margin-top:14px">
+          引き取り日時の登録機能は、店舗から修理完了案内が届いた後に使用できるようになります。
+        </div>
+      `;
+    }
+
+    function renderWarranty(warranty) {
+      if (!warranty || warranty.status === "not_applicable") {
+        el.warrantyContent.innerHTML = `
+          <div class="empty">
+            保証情報は、修理完了・引き渡し後に表示されます。
+          </div>
+        `;
+        return;
+      }
+
+      el.warrantyContent.innerHTML = `
+        <dl class="info-list">
+          ${infoRows([
+            ["保証状態", warrantyLabel(warranty.status)],
+            ["保証開始", warranty.warranty_start_date ? formatDate(warranty.warranty_start_date) : "未定"],
+            ["保証期限", warranty.warranty_end_date ? formatDate(warranty.warranty_end_date) : "未定"],
+            ["保証対象", warranty.covered_text || "店舗へご確認ください"],
+            ["対象外", warranty.excluded_text || "店舗へご確認ください"],
+          ])}
+        </dl>
+      `;
+    }
+
+    function showAccessPanel() {
+      el.accessPanel.classList.remove("hidden");
+      el.memberPanel.classList.add("hidden");
+      el.refreshTopButton.classList.add("hidden");
+      el.changeOrderButton.classList.add("hidden");
+      setConnection(
+        "ok",
+        "受付番号と電話番号で修理状況を確認できます"
+      );
+
+      if (state.access?.order_number) {
+        el.orderNumberInput.value = state.access.order_number;
+      }
+    }
+
+    function showMemberPanel() {
+      el.accessPanel.classList.add("hidden");
+      el.memberPanel.classList.remove("hidden");
+      el.refreshTopButton.classList.remove("hidden");
+      el.changeOrderButton.classList.remove("hidden");
+    }
+
+    function clearAccessAndShowForm() {
+      localStorage.removeItem(MEMBER_ACCESS_KEY);
+      state.access = null;
+      state.orderData = null;
+      state.historyData = null;
+      el.orderNumberInput.value = "";
+      el.phoneInput.value = "";
+      showAccessPanel();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function openTab(tabName) {
+      document.querySelectorAll("[data-tab]").forEach((button) => {
+        button.classList.toggle(
+          "active",
+          button.dataset.tab === tabName
+        );
+      });
+
+      document.querySelectorAll("[data-tab-panel]").forEach((panel) => {
+        panel.classList.toggle(
+          "active",
+          panel.dataset.tabPanel === tabName
+        );
+      });
+    }
+
+    async function copyInquiry() {
+      const order = state.orderData?.order;
+      const item = state.orderData?.item;
+      if (!order) return;
+
+      const message = [
+        `${state.orderData?.customer?.customer_name || "お客様"}です。`,
+        "修理受付について確認です。",
+        "",
+        `受付番号：${order.order_number}`,
+        `修理品：${itemDisplayName(item || {})}`,
+        `現在の表示：${state.orderData?.customer_status || order.customer_status || "確認中"}`,
+        "",
+        "確認をお願いします。",
+      ].join("\n");
+
+      try {
+        await navigator.clipboard.writeText(message);
+      } catch {
+        const area = document.createElement("textarea");
+        area.value = message;
+        document.body.appendChild(area);
+        area.select();
+        document.execCommand("copy");
+        area.remove();
+      }
+
+      showToast("問い合わせ文をコピーしました。");
+    }
+
+    function readAccessFromQuery() {
+      const params = new URLSearchParams(location.search);
+      const orderId = params.get("order_id");
+      const publicToken = params.get("public_token");
+      const orderNumber = params.get("order_number");
+
+      if (!orderId || !publicToken) return null;
+
+      return {
+        shop_code: state.shopCode,
+        order_id: orderId,
+        public_token: publicToken,
+        order_number: orderNumber || null,
+        saved_at: new Date().toISOString(),
+      };
+    }
+
+    function removeSensitiveQuery() {
+      const url = new URL(location.href);
+      url.searchParams.delete("order_id");
+      url.searchParams.delete("public_token");
+      url.searchParams.delete("order_number");
+      history.replaceState({}, "", url.toString());
+    }
+
+    function readSavedAccess() {
+      try {
+        const raw = localStorage.getItem(MEMBER_ACCESS_KEY);
+        if (!raw) return null;
+        const access = JSON.parse(raw);
+
+        if (
+          !access ||
+          access.shop_code !== state.shopCode ||
+          !access.order_id ||
+          !access.public_token
+        ) {
+          return null;
+        }
+
+        return access;
+      } catch {
+        return null;
+      }
+    }
+
+    function saveAccess(access) {
+      localStorage.setItem(
+        MEMBER_ACCESS_KEY,
+        JSON.stringify(access)
+      );
+    }
+
+    async function fetchJson(url, options = {}) {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 15000);
+
+      try {
+        const response = await fetch(url, {
+          cache: "no-store",
+          ...options,
+          signal: controller.signal,
+        });
+
+        const text = await response.text();
+        let data = null;
+
+        try {
+          data = text ? JSON.parse(text) : null;
+        } catch {
+          data = null;
+        }
+
+        if (!response.ok || !data?.ok) {
+          const error = new Error(
+            data?.error?.message ||
+              `通信に失敗しました（${response.status}）`
+          );
+          error.code = data?.error?.code || null;
+          error.status = response.status;
+          throw error;
+        }
+
+        return data;
+      } catch (error) {
+        if (error.name === "AbortError") {
+          throw new Error(
+            "通信がタイムアウトしました。もう一度お試しください。"
+          );
+        }
+        throw error;
+      } finally {
+        clearTimeout(timeout);
+      }
+    }
+
+    function setLoading(show, message = "確認しています…") {
+      el.loadingText.textContent = message;
+      el.loadingOverlay.classList.toggle("hidden", !show);
+    }
+
+    function setConnection(status, message) {
+      el.connection.dataset.status = status;
+      el.connectionText.textContent = message;
+    }
+
+    let toastTimer = null;
+    function showToast(message, isError = false) {
+      clearTimeout(toastTimer);
+      el.toast.textContent = message;
+      el.toast.classList.toggle("error", isError);
+      el.toast.classList.add("show");
+      toastTimer = setTimeout(
+        () => el.toast.classList.remove("show"),
+        3200
+      );
+    }
+
+    function clearErrors() {
+      document.querySelectorAll(".error").forEach(
+        (node) => (node.textContent = "")
+      );
+      document.querySelectorAll('[aria-invalid="true"]').forEach(
+        (node) => node.setAttribute("aria-invalid", "false")
+      );
+    }
+
+    function setError(id, message) {
+      const input = document.getElementById(id);
+      const error = document.querySelector(
+        `[data-error-for="${id}"]`
+      );
+      input?.setAttribute(
+        "aria-invalid",
+        message ? "true" : "false"
+      );
+      if (error) error.textContent = message;
+    }
+
+    function infoRows(rows) {
+      return rows
+        .map(
+          ([label, value]) => `
+            <dt>${escapeHtml(label)}</dt>
+            <dd>${escapeHtml(String(value ?? "—"))}</dd>
+          `
+        )
+        .join("");
+    }
+
+    function itemDisplayName(item) {
+      return (
+        [item.manufacturer || item.brand, item.product_name]
+          .filter(Boolean)
+          .join(" ") || "修理品"
+      );
+    }
+
+    function normalizePhone(value) {
+      return String(value || "")
+        .normalize("NFKC")
+        .replace(/[ー－―‐‑‒–—−]/g, "-")
+        .replace(/[^0-9+]/g, "")
+        .replace(/^\+81/, "0")
+        .replace(/\D/g, "");
+    }
+
+    function paymentLabel(status) {
+      return (
+        {
+          not_set: "未設定",
+          estimate_only: "見積もりのみ",
+          unpaid: "未払い",
+          deposit_paid: "預かり金入金済み",
+          partially_paid: "一部入金済み",
+          pay_on_pickup: "引き取り時支払い",
+          paid: "支払い済み",
+          refunded: "返金済み",
+          cancelled: "取消",
+        }[status] || "未設定"
+      );
+    }
+
+    function warrantyLabel(status) {
+      return (
+        {
+          active: "保証期間内",
+          expired: "保証期間終了",
+          claimed: "保証対応受付中",
+          closed: "保証対応完了",
+          not_applicable: "保証対象外",
+        }[status] || "確認中"
+      );
+    }
+
+    function formatMoney(value) {
+      const number = Number(value || 0);
+      return new Intl.NumberFormat("ja-JP", {
+        style: "currency",
+        currency: "JPY",
+        maximumFractionDigits: 0,
+      }).format(Number.isFinite(number) ? number : 0);
+    }
+
+    function formatDate(value) {
+      if (!value) return "未定";
+      const source = /^\d{4}-\d{2}-\d{2}$/.test(value)
+        ? `${value}T12:00:00+09:00`
+        : value;
+      const date = new Date(source);
+      if (Number.isNaN(date.getTime())) return String(value);
+
+      return new Intl.DateTimeFormat("ja-JP", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        weekday: "short",
+        timeZone: "Asia/Tokyo",
+      }).format(date);
+    }
+
+    function formatDateTime(value) {
+      if (!value) return "未定";
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return String(value);
+
+      return new Intl.DateTimeFormat("ja-JP", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        weekday: "short",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+        timeZone: "Asia/Tokyo",
+      }).format(date);
+    }
+
+    function formatTime(date) {
+      return new Intl.DateTimeFormat("ja-JP", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+        timeZone: "Asia/Tokyo",
+      }).format(date);
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+  </script>
+</body>
+</html>
