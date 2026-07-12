@@ -1,0 +1,2201 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f766e" />
+  <meta name="format-detection" content="telephone=no" />
+  <title>DPRO 修理受付 LINE｜修理相談・仮受付</title>
+  <style>
+    :root {
+      --bg: #f3f7f6;
+      --card: #ffffff;
+      --text: #162321;
+      --muted: #65736f;
+      --line: #dce7e4;
+      --primary: #0f766e;
+      --primary-dark: #0b5d57;
+      --primary-soft: #e8f5f2;
+      --accent: #f59e0b;
+      --danger: #c2413b;
+      --danger-soft: #fff0ef;
+      --success: #147d64;
+      --shadow: 0 14px 36px rgba(28, 62, 55, 0.10);
+      --radius-lg: 22px;
+      --radius-md: 15px;
+      --radius-sm: 10px;
+      --safe-bottom: max(18px, env(safe-area-inset-bottom));
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      background: var(--bg);
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 15% 0%, rgba(15, 118, 110, 0.10), transparent 34%),
+        linear-gradient(180deg, #edf8f5 0, var(--bg) 360px);
+      font-family:
+        -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Kaku Gothic ProN",
+        "Yu Gothic", "Meiryo", sans-serif;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .page {
+      width: min(100%, 760px);
+      margin: 0 auto;
+      padding: 18px 14px calc(116px + var(--safe-bottom));
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 24px 22px 22px;
+      color: #fff;
+      border-radius: 26px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.13), transparent 45%),
+        linear-gradient(135deg, #0b5d57, #0f766e 55%, #129486);
+      box-shadow: 0 18px 42px rgba(15, 118, 110, 0.23);
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -58px;
+      bottom: -78px;
+      width: 190px;
+      height: 190px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.08);
+    }
+
+    .hero-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 10px;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      opacity: 0.92;
+    }
+
+    .hero h1 {
+      position: relative;
+      z-index: 1;
+      margin: 0;
+      font-size: clamp(24px, 6vw, 34px);
+      line-height: 1.28;
+      letter-spacing: -0.02em;
+    }
+
+    .hero p {
+      position: relative;
+      z-index: 1;
+      max-width: 560px;
+      margin: 10px 0 0;
+      font-size: 14px;
+      opacity: 0.94;
+    }
+
+    .hero-badges {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .hero-badge {
+      padding: 6px 10px;
+      border: 1px solid rgba(255,255,255,0.28);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.12);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .connection {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin: 14px 4px 0;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .connection-dot {
+      width: 9px;
+      height: 9px;
+      flex: 0 0 auto;
+      border-radius: 50%;
+      background: #9ca3af;
+      box-shadow: 0 0 0 4px rgba(156,163,175,0.14);
+    }
+
+    .connection[data-status="ok"] .connection-dot {
+      background: var(--success);
+      box-shadow: 0 0 0 4px rgba(20,125,100,0.14);
+    }
+
+    .connection[data-status="error"] .connection-dot {
+      background: var(--danger);
+      box-shadow: 0 0 0 4px rgba(194,65,59,0.14);
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin: 22px 0 14px;
+    }
+
+    .step {
+      position: relative;
+      min-width: 0;
+      padding: 10px 6px;
+      color: #7a8985;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 800;
+      border-radius: 13px;
+      background: rgba(255,255,255,0.62);
+      border: 1px solid rgba(220,231,228,0.9);
+    }
+
+    .step strong {
+      display: grid;
+      place-items: center;
+      width: 25px;
+      height: 25px;
+      margin: 0 auto 5px;
+      color: #7a8985;
+      border-radius: 50%;
+      background: #e5ecea;
+      font-size: 12px;
+    }
+
+    .step.active {
+      color: var(--primary-dark);
+      background: var(--primary-soft);
+      border-color: #b8ddd6;
+    }
+
+    .step.active strong {
+      color: #fff;
+      background: var(--primary);
+    }
+
+    .step.done {
+      color: var(--success);
+      background: #f0faf7;
+      border-color: #cae9df;
+    }
+
+    .step.done strong {
+      color: #fff;
+      background: var(--success);
+    }
+
+    .card {
+      margin-top: 14px;
+      padding: 20px 18px;
+      border: 1px solid rgba(220,231,228,0.95);
+      border-radius: var(--radius-lg);
+      background: rgba(255,255,255,0.96);
+      box-shadow: var(--shadow);
+    }
+
+    .section-heading {
+      display: flex;
+      align-items: flex-start;
+      gap: 11px;
+      margin-bottom: 17px;
+    }
+
+    .section-icon {
+      display: grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      flex: 0 0 auto;
+      color: var(--primary-dark);
+      border-radius: 13px;
+      background: var(--primary-soft);
+      font-size: 19px;
+    }
+
+    .section-heading h2 {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.35;
+    }
+
+    .section-heading p {
+      margin: 3px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .field-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 15px;
+    }
+
+    .field-grid.two {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .field {
+      min-width: 0;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 7px;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .required {
+      padding: 1px 6px;
+      color: #fff;
+      border-radius: 999px;
+      background: var(--danger);
+      font-size: 10px;
+      line-height: 1.55;
+    }
+
+    .optional {
+      color: #788681;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      color: var(--text);
+      border: 1px solid #cfdcd8;
+      border-radius: 12px;
+      outline: none;
+      background: #fff;
+      transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
+    }
+
+    input,
+    select {
+      min-height: 49px;
+      padding: 10px 12px;
+    }
+
+    textarea {
+      min-height: 118px;
+      padding: 12px;
+      resize: vertical;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(15,118,110,0.11);
+    }
+
+    input[aria-invalid="true"],
+    select[aria-invalid="true"],
+    textarea[aria-invalid="true"] {
+      border-color: var(--danger);
+      background: var(--danger-soft);
+      box-shadow: 0 0 0 4px rgba(194,65,59,0.09);
+    }
+
+    .field-note {
+      margin: 6px 2px 0;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .field-error {
+      min-height: 18px;
+      margin: 4px 2px 0;
+      color: var(--danger);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .choice-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 9px;
+    }
+
+    .choice {
+      position: relative;
+    }
+
+    .choice input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .choice span {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 46px;
+      padding: 9px 10px;
+      text-align: center;
+      border: 1px solid #cfdcd8;
+      border-radius: 12px;
+      background: #fff;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .choice input:checked + span {
+      color: var(--primary-dark);
+      border-color: var(--primary);
+      background: var(--primary-soft);
+      box-shadow: 0 0 0 3px rgba(15,118,110,0.09);
+    }
+
+    .info-box {
+      margin-top: 14px;
+      padding: 13px 14px;
+      color: #42514d;
+      border: 1px solid #d8e7e3;
+      border-radius: 13px;
+      background: #f4faf8;
+      font-size: 12px;
+    }
+
+    .info-box strong {
+      color: var(--primary-dark);
+    }
+
+    .notice-box {
+      display: grid;
+      gap: 9px;
+      margin-top: 14px;
+      padding: 14px;
+      border: 1px solid #ecd9af;
+      border-radius: 13px;
+      background: #fffaf0;
+      font-size: 12px;
+    }
+
+    .check-line {
+      display: grid;
+      grid-template-columns: 24px 1fr;
+      gap: 9px;
+      align-items: start;
+      cursor: pointer;
+    }
+
+    .check-line input {
+      width: 20px;
+      min-height: 20px;
+      margin: 2px 0 0;
+      accent-color: var(--primary);
+    }
+
+    .summary {
+      display: grid;
+      gap: 12px;
+    }
+
+    .summary-block {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fbfdfc;
+    }
+
+    .summary-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+      font-size: 13px;
+      font-weight: 900;
+      color: var(--primary-dark);
+    }
+
+    .summary-edit {
+      padding: 4px 8px;
+      color: var(--primary-dark);
+      border: 0;
+      border-radius: 8px;
+      background: var(--primary-soft);
+      font-size: 11px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .summary-list {
+      display: grid;
+      grid-template-columns: 108px 1fr;
+      gap: 6px 10px;
+      margin: 0;
+      font-size: 12px;
+    }
+
+    .summary-list dt {
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .summary-list dd {
+      min-width: 0;
+      margin: 0;
+      font-weight: 700;
+      overflow-wrap: anywhere;
+      white-space: pre-wrap;
+    }
+
+    .action-bar {
+      position: fixed;
+      z-index: 50;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 12px 14px var(--safe-bottom);
+      border-top: 1px solid rgba(205,220,216,0.95);
+      background: rgba(255,255,255,0.94);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+    }
+
+    .action-inner {
+      display: grid;
+      grid-template-columns: 0.42fr 1fr;
+      gap: 10px;
+      width: min(100%, 732px);
+      margin: 0 auto;
+    }
+
+    .action-inner.single {
+      grid-template-columns: 1fr;
+    }
+
+    .btn {
+      min-height: 52px;
+      padding: 12px 16px;
+      border: 0;
+      border-radius: 14px;
+      font-weight: 900;
+      cursor: pointer;
+      transition: transform 0.12s, opacity 0.18s, box-shadow 0.18s;
+    }
+
+    .btn:active {
+      transform: translateY(1px) scale(0.995);
+    }
+
+    .btn:disabled {
+      opacity: 0.55;
+      cursor: wait;
+    }
+
+    .btn-primary {
+      color: #fff;
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+      box-shadow: 0 11px 24px rgba(15,118,110,0.23);
+    }
+
+    .btn-secondary {
+      color: var(--primary-dark);
+      background: var(--primary-soft);
+    }
+
+    .btn-light {
+      color: #42514d;
+      background: #edf2f0;
+    }
+
+    .success-card {
+      text-align: center;
+      padding: 26px 18px;
+    }
+
+    .success-icon {
+      display: grid;
+      place-items: center;
+      width: 68px;
+      height: 68px;
+      margin: 0 auto 14px;
+      color: #fff;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #139475, #0f766e);
+      box-shadow: 0 14px 30px rgba(15,118,110,0.24);
+      font-size: 32px;
+      font-weight: 900;
+    }
+
+    .success-card h2 {
+      margin: 0;
+      font-size: 23px;
+    }
+
+    .success-card > p {
+      margin: 8px auto 0;
+      max-width: 500px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .order-number-card {
+      margin: 18px 0 14px;
+      padding: 17px;
+      border: 1px solid #b8ddd6;
+      border-radius: 17px;
+      background: var(--primary-soft);
+    }
+
+    .order-number-label {
+      color: var(--primary-dark);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .order-number {
+      margin-top: 3px;
+      color: var(--primary-dark);
+      font-size: clamp(22px, 7vw, 31px);
+      font-weight: 950;
+      letter-spacing: 0.025em;
+      overflow-wrap: anywhere;
+    }
+
+    .success-actions {
+      display: grid;
+      gap: 9px;
+      margin-top: 15px;
+    }
+
+    .status-note {
+      margin-top: 14px;
+      padding: 13px;
+      color: #41504c;
+      border-radius: 13px;
+      background: #f6f8f7;
+      font-size: 12px;
+      text-align: left;
+    }
+
+    .empty-time {
+      color: var(--muted);
+    }
+
+    .toast {
+      position: fixed;
+      z-index: 100;
+      left: 50%;
+      bottom: calc(92px + var(--safe-bottom));
+      width: min(calc(100% - 28px), 640px);
+      padding: 12px 14px;
+      color: #fff;
+      border-radius: 13px;
+      background: rgba(31,45,41,0.96);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.18);
+      font-size: 13px;
+      font-weight: 800;
+      text-align: center;
+      opacity: 0;
+      transform: translate(-50%, 14px);
+      pointer-events: none;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    .toast.error {
+      background: rgba(156,45,40,0.97);
+    }
+
+    .loading-overlay {
+      position: fixed;
+      z-index: 120;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background: rgba(244,248,247,0.76);
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+    }
+
+    .loading-box {
+      display: grid;
+      justify-items: center;
+      gap: 12px;
+      min-width: 190px;
+      padding: 23px;
+      border-radius: 18px;
+      background: #fff;
+      box-shadow: var(--shadow);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .spinner {
+      width: 31px;
+      height: 31px;
+      border: 4px solid #dcebe7;
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .dev-version {
+      margin: 18px 4px 0;
+      color: #84918d;
+      font-size: 10px;
+      text-align: center;
+    }
+
+    @media (max-width: 560px) {
+      .page {
+        padding-left: 10px;
+        padding-right: 10px;
+      }
+
+      .hero {
+        padding: 22px 17px 20px;
+        border-radius: 22px;
+      }
+
+      .card {
+        padding: 18px 14px;
+        border-radius: 19px;
+      }
+
+      .field-grid.two {
+        grid-template-columns: 1fr;
+      }
+
+      .summary-list {
+        grid-template-columns: 92px 1fr;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .choice-row {
+        grid-template-columns: 1fr;
+      }
+
+      .steps {
+        gap: 5px;
+      }
+
+      .step {
+        padding-inline: 3px;
+        font-size: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <div class="hero-kicker">DPRO REPAIR RECEPTION</div>
+      <h1 id="shopTitle">修理相談・仮受付</h1>
+      <p>
+        症状や修理品についてご入力ください。送信後、店舗が内容を確認してご連絡します。
+      </p>
+      <div class="hero-badges">
+        <span class="hero-badge">入力目安 3〜5分</span>
+        <span class="hero-badge">24時間送信可能</span>
+        <span class="hero-badge">見積もり前の仮受付</span>
+      </div>
+    </header>
+
+    <div id="connection" class="connection" data-status="loading" role="status" aria-live="polite">
+      <span class="connection-dot"></span>
+      <span id="connectionText">店舗の受付情報を確認しています…</span>
+    </div>
+
+    <nav class="steps" aria-label="入力手順">
+      <div class="step active" data-step-indicator="1">
+        <strong>1</strong>
+        お客様・修理品
+      </div>
+      <div class="step" data-step-indicator="2">
+        <strong>2</strong>
+        症状・来店希望
+      </div>
+      <div class="step" data-step-indicator="3">
+        <strong>3</strong>
+        内容確認
+      </div>
+    </nav>
+
+    <form id="repairForm" novalidate>
+      <section id="step1" data-step-panel="1">
+        <div class="card">
+          <div class="section-heading">
+            <div class="section-icon" aria-hidden="true">人</div>
+            <div>
+              <h2>お客様情報</h2>
+              <p>店舗からの確認連絡に使用します。</p>
+            </div>
+          </div>
+
+          <div class="field-grid two">
+            <div class="field">
+              <label for="customerName">
+                お名前
+                <span class="required">必須</span>
+              </label>
+              <input
+                id="customerName"
+                name="customer_name"
+                type="text"
+                autocomplete="name"
+                maxlength="100"
+                placeholder="例：修理 太郎"
+                required
+              />
+              <div class="field-error" data-error-for="customerName"></div>
+            </div>
+
+            <div class="field">
+              <label for="customerKana">
+                フリガナ
+                <span class="optional">任意</span>
+              </label>
+              <input
+                id="customerKana"
+                name="customer_name_kana"
+                type="text"
+                inputmode="kana"
+                maxlength="100"
+                placeholder="例：シュウリ タロウ"
+              />
+              <div class="field-error" data-error-for="customerKana"></div>
+            </div>
+
+            <div class="field">
+              <label for="phone">
+                電話番号
+                <span class="required">必須</span>
+              </label>
+              <input
+                id="phone"
+                name="phone"
+                type="tel"
+                autocomplete="tel"
+                inputmode="tel"
+                maxlength="30"
+                placeholder="例：090-1111-2222"
+                required
+              />
+              <p class="field-note">ハイフンあり・なし、全角入力でも確認できます。</p>
+              <div class="field-error" data-error-for="phone"></div>
+            </div>
+
+            <div class="field">
+              <label for="email">
+                メールアドレス
+                <span class="optional">任意</span>
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                autocomplete="email"
+                maxlength="254"
+                placeholder="例：sample@example.com"
+              />
+              <div class="field-error" data-error-for="email"></div>
+            </div>
+
+            <div class="field full">
+              <label>
+                希望する連絡方法
+                <span class="required">必須</span>
+              </label>
+              <div class="choice-row" role="radiogroup" aria-label="希望する連絡方法">
+                <label class="choice">
+                  <input type="radio" name="preferred_contact" value="line" checked />
+                  <span>LINE</span>
+                </label>
+                <label class="choice">
+                  <input type="radio" name="preferred_contact" value="phone" />
+                  <span>電話</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-heading">
+            <div class="section-icon" aria-hidden="true">修</div>
+            <div>
+              <h2>修理品情報</h2>
+              <p>分かる範囲だけで大丈夫です。</p>
+            </div>
+          </div>
+
+          <div class="field-grid two">
+            <div class="field">
+              <label for="category">
+                修理品カテゴリー
+                <span class="required">必須</span>
+              </label>
+              <select id="category" name="category" required>
+                <option value="">読み込み中…</option>
+              </select>
+              <div class="field-error" data-error-for="category"></div>
+            </div>
+
+            <div class="field">
+              <label for="manufacturer">
+                メーカー・ブランド
+                <span class="optional">任意</span>
+              </label>
+              <input
+                id="manufacturer"
+                name="manufacturer"
+                type="text"
+                maxlength="100"
+                placeholder="例：Apple、任天堂、SEIKO"
+              />
+              <div class="field-error" data-error-for="manufacturer"></div>
+            </div>
+
+            <div class="field">
+              <label for="productName">
+                商品名
+                <span class="required">必須</span>
+              </label>
+              <input
+                id="productName"
+                name="product_name"
+                type="text"
+                maxlength="200"
+                placeholder="例：iPhone、腕時計、ノートPC"
+                required
+              />
+              <div class="field-error" data-error-for="productName"></div>
+            </div>
+
+            <div class="field">
+              <label for="modelNumber">
+                型番
+                <span class="optional">任意</span>
+              </label>
+              <input
+                id="modelNumber"
+                name="model_number"
+                type="text"
+                maxlength="150"
+                placeholder="例：Axxxx、型式番号"
+              />
+              <div class="field-error" data-error-for="modelNumber"></div>
+            </div>
+
+            <div class="field">
+              <label for="serialNumber">
+                シリアル番号
+                <span class="optional">任意</span>
+              </label>
+              <input
+                id="serialNumber"
+                name="serial_number"
+                type="text"
+                maxlength="200"
+                placeholder="分かる場合のみ"
+              />
+              <div class="field-error" data-error-for="serialNumber"></div>
+            </div>
+
+            <div class="field">
+              <label for="color">
+                色・特徴
+                <span class="optional">任意</span>
+              </label>
+              <input
+                id="color"
+                name="color"
+                type="text"
+                maxlength="100"
+                placeholder="例：黒、ケースにシールあり"
+              />
+              <div class="field-error" data-error-for="color"></div>
+            </div>
+          </div>
+
+          <div class="info-box">
+            <strong>写真について</strong><br />
+            写真登録機能は後続STEPで追加します。現在は、傷や故障箇所を「症状・状態」欄へ詳しくご入力ください。
+          </div>
+        </div>
+      </section>
+
+      <section id="step2" data-step-panel="2" class="hidden">
+        <div class="card">
+          <div class="section-heading">
+            <div class="section-icon" aria-hidden="true">状</div>
+            <div>
+              <h2>症状・ご希望</h2>
+              <p>店舗が事前に確認しやすいよう、できるだけ具体的にご入力ください。</p>
+            </div>
+          </div>
+
+          <div class="field-grid">
+            <div class="field">
+              <label for="symptom">
+                症状・現在の状態
+                <span class="required">必須</span>
+              </label>
+              <textarea
+                id="symptom"
+                name="symptom"
+                maxlength="5000"
+                placeholder="例：画面が割れて操作できません。電源は入り、通知音は鳴ります。右上に大きなひびがあります。"
+                required
+              ></textarea>
+              <div class="field-error" data-error-for="symptom"></div>
+            </div>
+
+            <div class="field">
+              <label for="symptomStarted">
+                いつから・きっかけ
+                <span class="optional">任意</span>
+              </label>
+              <textarea
+                id="symptomStarted"
+                name="symptom_started_text"
+                maxlength="1000"
+                placeholder="例：本日落下させてから。1週間ほど前から徐々に。"
+              ></textarea>
+              <div class="field-error" data-error-for="symptomStarted"></div>
+            </div>
+
+            <div class="field">
+              <label for="requestedWork">
+                修理のご希望・ご相談
+                <span class="optional">任意</span>
+              </label>
+              <textarea
+                id="requestedWork"
+                name="requested_work"
+                maxlength="3000"
+                placeholder="例：データを消さずに修理できるか相談したい。金額を確認してから修理したい。"
+              ></textarea>
+              <div class="field-error" data-error-for="requestedWork"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-heading">
+            <div class="section-icon" aria-hidden="true">日</div>
+            <div>
+              <h2>来店希望</h2>
+              <p>未定の場合は、入力せずに送信できます。</p>
+            </div>
+          </div>
+
+          <div class="field-grid two">
+            <div class="field">
+              <label for="visitDate">
+                希望日
+                <span class="optional">任意</span>
+              </label>
+              <input id="visitDate" name="visit_date" type="date" />
+              <div class="field-error" data-error-for="visitDate"></div>
+            </div>
+
+            <div class="field">
+              <label for="visitTime">
+                希望時間
+                <span class="optional">任意</span>
+              </label>
+              <select id="visitTime" name="visit_time" disabled>
+                <option value="">先に希望日を選択</option>
+              </select>
+              <div class="field-error" data-error-for="visitTime"></div>
+            </div>
+          </div>
+
+          <div id="visitInfo" class="info-box">
+            来店日時は仮希望です。店舗からの確認連絡で確定します。
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-heading">
+            <div class="section-icon" aria-hidden="true">✓</div>
+            <div>
+              <h2>同意事項</h2>
+              <p>内容をご確認のうえ、チェックしてください。</p>
+            </div>
+          </div>
+
+          <div class="notice-box">
+            <label class="check-line">
+              <input id="privacyConsent" type="checkbox" />
+              <span id="privacyText">
+                入力した個人情報を、修理受付・店舗からの連絡・修理履歴管理のために利用することへ同意します。
+              </span>
+            </label>
+
+            <label class="check-line">
+              <input id="termsConsent" type="checkbox" />
+              <span id="termsText">
+                この送信は見積もりや修理の確定ではなく、店舗確認前の仮受付であることを確認しました。
+              </span>
+            </label>
+          </div>
+
+          <div class="field-error" data-error-for="consents"></div>
+        </div>
+      </section>
+
+      <section id="step3" data-step-panel="3" class="hidden">
+        <div class="card">
+          <div class="section-heading">
+            <div class="section-icon" aria-hidden="true">確</div>
+            <div>
+              <h2>送信内容の確認</h2>
+              <p>内容に間違いがなければ「この内容で仮受付を送信」を押してください。</p>
+            </div>
+          </div>
+
+          <div id="confirmationSummary" class="summary"></div>
+
+          <div class="info-box">
+            <strong>まだ修理は確定していません。</strong><br />
+            店舗が内容を確認したあと、見積もりや来店日時についてご連絡します。
+          </div>
+        </div>
+      </section>
+    </form>
+
+    <section id="successPanel" class="card success-card hidden" aria-live="polite">
+      <div class="success-icon">✓</div>
+      <h2>仮受付を送信しました</h2>
+      <p id="successMessage">店舗が内容を確認してご連絡します。</p>
+
+      <div class="order-number-card">
+        <div class="order-number-label">受付番号</div>
+        <div id="orderNumber" class="order-number">—</div>
+      </div>
+
+      <div id="successDetails" class="summary"></div>
+
+      <div class="success-actions">
+        <button id="copyOrderNumberButton" class="btn btn-primary" type="button">
+          受付番号をコピー
+        </button>
+        <button id="newRequestButton" class="btn btn-light" type="button">
+          別の修理相談を入力
+        </button>
+      </div>
+
+      <div class="status-note">
+        受付番号は、お問い合わせ時に使用します。修理状況確認画面はSTEP REPAIR-5で追加します。
+      </div>
+    </section>
+
+    <div class="dev-version">
+      DPRO 修理受付 LINE｜STEP REPAIR-4｜REPAIR-4-CUSTOMER-INTAKE-20260712
+    </div>
+  </main>
+
+  <div id="actionBar" class="action-bar">
+    <div id="actionInner" class="action-inner single">
+      <button id="backButton" class="btn btn-secondary hidden" type="button">
+        戻る
+      </button>
+      <button id="nextButton" class="btn btn-primary" type="button">
+        次へ進む
+      </button>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <div id="loadingOverlay" class="loading-overlay hidden" aria-live="polite">
+    <div class="loading-box">
+      <div class="spinner" aria-hidden="true"></div>
+      <div id="loadingText">送信しています…</div>
+    </div>
+  </div>
+
+  <script>
+    "use strict";
+
+    const APP_VERSION = "REPAIR-4-CUSTOMER-INTAKE-20260712";
+    const API_BASE = "https://dpro-repair-line-api.dpromstk2000.workers.dev";
+    const DEFAULT_SHOP_CODE = "repair_demo";
+    const DRAFT_KEY = "dpro_repair_intake_draft_v1";
+    const MEMBER_ACCESS_KEY = "dpro_repair_member_access_v1";
+
+    const FALLBACK_SETTINGS = {
+      category_options: [
+        { key: "smartphone", label: "スマートフォン", enabled: true, display_order: 10 },
+        { key: "computer", label: "パソコン", enabled: true, display_order: 20 },
+        { key: "tablet", label: "タブレット", enabled: true, display_order: 30 },
+        { key: "game_console", label: "ゲーム機", enabled: true, display_order: 40 },
+        { key: "home_appliance", label: "家電", enabled: true, display_order: 50 },
+        { key: "watch", label: "時計", enabled: true, display_order: 60 },
+        { key: "bag_wallet", label: "バッグ・財布", enabled: true, display_order: 70 },
+        { key: "shoes", label: "靴", enabled: true, display_order: 80 },
+        { key: "bicycle", label: "自転車", enabled: true, display_order: 90 },
+        { key: "instrument", label: "楽器", enabled: true, display_order: 100 },
+        { key: "other", label: "その他", enabled: true, display_order: 999 }
+      ],
+      business_hours: {
+        monday: { enabled: true, open: "09:00", close: "18:00" },
+        tuesday: { enabled: true, open: "09:00", close: "18:00" },
+        wednesday: { enabled: true, open: "09:00", close: "18:00" },
+        thursday: { enabled: true, open: "09:00", close: "18:00" },
+        friday: { enabled: true, open: "09:00", close: "18:00" },
+        saturday: { enabled: true, open: "09:00", close: "17:00" },
+        sunday: { enabled: false, open: null, close: null }
+      },
+      temporary_closed_dates: [],
+      time_slot_minutes: 30,
+      booking_horizon_days: 60,
+      privacy_notice:
+        "入力した個人情報を、修理受付・店舗からの連絡・修理履歴管理のために利用します。",
+      customer_terms:
+        "この送信は見積もりや修理の確定ではなく、店舗確認前の仮受付です。",
+      settings_version: 1
+    };
+
+    const state = {
+      step: 1,
+      submitting: false,
+      shopCode: new URLSearchParams(location.search).get("shop_code") || DEFAULT_SHOP_CODE,
+      lineUserId: new URLSearchParams(location.search).get("line_user_id") || null,
+      shop: null,
+      settings: structuredCloneSafe(FALLBACK_SETTINGS),
+      result: null
+    };
+
+    const elements = {
+      form: document.getElementById("repairForm"),
+      stepPanels: Array.from(document.querySelectorAll("[data-step-panel]")),
+      indicators: Array.from(document.querySelectorAll("[data-step-indicator]")),
+      backButton: document.getElementById("backButton"),
+      nextButton: document.getElementById("nextButton"),
+      actionBar: document.getElementById("actionBar"),
+      actionInner: document.getElementById("actionInner"),
+      connection: document.getElementById("connection"),
+      connectionText: document.getElementById("connectionText"),
+      shopTitle: document.getElementById("shopTitle"),
+      category: document.getElementById("category"),
+      visitDate: document.getElementById("visitDate"),
+      visitTime: document.getElementById("visitTime"),
+      visitInfo: document.getElementById("visitInfo"),
+      privacyConsent: document.getElementById("privacyConsent"),
+      termsConsent: document.getElementById("termsConsent"),
+      privacyText: document.getElementById("privacyText"),
+      termsText: document.getElementById("termsText"),
+      confirmationSummary: document.getElementById("confirmationSummary"),
+      loadingOverlay: document.getElementById("loadingOverlay"),
+      loadingText: document.getElementById("loadingText"),
+      toast: document.getElementById("toast"),
+      successPanel: document.getElementById("successPanel"),
+      successMessage: document.getElementById("successMessage"),
+      orderNumber: document.getElementById("orderNumber"),
+      successDetails: document.getElementById("successDetails"),
+      copyOrderNumberButton: document.getElementById("copyOrderNumberButton"),
+      newRequestButton: document.getElementById("newRequestButton")
+    };
+
+    document.addEventListener("DOMContentLoaded", initialize);
+
+    async function initialize() {
+      bindEvents();
+      configureDateRange();
+      restoreDraft();
+      renderStep();
+      await loadShopAndSettings();
+      populateCategories();
+      configureDateRange();
+      updateVisitTimeOptions();
+    }
+
+    function bindEvents() {
+      elements.nextButton.addEventListener("click", handleNext);
+      elements.backButton.addEventListener("click", handleBack);
+      elements.visitDate.addEventListener("change", () => {
+        updateVisitTimeOptions();
+        saveDraft();
+      });
+      elements.form.addEventListener("input", debounce(saveDraft, 350));
+      elements.form.addEventListener("change", saveDraft);
+      elements.copyOrderNumberButton.addEventListener("click", copyOrderNumber);
+      elements.newRequestButton.addEventListener("click", resetForNewRequest);
+
+      elements.form.addEventListener("submit", (event) => {
+        event.preventDefault();
+      });
+    }
+
+    async function loadShopAndSettings() {
+      setConnection("loading", "店舗の受付情報を確認しています…");
+
+      try {
+        const [shopResponse, settingsResponse] = await Promise.all([
+          fetchJson(
+            `${API_BASE}/api/shop?shop_code=${encodeURIComponent(state.shopCode)}`
+          ),
+          fetchJson(
+            `${API_BASE}/api/settings?shop_code=${encodeURIComponent(state.shopCode)}`
+          )
+        ]);
+
+        state.shop = shopResponse.shop;
+        state.settings = {
+          ...structuredCloneSafe(FALLBACK_SETTINGS),
+          ...(settingsResponse.settings || {})
+        };
+
+        elements.shopTitle.textContent =
+          `${state.shop.shop_name || "DPRO 修理受付"}｜修理相談`;
+        elements.privacyText.textContent =
+          state.settings.privacy_notice || FALLBACK_SETTINGS.privacy_notice;
+        elements.termsText.textContent =
+          state.settings.customer_terms || FALLBACK_SETTINGS.customer_terms;
+
+        setConnection(
+          "ok",
+          `${state.shop.shop_name || "店舗"}の受付情報を取得しました`
+        );
+      } catch (error) {
+        console.error(error);
+        setConnection(
+          "error",
+          "店舗設定を取得できなかったため、標準設定で表示しています"
+        );
+        showToast(
+          "店舗設定の取得に失敗しました。通信環境をご確認ください。",
+          true
+        );
+      }
+    }
+
+    function populateCategories() {
+      const current = elements.category.value;
+      const options = Array.isArray(state.settings.category_options)
+        ? state.settings.category_options
+            .filter((item) => item && item.enabled !== false)
+            .sort((a, b) => Number(a.display_order || 999) - Number(b.display_order || 999))
+        : FALLBACK_SETTINGS.category_options;
+
+      elements.category.innerHTML =
+        '<option value="">選択してください</option>';
+
+      for (const option of options) {
+        const value = String(option.key || option.label || "").trim();
+        const label = String(option.label || option.key || "").trim();
+        if (!value || !label) continue;
+
+        const node = document.createElement("option");
+        node.value = value;
+        node.textContent = label;
+        elements.category.appendChild(node);
+      }
+
+      if (
+        current &&
+        Array.from(elements.category.options).some((option) => option.value === current)
+      ) {
+        elements.category.value = current;
+      }
+    }
+
+    function configureDateRange() {
+      const today = getLocalDateString(new Date());
+      const horizon = clampNumber(
+        state.settings.booking_horizon_days,
+        1,
+        365,
+        60
+      );
+      const maxDate = new Date();
+      maxDate.setDate(maxDate.getDate() + horizon);
+
+      elements.visitDate.min = today;
+      elements.visitDate.max = getLocalDateString(maxDate);
+    }
+
+    function updateVisitTimeOptions() {
+      const selectedDate = elements.visitDate.value;
+      elements.visitTime.innerHTML = "";
+
+      if (!selectedDate) {
+        elements.visitTime.disabled = true;
+        elements.visitTime.innerHTML =
+          '<option value="">先に希望日を選択</option>';
+        elements.visitInfo.textContent =
+          "来店日時は仮希望です。店舗からの確認連絡で確定します。";
+        return;
+      }
+
+      if (!isValidCalendarDate(selectedDate)) {
+        elements.visitTime.disabled = true;
+        elements.visitTime.innerHTML =
+          '<option value="">正しい日付を選択してください</option>';
+        return;
+      }
+
+      const today = elements.visitDate.min;
+      const max = elements.visitDate.max;
+
+      if (selectedDate < today || selectedDate > max) {
+        elements.visitTime.disabled = true;
+        elements.visitTime.innerHTML =
+          '<option value="">受付可能期間外です</option>';
+        return;
+      }
+
+      const closedDates = Array.isArray(state.settings.temporary_closed_dates)
+        ? state.settings.temporary_closed_dates
+        : [];
+
+      if (closedDates.includes(selectedDate)) {
+        elements.visitTime.disabled = true;
+        elements.visitTime.innerHTML =
+          '<option value="">臨時休業日です</option>';
+        elements.visitInfo.textContent =
+          "選択日は臨時休業日のため、別の日をお選びください。";
+        return;
+      }
+
+      const dayKey = getDayKey(selectedDate);
+      const business = state.settings.business_hours?.[dayKey];
+
+      if (!business || business.enabled === false || !business.open || !business.close) {
+        elements.visitTime.disabled = true;
+        elements.visitTime.innerHTML =
+          '<option value="">定休日です</option>';
+        elements.visitInfo.textContent =
+          "選択日は定休日のため、別の日をお選びください。";
+        return;
+      }
+
+      const step = clampNumber(
+        state.settings.time_slot_minutes,
+        15,
+        60,
+        30
+      );
+      const slots = createTimeSlots(business.open, business.close, step);
+
+      const placeholder = document.createElement("option");
+      placeholder.value = "";
+      placeholder.textContent = "選択してください";
+      elements.visitTime.appendChild(placeholder);
+
+      for (const slot of slots) {
+        const option = document.createElement("option");
+        option.value = slot;
+        option.textContent = slot;
+        elements.visitTime.appendChild(option);
+      }
+
+      const draftTime = getDraft()?.visit_time;
+      if (
+        draftTime &&
+        Array.from(elements.visitTime.options).some((option) => option.value === draftTime)
+      ) {
+        elements.visitTime.value = draftTime;
+      }
+
+      elements.visitTime.disabled = false;
+      elements.visitInfo.textContent =
+        `${formatJapaneseDate(selectedDate)}｜営業時間 ${business.open}〜${business.close}｜${step}分単位`;
+    }
+
+    function createTimeSlots(open, close, stepMinutes) {
+      const start = timeToMinutes(open);
+      const end = timeToMinutes(close);
+      const slots = [];
+
+      if (start === null || end === null || start >= end) return slots;
+
+      for (let minutes = start; minutes < end; minutes += stepMinutes) {
+        slots.push(minutesToTime(minutes));
+      }
+
+      return slots;
+    }
+
+    async function handleNext() {
+      if (state.submitting) return;
+
+      if (state.step === 1) {
+        if (!validateStep1()) return;
+        state.step = 2;
+        renderStep();
+        scrollToTop();
+        return;
+      }
+
+      if (state.step === 2) {
+        if (!validateStep2()) return;
+        renderConfirmation();
+        state.step = 3;
+        renderStep();
+        scrollToTop();
+        return;
+      }
+
+      if (state.step === 3) {
+        await submitRepairRequest();
+      }
+    }
+
+    function handleBack() {
+      if (state.submitting || state.step <= 1) return;
+      state.step -= 1;
+      renderStep();
+      scrollToTop();
+    }
+
+    function renderStep() {
+      for (const panel of elements.stepPanels) {
+        const step = Number(panel.dataset.stepPanel);
+        panel.classList.toggle("hidden", step !== state.step);
+      }
+
+      for (const indicator of elements.indicators) {
+        const step = Number(indicator.dataset.stepIndicator);
+        indicator.classList.toggle("active", step === state.step);
+        indicator.classList.toggle("done", step < state.step);
+      }
+
+      elements.backButton.classList.toggle("hidden", state.step === 1);
+      elements.actionInner.classList.toggle("single", state.step === 1);
+
+      if (state.step === 1) {
+        elements.nextButton.textContent = "次へ進む";
+      } else if (state.step === 2) {
+        elements.nextButton.textContent = "入力内容を確認";
+      } else {
+        elements.nextButton.textContent = "この内容で仮受付を送信";
+      }
+    }
+
+    function validateStep1() {
+      clearErrors();
+
+      const validations = [
+        validateRequired("customerName", "お名前を入力してください。"),
+        validatePhoneField(),
+        validateEmailField(),
+        validateRequired("category", "修理品カテゴリーを選択してください。"),
+        validateRequired("productName", "商品名を入力してください。")
+      ];
+
+      return finalizeValidation(validations);
+    }
+
+    function validateStep2() {
+      clearErrors();
+
+      const validations = [
+        validateRequired("symptom", "症状・現在の状態を入力してください。"),
+        validateVisitDateTime(),
+        validateConsents()
+      ];
+
+      return finalizeValidation(validations);
+    }
+
+    function validateRequired(id, message) {
+      const field = document.getElementById(id);
+      const valid = Boolean(field.value.trim());
+      setFieldError(id, valid ? "" : message);
+      return valid;
+    }
+
+    function validatePhoneField() {
+      const field = document.getElementById("phone");
+      const normalized = normalizePhone(field.value);
+      const valid = normalized.length >= 10 && normalized.length <= 15;
+      setFieldError(
+        "phone",
+        valid ? "" : "電話番号を正しく入力してください。"
+      );
+      return valid;
+    }
+
+    function validateEmailField() {
+      const field = document.getElementById("email");
+      const value = field.value.trim();
+
+      if (!value) {
+        setFieldError("email", "");
+        return true;
+      }
+
+      const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+      setFieldError(
+        "email",
+        valid ? "" : "メールアドレスの形式を確認してください。"
+      );
+      return valid;
+    }
+
+    function validateVisitDateTime() {
+      const date = elements.visitDate.value;
+      const time = elements.visitTime.value;
+
+      setFieldError("visitDate", "");
+      setFieldError("visitTime", "");
+
+      if (!date && !time) return true;
+
+      if (!date) {
+        setFieldError("visitDate", "希望日を選択してください。");
+        return false;
+      }
+
+      if (elements.visitTime.disabled) {
+        setFieldError("visitDate", "営業日を選択してください。");
+        return false;
+      }
+
+      if (!time) {
+        setFieldError("visitTime", "希望時間を選択してください。");
+        return false;
+      }
+
+      const requested = new Date(`${date}T${time}:00+09:00`);
+      if (Number.isNaN(requested.getTime()) || requested.getTime() < Date.now() - 300000) {
+        setFieldError(
+          "visitTime",
+          "過去の日時は選択できません。"
+        );
+        return false;
+      }
+
+      return true;
+    }
+
+    function validateConsents() {
+      const valid =
+        elements.privacyConsent.checked &&
+        elements.termsConsent.checked;
+
+      setFieldError(
+        "consents",
+        valid ? "" : "2つの同意事項を確認してください。"
+      );
+      return valid;
+    }
+
+    function finalizeValidation(results) {
+      const valid = results.every(Boolean);
+
+      if (!valid) {
+        const firstInvalid = document.querySelector('[aria-invalid="true"]');
+        firstInvalid?.focus({ preventScroll: true });
+        firstInvalid?.scrollIntoView({
+          behavior: "smooth",
+          block: "center"
+        });
+        showToast("入力内容をご確認ください。", true);
+      }
+
+      return valid;
+    }
+
+    function setFieldError(id, message) {
+      const field = document.getElementById(id);
+      const error = document.querySelector(`[data-error-for="${id}"]`);
+
+      if (field) {
+        field.setAttribute("aria-invalid", message ? "true" : "false");
+      }
+      if (error) {
+        error.textContent = message;
+      }
+    }
+
+    function clearErrors() {
+      document.querySelectorAll(".field-error").forEach((node) => {
+        node.textContent = "";
+      });
+      document.querySelectorAll('[aria-invalid="true"]').forEach((node) => {
+        node.setAttribute("aria-invalid", "false");
+      });
+    }
+
+    function renderConfirmation() {
+      const data = collectFormData();
+      const categoryLabel =
+        elements.category.options[elements.category.selectedIndex]?.textContent || "—";
+
+      const blocks = [
+        {
+          title: "お客様情報",
+          step: 1,
+          rows: [
+            ["お名前", data.customer.customer_name],
+            ["フリガナ", data.customer.customer_name_kana || "未入力"],
+            ["電話番号", data.customer.phone],
+            ["メール", data.customer.email || "未入力"],
+            ["連絡方法", data.customer.preferred_contact === "line" ? "LINE" : "電話"]
+          ]
+        },
+        {
+          title: "修理品情報",
+          step: 1,
+          rows: [
+            ["カテゴリー", categoryLabel],
+            ["メーカー", data.item.manufacturer || "未入力"],
+            ["商品名", data.item.product_name],
+            ["型番", data.item.model_number || "未入力"],
+            ["シリアル", data.item.serial_number || "未入力"],
+            ["色・特徴", data.item.color || "未入力"]
+          ]
+        },
+        {
+          title: "症状・ご希望",
+          step: 2,
+          rows: [
+            ["症状", data.symptom],
+            ["きっかけ", data.symptom_started_text || "未入力"],
+            ["ご希望", data.requested_work || "未入力"],
+            [
+              "来店希望",
+              data.visit_requested_at
+                ? formatJapaneseDateTime(data.visit_requested_at)
+                : "未定"
+            ]
+          ]
+        }
+      ];
+
+      elements.confirmationSummary.innerHTML = blocks
+        .map(
+          (block) => `
+            <section class="summary-block">
+              <div class="summary-title">
+                <span>${escapeHtml(block.title)}</span>
+                <button
+                  type="button"
+                  class="summary-edit"
+                  data-edit-step="${block.step}"
+                >修正</button>
+              </div>
+              <dl class="summary-list">
+                ${block.rows
+                  .map(
+                    ([label, value]) => `
+                      <dt>${escapeHtml(label)}</dt>
+                      <dd>${escapeHtml(String(value ?? "—"))}</dd>
+                    `
+                  )
+                  .join("")}
+              </dl>
+            </section>
+          `
+        )
+        .join("");
+
+      elements.confirmationSummary
+        .querySelectorAll("[data-edit-step]")
+        .forEach((button) => {
+          button.addEventListener("click", () => {
+            state.step = Number(button.dataset.editStep);
+            renderStep();
+            scrollToTop();
+          });
+        });
+    }
+
+    function collectFormData() {
+      const formData = new FormData(elements.form);
+      const date = String(formData.get("visit_date") || "");
+      const time = String(formData.get("visit_time") || "");
+      const visitRequestedAt =
+        date && time
+          ? new Date(`${date}T${time}:00+09:00`).toISOString()
+          : null;
+
+      return {
+        shop_code: state.shopCode,
+        terms_accepted: true,
+        terms_version: `${APP_VERSION}-SETTINGS-${state.settings.settings_version || 1}`,
+        terms_accepted_at: new Date().toISOString(),
+        customer: {
+          customer_name: String(formData.get("customer_name") || "").trim(),
+          customer_name_kana:
+            String(formData.get("customer_name_kana") || "").trim() || null,
+          phone: String(formData.get("phone") || "").trim(),
+          email: String(formData.get("email") || "").trim() || null,
+          preferred_contact:
+            String(formData.get("preferred_contact") || "line"),
+          line_user_id: state.lineUserId,
+          privacy_consent: true,
+          privacy_consented_at: new Date().toISOString()
+        },
+        item: {
+          category: String(formData.get("category") || "").trim(),
+          manufacturer:
+            String(formData.get("manufacturer") || "").trim() || null,
+          brand:
+            String(formData.get("manufacturer") || "").trim() || null,
+          product_name:
+            String(formData.get("product_name") || "").trim(),
+          model_number:
+            String(formData.get("model_number") || "").trim() || null,
+          serial_number:
+            String(formData.get("serial_number") || "").trim() || null,
+          color:
+            String(formData.get("color") || "").trim() || null,
+          item_features: null,
+          purchased_on: null,
+          purchase_shop: null,
+          customer_item_note: null
+        },
+        symptom: String(formData.get("symptom") || "").trim(),
+        symptom_started_text:
+          String(formData.get("symptom_started_text") || "").trim() || null,
+        requested_work:
+          String(formData.get("requested_work") || "").trim() || null,
+        preferred_contact:
+          String(formData.get("preferred_contact") || "line"),
+        visit_requested_at: visitRequestedAt
+      };
+    }
+
+    async function submitRepairRequest() {
+      if (state.submitting) return;
+
+      state.submitting = true;
+      setLoading(true, "仮受付を送信しています…");
+      elements.nextButton.disabled = true;
+      elements.nextButton.textContent = "送信中…";
+
+      try {
+        const payload = collectFormData();
+        const response = await fetchJson(`${API_BASE}/api/orders`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+
+        state.result = response;
+        localStorage.removeItem(DRAFT_KEY);
+
+        const access = {
+          shop_code: state.shopCode,
+          order_id: response.order?.id || null,
+          order_number: response.order?.order_number || null,
+          public_token: response.order?.public_token || null,
+          saved_at: new Date().toISOString()
+        };
+        localStorage.setItem(MEMBER_ACCESS_KEY, JSON.stringify(access));
+
+        showSuccess(response);
+      } catch (error) {
+        console.error(error);
+        const message =
+          error?.message ||
+          "送信に失敗しました。通信環境をご確認のうえ、もう一度お試しください。";
+        showToast(message, true);
+      } finally {
+        state.submitting = false;
+        setLoading(false);
+        elements.nextButton.disabled = false;
+        elements.nextButton.textContent = "この内容で仮受付を送信";
+      }
+    }
+
+    function showSuccess(response) {
+      elements.form.classList.add("hidden");
+      document.querySelector(".steps").classList.add("hidden");
+      elements.actionBar.classList.add("hidden");
+      elements.successPanel.classList.remove("hidden");
+
+      elements.orderNumber.textContent =
+        response.order?.order_number || "受付番号を確認できませんでした";
+      elements.successMessage.textContent =
+        response.next_action ||
+        "店舗が内容を確認してご連絡します。";
+
+      const itemName =
+        [
+          response.item?.manufacturer,
+          response.item?.product_name
+        ]
+          .filter(Boolean)
+          .join(" ") || "修理品";
+
+      elements.successDetails.innerHTML = `
+        <section class="summary-block">
+          <dl class="summary-list">
+            <dt>修理品</dt>
+            <dd>${escapeHtml(itemName)}</dd>
+            <dt>受付状態</dt>
+            <dd>${escapeHtml(response.order?.customer_status || "受付しました")}</dd>
+            <dt>送信日時</dt>
+            <dd>${escapeHtml(formatJapaneseDateTime(response.order?.created_at || new Date().toISOString()))}</dd>
+          </dl>
+        </section>
+      `;
+
+      scrollToTop();
+      showToast("仮受付を送信しました。");
+    }
+
+    async function copyOrderNumber() {
+      const value = state.result?.order?.order_number;
+      if (!value) {
+        showToast("受付番号を確認できませんでした。", true);
+        return;
+      }
+
+      try {
+        await navigator.clipboard.writeText(value);
+        showToast(`受付番号 ${value} をコピーしました`);
+      } catch {
+        const textarea = document.createElement("textarea");
+        textarea.value = value;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        textarea.remove();
+        showToast(`受付番号 ${value} をコピーしました`);
+      }
+    }
+
+    function resetForNewRequest() {
+      state.result = null;
+      state.step = 1;
+      elements.form.reset();
+      elements.privacyConsent.checked = false;
+      elements.termsConsent.checked = false;
+      elements.successPanel.classList.add("hidden");
+      elements.form.classList.remove("hidden");
+      document.querySelector(".steps").classList.remove("hidden");
+      elements.actionBar.classList.remove("hidden");
+      localStorage.removeItem(DRAFT_KEY);
+      renderStep();
+      updateVisitTimeOptions();
+      scrollToTop();
+    }
+
+    function saveDraft() {
+      if (state.submitting || state.result) return;
+
+      const formData = new FormData(elements.form);
+      const draft = Object.fromEntries(formData.entries());
+      draft.privacy_consent = elements.privacyConsent.checked;
+      draft.terms_consent = elements.termsConsent.checked;
+      draft.saved_at = new Date().toISOString();
+
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+    }
+
+    function restoreDraft() {
+      const draft = getDraft();
+      if (!draft) return;
+
+      const fields = [
+        "customer_name",
+        "customer_name_kana",
+        "phone",
+        "email",
+        "category",
+        "manufacturer",
+        "product_name",
+        "model_number",
+        "serial_number",
+        "color",
+        "symptom",
+        "symptom_started_text",
+        "requested_work",
+        "visit_date",
+        "visit_time"
+      ];
+
+      for (const name of fields) {
+        const field = elements.form.elements.namedItem(name);
+        if (field && draft[name] !== undefined && draft[name] !== null) {
+          field.value = draft[name];
+        }
+      }
+
+      if (draft.preferred_contact) {
+        const contact = elements.form.querySelector(
+          `input[name="preferred_contact"][value="${cssEscape(draft.preferred_contact)}"]`
+        );
+        if (contact) contact.checked = true;
+      }
+
+      elements.privacyConsent.checked = draft.privacy_consent === true;
+      elements.termsConsent.checked = draft.terms_consent === true;
+
+      showToast("前回入力途中の内容を復元しました。");
+    }
+
+    function getDraft() {
+      try {
+        const raw = localStorage.getItem(DRAFT_KEY);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+
+        if (!parsed || typeof parsed !== "object") return null;
+
+        const savedAt = new Date(parsed.saved_at || 0).getTime();
+        if (!savedAt || Date.now() - savedAt > 7 * 24 * 60 * 60 * 1000) {
+          localStorage.removeItem(DRAFT_KEY);
+          return null;
+        }
+
+        return parsed;
+      } catch {
+        localStorage.removeItem(DRAFT_KEY);
+        return null;
+      }
+    }
+
+    async function fetchJson(url, options = {}) {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 15000);
+
+      try {
+        const response = await fetch(url, {
+          cache: "no-store",
+          ...options,
+          signal: controller.signal
+        });
+
+        const text = await response.text();
+        let data = null;
+
+        try {
+          data = text ? JSON.parse(text) : null;
+        } catch {
+          data = null;
+        }
+
+        if (!response.ok || !data?.ok) {
+          const message =
+            data?.error?.message ||
+            `通信に失敗しました（${response.status}）`;
+          throw new Error(message);
+        }
+
+        return data;
+      } catch (error) {
+        if (error?.name === "AbortError") {
+          throw new Error("通信がタイムアウトしました。もう一度お試しください。");
+        }
+        throw error;
+      } finally {
+        clearTimeout(timeout);
+      }
+    }
+
+    function setConnection(status, text) {
+      elements.connection.dataset.status = status;
+      elements.connectionText.textContent = text;
+    }
+
+    function setLoading(show, text = "処理しています…") {
+      elements.loadingText.textContent = text;
+      elements.loadingOverlay.classList.toggle("hidden", !show);
+    }
+
+    let toastTimer = null;
+    function showToast(message, isError = false) {
+      clearTimeout(toastTimer);
+      elements.toast.textContent = message;
+      elements.toast.classList.toggle("error", isError);
+      elements.toast.classList.add("show");
+
+      toastTimer = setTimeout(() => {
+        elements.toast.classList.remove("show");
+      }, 3200);
+    }
+
+    function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function normalizePhone(value) {
+      return String(value || "")
+        .normalize("NFKC")
+        .replace(/[ー－―‐‑‒–—−]/g, "-")
+        .replace(/[^0-9+]/g, "")
+        .replace(/^\+81/, "0")
+        .replace(/\D/g, "");
+    }
+
+    function getLocalDateString(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    }
+
+    function getDayKey(dateString) {
+      const date = new Date(`${dateString}T12:00:00+09:00`);
+      const keys = [
+        "sunday",
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday",
+        "saturday"
+      ];
+      return keys[date.getDay()];
+    }
+
+    function formatJapaneseDate(dateString) {
+      if (!dateString) return "未定";
+      const date = new Date(`${dateString}T12:00:00+09:00`);
+      if (Number.isNaN(date.getTime())) return dateString;
+
+      return new Intl.DateTimeFormat("ja-JP", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        weekday: "short",
+        timeZone: "Asia/Tokyo"
+      }).format(date);
+    }
+
+    function formatJapaneseDateTime(value) {
+      if (!value) return "未定";
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return String(value);
+
+      return new Intl.DateTimeFormat("ja-JP", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        weekday: "short",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+        timeZone: "Asia/Tokyo"
+      }).format(date);
+    }
+
+    function timeToMinutes(value) {
+      const match = /^(\d{2}):(\d{2})$/.exec(String(value || ""));
+      if (!match) return null;
+
+      const hour = Number(match[1]);
+      const minute = Number(match[2]);
+      if (hour > 23 || minute > 59) return null;
+
+      return hour * 60 + minute;
+    }
+
+    function minutesToTime(total) {
+      const hour = Math.floor(total / 60);
+      const minute = total % 60;
+      return `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
+    }
+
+    function isValidCalendarDate(value) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+      const date = new Date(`${value}T00:00:00Z`);
+      return (
+        !Number.isNaN(date.getTime()) &&
+        date.toISOString().slice(0, 10) === value
+      );
+    }
+
+    function clampNumber(value, min, max, fallback) {
+      const number = Number(value);
+      if (!Number.isFinite(number)) return fallback;
+      return Math.min(Math.max(number, min), max);
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function cssEscape(value) {
+      if (window.CSS?.escape) return CSS.escape(value);
+      return String(value).replace(/["\\]/g, "\\$&");
+    }
+
+    function debounce(callback, delay) {
+      let timer = null;
+      return (...args) => {
+        clearTimeout(timer);
+        timer = setTimeout(() => callback(...args), delay);
+      };
+    }
+
+    function structuredCloneSafe(value) {
+      if (typeof structuredClone === "function") {
+        return structuredClone(value);
+      }
+      return JSON.parse(JSON.stringify(value));
+    }
+  </script>
+</body>
+</html>
