@@ -384,6 +384,35 @@
       white-space: pre-wrap;
     }
 
+    .member-photo-grid {
+      display: grid;
+      grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+      gap: 9px;
+    }
+
+    .member-photo-card {
+      min-width: 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: #f8fbfa;
+    }
+
+    .member-photo-card img {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+      display: block;
+      background: #e5ece9;
+    }
+
+    .member-photo-info {
+      padding: 8px;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
     .timeline {
       position: relative;
       display: grid;
@@ -821,6 +850,17 @@
           <dl id="orderDetails" class="info-list"></dl>
         </div>
 
+        <div id="sharedPhotosCard" class="card hidden">
+          <div class="section-head">
+            <div class="section-icon">写</div>
+            <div>
+              <h2>店舗から共有された写真</h2>
+              <p>受付時や修理後の確認写真です。</p>
+            </div>
+          </div>
+          <div id="sharedPhotos" class="member-photo-grid"></div>
+        </div>
+
         <div class="card">
           <div class="section-head">
             <div class="section-icon">歴</div>
@@ -858,6 +898,17 @@
           <div id="pickupContent"></div>
         </div>
 
+        <div id="accessoriesCard" class="card hidden">
+          <div class="section-head">
+            <div class="section-icon">付</div>
+            <div>
+              <h2>お預かり品・付属品</h2>
+              <p>店舗で確認した付属品と返却状態です。</p>
+            </div>
+          </div>
+          <div id="accessoriesContent"></div>
+        </div>
+
         <div class="card">
           <div class="section-head">
             <div class="section-icon">保</div>
@@ -881,7 +932,7 @@
     </section>
 
     <div class="version">
-      DPRO 修理受付 LINE｜STEP REPAIR-6｜REPAIR-6-ESTIMATE-APPROVAL-20260712
+      DPRO 修理受付 LINE｜STEP REPAIR-9｜REPAIR-9-INTAKE-PHOTO-ACCESSORY-20260712
     </div>
   </main>
 
@@ -960,6 +1011,14 @@
       promisedDate: document.getElementById("promisedDate"),
       orderDetails: document.getElementById("orderDetails"),
       timeline: document.getElementById("timeline"),
+      sharedPhotosCard:
+        document.getElementById("sharedPhotosCard"),
+      sharedPhotos:
+        document.getElementById("sharedPhotos"),
+      accessoriesCard:
+        document.getElementById("accessoriesCard"),
+      accessoriesContent:
+        document.getElementById("accessoriesContent"),
       estimateContent: document.getElementById("estimateContent"),
       pickupContent: document.getElementById("pickupContent"),
       warrantyContent: document.getElementById("warrantyContent"),
@@ -1213,9 +1272,97 @@
       ]);
 
       renderTimeline(state.historyData?.history || []);
+      renderSharedPhotos(data.photos || []);
+      renderAccessories(data.accessories || []);
       renderEstimate(estimate);
       renderPickup(order);
       renderWarranty(warranty);
+    }
+
+    function renderSharedPhotos(photos) {
+      const visible =
+        Array.isArray(photos)
+          ? photos.filter(
+              (photo) => photo.signed_url
+            )
+          : [];
+
+      el.sharedPhotosCard.classList.toggle(
+        "hidden",
+        visible.length === 0
+      );
+
+      el.sharedPhotos.innerHTML =
+        visible
+          .map(
+            (photo) => `
+              <a
+                class="member-photo-card"
+                href="${escapeHtml(photo.signed_url)}"
+                target="_blank"
+                rel="noopener"
+              >
+                <img
+                  src="${escapeHtml(photo.signed_url)}"
+                  alt="店舗共有写真"
+                />
+                <div class="member-photo-info">
+                  ${escapeHtml(photoTypeLabel(photo.photo_type))}
+                  ${
+                    photo.comment
+                      ? `<br />${escapeHtml(photo.comment)}`
+                      : ""
+                  }
+                </div>
+              </a>
+            `
+          )
+          .join("");
+    }
+
+    function renderAccessories(accessories) {
+      const items =
+        Array.isArray(accessories)
+          ? accessories
+          : [];
+
+      el.accessoriesCard.classList.toggle(
+        "hidden",
+        items.length === 0
+      );
+
+      el.accessoriesContent.innerHTML =
+        items.length
+          ? `<dl class="info-list">
+              ${items.map((item) => `
+                <dt>${escapeHtml(item.accessory_name)}</dt>
+                <dd>
+                  ${escapeHtml(String(item.quantity))}点
+                  ${
+                    item.condition_text
+                      ? `｜${escapeHtml(item.condition_text)}`
+                      : ""
+                  }
+                  ｜${item.delivered_confirmed ? "返却済み" : "店舗でお預かり中"}
+                </dd>
+              `).join("")}
+            </dl>`
+          : "";
+    }
+
+    function photoTypeLabel(value) {
+      return {
+        customer_before_visit: "来店前",
+        received_overview: "受付時・全体",
+        received_damage: "傷・破損箇所",
+        received_accessory: "付属品",
+        diagnosis: "診断",
+        repair_process: "修理中",
+        repair_completed: "修理完了",
+        delivery: "引き渡し",
+        warranty_claim: "保証対応",
+        other: "その他",
+      }[value] || value || "写真";
     }
 
     function renderTimeline(history) {

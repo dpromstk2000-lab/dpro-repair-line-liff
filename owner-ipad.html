@@ -752,6 +752,116 @@
       margin-top: 15px;
     }
 
+    .intake-photo-grid {
+      display: grid;
+      grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .photo-preview-card {
+      min-width: 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: #f8fbfa;
+    }
+
+    .photo-preview-image {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+      display: block;
+      background: #e6ecea;
+    }
+
+    .photo-preview-body {
+      display: grid;
+      gap: 7px;
+      padding: 9px;
+    }
+
+    .photo-preview-name {
+      color: var(--muted);
+      font-size: 10px;
+      overflow-wrap: anywhere;
+    }
+
+    .photo-upload-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 9px;
+    }
+
+    .accessory-editor {
+      display: grid;
+      gap: 8px;
+    }
+
+    .accessory-row {
+      display: grid;
+      grid-template-columns:
+        minmax(140px, 1fr)
+        80px
+        minmax(130px, 1fr)
+        42px;
+      gap: 7px;
+      align-items: end;
+      padding: 9px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #f8fbfa;
+    }
+
+    .accessory-row label {
+      margin-bottom: 4px;
+      font-size: 9px;
+    }
+
+    .accessory-remove {
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 50px;
+      color: var(--danger);
+      border: 0;
+      border-radius: 10px;
+      background: var(--danger-soft);
+      font-size: 18px;
+      font-weight: 950;
+      cursor: pointer;
+    }
+
+    .existing-photo-grid {
+      display: grid;
+      grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 9px;
+    }
+
+    .existing-photo {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      background: #f7faf9;
+    }
+
+    .existing-photo img {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+      display: block;
+    }
+
+    .existing-photo div {
+      padding: 6px;
+      color: var(--muted);
+      font-size: 9px;
+    }
+
     .toast {
       position: fixed;
       z-index: 180;
@@ -839,6 +949,18 @@
       .form-grid .full { grid-column: auto; }
       .modal-actions { grid-template-columns: 1fr; }
       .detail-list { grid-template-columns: 90px 1fr; }
+      .accessory-row {
+        grid-template-columns: 1fr 76px;
+      }
+      .accessory-row > div:nth-child(3) {
+        grid-column: 1 / -1;
+      }
+      .intake-photo-grid {
+        grid-template-columns: 1fr;
+      }
+      .existing-photo-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
     }
 
     @media (max-width: 390px) {
@@ -989,7 +1111,7 @@
     </section>
 
     <div class="version">
-      DPRO 修理受付 LINE｜STEP REPAIR-8｜REPAIR-8-OWNER-IPAD-20260712
+      DPRO 修理受付 LINE｜STEP REPAIR-9｜REPAIR-9-INTAKE-PHOTO-ACCESSORY-20260712
     </div>
   </main>
 
@@ -1171,6 +1293,99 @@
     </section>
   </div>
 
+  <div id="intakeModalBackdrop" class="modal-backdrop hidden">
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="intakeModalTitle">
+      <header class="modal-head">
+        <div>
+          <h2 id="intakeModalTitle">お預かり確認</h2>
+          <p id="intakeModalSubtitle">外観・付属品・写真をお客様と一緒に確認します。</p>
+        </div>
+        <button id="intakeModalCloseButton" class="icon-button" type="button" aria-label="閉じる">×</button>
+      </header>
+
+      <section class="form-section">
+        <h3>本体の状態</h3>
+        <div class="form-grid">
+          <div>
+            <label for="intakePowerState">電源状態</label>
+            <select id="intakePowerState">
+              <option value="unknown">未確認</option>
+              <option value="power_on">電源が入る</option>
+              <option value="power_off">電源が入らない</option>
+              <option value="not_applicable">対象外</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="intakeExterior">外観</label>
+            <input id="intakeExterior" type="text" maxlength="3000" placeholder="例：全体に使用感あり" />
+          </div>
+
+          <div class="full">
+            <label for="intakeDamage">既存の傷・破損</label>
+            <textarea id="intakeDamage" maxlength="3000" placeholder="例：右上にひび、背面に擦り傷あり"></textarea>
+          </div>
+
+          <div class="full">
+            <label for="intakeOperation">受付時の動作確認</label>
+            <textarea id="intakeOperation" maxlength="3000" placeholder="例：画面表示・充電・タッチ操作を確認"></textarea>
+          </div>
+        </div>
+      </section>
+
+      <section class="form-section">
+        <h3>付属品</h3>
+        <div id="intakeAccessories" class="accessory-editor"></div>
+        <button id="addIntakeAccessoryButton" class="btn btn-soft" type="button" style="margin-top:8px">
+          付属品を追加
+        </button>
+        <datalist id="accessoryOptionsList"></datalist>
+      </section>
+
+      <section class="form-section">
+        <h3>受付写真</h3>
+        <p class="field-note">
+          iPadのカメラで撮影できます。保存前に写真の種類と、お客様画面への共有可否を選べます。
+        </p>
+
+        <input id="intakeCameraInput" class="hidden" type="file" accept="image/*" capture="environment" />
+        <input id="intakePhotoInput" class="hidden" type="file" accept="image/jpeg,image/png,image/webp" multiple />
+
+        <div class="photo-upload-actions">
+          <button id="takeIntakePhotoButton" class="btn btn-primary" type="button">
+            写真を撮る
+          </button>
+          <button id="selectIntakePhotoButton" class="btn btn-soft" type="button">
+            写真を選ぶ
+          </button>
+        </div>
+
+        <div id="intakePhotoPreviews" class="intake-photo-grid"></div>
+
+        <div id="existingPhotosSection" class="hidden" style="margin-top:13px">
+          <label>登録済み写真</label>
+          <div id="existingPhotosGrid" class="existing-photo-grid"></div>
+        </div>
+      </section>
+
+      <label class="check-line form-section">
+        <input id="intakeCustomerConfirmed" type="checkbox" />
+        <span>お客様と一緒に、本体の状態・付属品・写真を確認しました</span>
+      </label>
+
+      <div id="intakeError" class="field-error"></div>
+
+      <div class="modal-actions">
+        <button id="intakeCancelButton" class="btn btn-light" type="button">
+          キャンセル
+        </button>
+        <button id="intakeSaveButton" class="btn btn-primary" type="button">
+          お預かり確認を保存
+        </button>
+      </div>
+    </section>
+  </div>
+
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <div id="loadingOverlay" class="loading hidden">
@@ -1275,6 +1490,10 @@
       receptionType: "phone",
       selectedCustomer: null,
       selectedCustomerItems: [],
+      intakeOrderId: null,
+      intakeDetail: null,
+      intakePhotoFiles: [],
+      intakePreviewUrls: [],
       loading: false,
     };
 
@@ -1351,6 +1570,50 @@
       receptionError: document.getElementById("receptionError"),
       receptionCancelButton: document.getElementById("receptionCancelButton"),
       receptionSaveButton: document.getElementById("receptionSaveButton"),
+      intakeModalBackdrop:
+        document.getElementById("intakeModalBackdrop"),
+      intakeModalTitle:
+        document.getElementById("intakeModalTitle"),
+      intakeModalSubtitle:
+        document.getElementById("intakeModalSubtitle"),
+      intakeModalCloseButton:
+        document.getElementById("intakeModalCloseButton"),
+      intakePowerState:
+        document.getElementById("intakePowerState"),
+      intakeExterior:
+        document.getElementById("intakeExterior"),
+      intakeDamage:
+        document.getElementById("intakeDamage"),
+      intakeOperation:
+        document.getElementById("intakeOperation"),
+      intakeAccessories:
+        document.getElementById("intakeAccessories"),
+      addIntakeAccessoryButton:
+        document.getElementById("addIntakeAccessoryButton"),
+      accessoryOptionsList:
+        document.getElementById("accessoryOptionsList"),
+      intakeCameraInput:
+        document.getElementById("intakeCameraInput"),
+      intakePhotoInput:
+        document.getElementById("intakePhotoInput"),
+      takeIntakePhotoButton:
+        document.getElementById("takeIntakePhotoButton"),
+      selectIntakePhotoButton:
+        document.getElementById("selectIntakePhotoButton"),
+      intakePhotoPreviews:
+        document.getElementById("intakePhotoPreviews"),
+      existingPhotosSection:
+        document.getElementById("existingPhotosSection"),
+      existingPhotosGrid:
+        document.getElementById("existingPhotosGrid"),
+      intakeCustomerConfirmed:
+        document.getElementById("intakeCustomerConfirmed"),
+      intakeError:
+        document.getElementById("intakeError"),
+      intakeCancelButton:
+        document.getElementById("intakeCancelButton"),
+      intakeSaveButton:
+        document.getElementById("intakeSaveButton"),
       toast: document.getElementById("toast"),
       loadingOverlay: document.getElementById("loadingOverlay"),
       loadingText: document.getElementById("loadingText"),
@@ -1457,6 +1720,72 @@
       el.receptionForm.addEventListener("submit", saveReception);
       el.clearSelectedCustomerButton.addEventListener("click", clearSelectedCustomer);
       el.existingItemSelect.addEventListener("change", renderExistingItemSelection);
+
+      el.intakeModalCloseButton.addEventListener(
+        "click",
+        closeIntakeModal
+      );
+      el.intakeCancelButton.addEventListener(
+        "click",
+        closeIntakeModal
+      );
+      el.intakeModalBackdrop.addEventListener(
+        "click",
+        (event) => {
+          if (event.target === el.intakeModalBackdrop) {
+            closeIntakeModal();
+          }
+        }
+      );
+      el.addIntakeAccessoryButton.addEventListener(
+        "click",
+        () => addIntakeAccessory()
+      );
+      el.intakeAccessories.addEventListener(
+        "click",
+        (event) => {
+          const remove = event.target.closest(
+            "[data-remove-intake-accessory]"
+          );
+          if (!remove) return;
+          remove.closest(".accessory-row")?.remove();
+          if (!el.intakeAccessories.children.length) {
+            addIntakeAccessory();
+          }
+        }
+      );
+      el.takeIntakePhotoButton.addEventListener(
+        "click",
+        () => el.intakeCameraInput.click()
+      );
+      el.selectIntakePhotoButton.addEventListener(
+        "click",
+        () => el.intakePhotoInput.click()
+      );
+      el.intakeCameraInput.addEventListener(
+        "change",
+        handleIntakePhotoSelection
+      );
+      el.intakePhotoInput.addEventListener(
+        "change",
+        handleIntakePhotoSelection
+      );
+      el.intakePhotoPreviews.addEventListener(
+        "click",
+        (event) => {
+          const remove = event.target.closest(
+            "[data-remove-intake-photo]"
+          );
+          if (!remove) return;
+          removeIntakePhoto(
+            Number(remove.dataset.removeIntakePhoto)
+          );
+        }
+      );
+      el.intakeSaveButton.addEventListener(
+        "click",
+        saveIntakeConfirmation
+      );
     }
 
     async function verifyAndOpen(showError) {
@@ -1549,6 +1878,7 @@
         state.settings = null;
       } finally {
         populateCategories();
+        populateAccessoryOptions();
       }
     }
 
@@ -1633,22 +1963,34 @@
                 詳細を見る
               </button>
               ${
-                nextStatus
+                [
+                  "consultation_received",
+                  "provisional_received",
+                  "visit_scheduled",
+                ].includes(order.status)
                   ? `<button
                       class="btn btn-primary"
                       type="button"
-                      data-order-action="quick-status"
-                      data-next-status="${escapeHtml(nextStatus.value)}"
+                      data-order-action="intake"
                     >
-                      ${escapeHtml(nextStatus.label)}
+                      お預かり確認
                     </button>`
-                  : `<button
-                      class="btn btn-soft"
-                      type="button"
-                      data-order-action="copy"
-                    >
-                      文面コピー
-                    </button>`
+                  : nextStatus
+                    ? `<button
+                        class="btn btn-primary"
+                        type="button"
+                        data-order-action="quick-status"
+                        data-next-status="${escapeHtml(nextStatus.value)}"
+                      >
+                        ${escapeHtml(nextStatus.label)}
+                      </button>`
+                    : `<button
+                        class="btn btn-soft"
+                        type="button"
+                        data-order-action="copy"
+                      >
+                        文面コピー
+                      </button>`
               }
             </div>
           </article>
@@ -1690,6 +2032,8 @@
 
       if (action === "detail") {
         await openOrder(orderId);
+      } else if (action === "intake") {
+        await openIntakeModal(orderId);
       } else if (action === "quick-status") {
         await updateOrderStatus(
           orderId,
@@ -1770,6 +2114,58 @@
         </section>
 
         <section class="detail-card">
+          <div class="detail-title">写真・付属品</div>
+          ${
+            Array.isArray(detail.photos) && detail.photos.length
+              ? `<div class="existing-photo-grid">
+                  ${detail.photos.map((photo) => `
+                    <a
+                      class="existing-photo"
+                      href="${escapeHtml(photo.signed_url || "#")}"
+                      target="_blank"
+                      rel="noopener"
+                    >
+                      ${
+                        photo.signed_url
+                          ? `<img src="${escapeHtml(photo.signed_url)}" alt="受付写真" />`
+                          : ""
+                      }
+                      <div>
+                        ${escapeHtml(photoTypeLabel(photo.photo_type))}
+                        ${photo.visibility === "customer_visible" ? "｜お客様共有" : "｜店舗のみ"}
+                      </div>
+                    </a>
+                  `).join("")}
+                </div>`
+              : '<div class="field-note">写真はまだ登録されていません。</div>'
+          }
+
+          <dl class="detail-list" style="margin-top:10px">
+            ${
+              Array.isArray(detail.accessories) && detail.accessories.length
+                ? detail.accessories.map((accessory) => `
+                    <dt>${escapeHtml(accessory.accessory_name)}</dt>
+                    <dd>
+                      ${escapeHtml(String(accessory.quantity))}点
+                      ${accessory.condition_text ? `｜${escapeHtml(accessory.condition_text)}` : ""}
+                      ${accessory.delivered_confirmed ? "｜返却済み" : ""}
+                    </dd>
+                  `).join("")
+                : "<dt>付属品</dt><dd>登録なし</dd>"
+            }
+          </dl>
+
+          <button
+            class="btn btn-primary"
+            type="button"
+            data-drawer-action="intake"
+            style="width:100%;margin-top:11px"
+          >
+            お預かり確認・写真を編集
+          </button>
+        </section>
+
+        <section class="detail-card">
           <div class="detail-title">かんたん操作</div>
           <div class="quick-actions">
             ${nextStatuses.slice(0, 4).map((status) => `
@@ -1804,6 +2200,10 @@
           state.selectedDetail.order.id,
           button.dataset.nextStatus,
           STATUS_LABELS[button.dataset.nextStatus] || "状態更新"
+        );
+      } else if (action === "intake") {
+        await openIntakeModal(
+          state.selectedDetail.order.id
         );
       } else if (action === "copy") {
         await copyDetailMessage();
@@ -1988,7 +2388,7 @@
       el.visitTimeField.classList.toggle("hidden", walkIn);
       el.preferredContact.value = walkIn ? "in_person" : "phone";
       el.receptionSaveButton.textContent = walkIn
-        ? "お預かり受付を保存"
+        ? "受付を保存して写真・付属品へ"
         : "電話受付を保存";
     }
 
@@ -2175,7 +2575,12 @@
           `${response.order.order_number} を登録しました。`
         );
         await loadDashboard();
-        await openOrder(response.order.id);
+
+        if (state.receptionType === "walk_in") {
+          await openIntakeModal(response.order.id);
+        } else {
+          await openOrder(response.order.id);
+        }
       } catch (error) {
         state.loading = false;
         el.receptionError.textContent =
@@ -2185,9 +2590,741 @@
         el.receptionSaveButton.disabled = false;
         el.receptionSaveButton.textContent =
           state.receptionType === "walk_in"
-            ? "お預かり受付を保存"
+            ? "受付を保存して写真・付属品へ"
             : "電話受付を保存";
       }
+    }
+
+    async function openIntakeModal(orderId) {
+      if (!orderId) return;
+
+      setLoading(
+        true,
+        "お預かり情報を読み込んでいます…"
+      );
+
+      try {
+        const detail = await fetchJson(
+          `${API_BASE}/api/orders/${encodeURIComponent(orderId)}` +
+          `?shop_code=${encodeURIComponent(state.shopCode)}` +
+          `&admin_key=${encodeURIComponent(state.adminKey)}`
+        );
+
+        state.intakeOrderId = orderId;
+        state.intakeDetail = detail;
+        clearIntakePhotoFiles();
+
+        const order = detail.order || {};
+        el.intakeModalTitle.textContent =
+          "お預かり確認";
+        el.intakeModalSubtitle.textContent =
+          `${order.order_number || ""}｜${detail.customer?.customer_name || "お客様"}｜${itemName(detail.item || {})}`;
+
+        el.intakePowerState.value =
+          order.power_state || "unknown";
+        el.intakeExterior.value =
+          order.received_exterior_condition || "";
+        el.intakeDamage.value =
+          order.received_damage_note || "";
+        el.intakeOperation.value =
+          order.received_operation_note || "";
+        el.intakeCustomerConfirmed.checked =
+          order.intake_customer_confirmed === true;
+        el.intakeError.textContent = "";
+
+        el.intakeAccessories.innerHTML = "";
+        const accessories =
+          Array.isArray(detail.accessories)
+            ? detail.accessories
+            : [];
+
+        if (accessories.length) {
+          accessories.forEach((accessory) => {
+            addIntakeAccessory(accessory);
+          });
+        } else {
+          addIntakeAccessory();
+        }
+
+        renderExistingIntakePhotos(
+          detail.photos || []
+        );
+
+        el.intakeModalBackdrop.classList.remove(
+          "hidden"
+        );
+        document.body.style.overflow = "hidden";
+      } catch (error) {
+        showToast(
+          error.message ||
+            "お預かり情報を取得できませんでした。",
+          true
+        );
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    function closeIntakeModal(force = false) {
+      if (state.loading && !force) return;
+
+      el.intakeModalBackdrop.classList.add(
+        "hidden"
+      );
+      state.intakeOrderId = null;
+      state.intakeDetail = null;
+      clearIntakePhotoFiles();
+      el.intakeAccessories.innerHTML = "";
+      el.intakeError.textContent = "";
+      document.body.style.overflow = "";
+    }
+
+    function addIntakeAccessory(values = {}) {
+      const row = document.createElement("div");
+      row.className = "accessory-row";
+      row.innerHTML = `
+        <div>
+          <label>付属品名</label>
+          <input
+            data-accessory-field="name"
+            type="text"
+            maxlength="200"
+            list="accessoryOptionsList"
+            value="${escapeAttribute(values.accessory_name || "")}"
+            placeholder="例：充電器、ケース"
+          />
+        </div>
+        <div>
+          <label>数量</label>
+          <input
+            data-accessory-field="quantity"
+            type="number"
+            min="1"
+            max="999"
+            step="1"
+            value="${Number(values.quantity || 1)}"
+          />
+        </div>
+        <div>
+          <label>状態・特徴</label>
+          <input
+            data-accessory-field="condition"
+            type="text"
+            maxlength="2000"
+            value="${escapeAttribute(values.condition_text || "")}"
+            placeholder="例：白色、傷あり"
+          />
+        </div>
+        <button
+          class="accessory-remove"
+          type="button"
+          data-remove-intake-accessory
+          aria-label="付属品を削除"
+        >
+          ×
+        </button>
+      `;
+      el.intakeAccessories.appendChild(row);
+    }
+
+    function collectIntakeAccessories() {
+      return Array.from(
+        el.intakeAccessories.querySelectorAll(
+          ".accessory-row"
+        )
+      )
+        .map((row) => ({
+          accessory_name:
+            row.querySelector(
+              '[data-accessory-field="name"]'
+            )?.value.trim() || "",
+          quantity:
+            Number(
+              row.querySelector(
+                '[data-accessory-field="quantity"]'
+              )?.value || 1
+            ),
+          condition_text:
+            row.querySelector(
+              '[data-accessory-field="condition"]'
+            )?.value.trim() || null,
+        }))
+        .filter(
+          (accessory) =>
+            accessory.accessory_name
+        );
+    }
+
+    function populateAccessoryOptions() {
+      const options =
+        Array.isArray(
+          state.settings?.accessory_options
+        )
+          ? state.settings.accessory_options
+              .filter(
+                (item) =>
+                  item &&
+                  item.enabled !== false
+              )
+              .map(
+                (item) =>
+                  String(
+                    item.label ||
+                    item.name ||
+                    item.key ||
+                    ""
+                  ).trim()
+              )
+              .filter(Boolean)
+          : [
+              "本体",
+              "充電器",
+              "充電ケーブル",
+              "ACアダプター",
+              "ケース",
+              "カバー",
+              "バッテリー",
+              "リモコン",
+              "ストラップ",
+              "箱",
+              "説明書",
+              "その他",
+            ];
+
+      el.accessoryOptionsList.innerHTML =
+        options
+          .map(
+            (value) =>
+              `<option value="${escapeHtml(value)}"></option>`
+          )
+          .join("");
+    }
+
+    async function handleIntakePhotoSelection(event) {
+      const files = Array.from(
+        event.target.files || []
+      );
+      event.target.value = "";
+
+      if (!files.length) return;
+
+      const remaining =
+        12 - state.intakePhotoFiles.length;
+
+      if (remaining <= 0) {
+        showToast(
+          "写真は一度に12枚までです。",
+          true
+        );
+        return;
+      }
+
+      const selected = files.slice(0, remaining);
+
+      setLoading(
+        true,
+        "写真を準備しています…"
+      );
+
+      try {
+        for (const file of selected) {
+          const compressed =
+            await compressImageFile(file);
+
+          if (
+            compressed.size >
+            5 * 1024 * 1024
+          ) {
+            showToast(
+              `${file.name} は5MBを超えるため追加できませんでした。`,
+              true
+            );
+            continue;
+          }
+
+          state.intakePhotoFiles.push({
+            file: compressed,
+            original_name: file.name,
+            photo_type:
+              "received_overview",
+            visibility: "internal",
+            comment: "",
+          });
+        }
+
+        renderIntakePhotoPreviews();
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    function renderIntakePhotoPreviews() {
+      state.intakePreviewUrls.forEach(
+        (url) => URL.revokeObjectURL(url)
+      );
+      state.intakePreviewUrls = [];
+
+      if (!state.intakePhotoFiles.length) {
+        el.intakePhotoPreviews.innerHTML =
+          '<div class="field-note">追加予定の写真はありません。</div>';
+        return;
+      }
+
+      el.intakePhotoPreviews.innerHTML =
+        state.intakePhotoFiles
+          .map((entry, index) => {
+            const url =
+              URL.createObjectURL(entry.file);
+            state.intakePreviewUrls.push(url);
+
+            return `
+              <article class="photo-preview-card">
+                <img
+                  class="photo-preview-image"
+                  src="${escapeHtml(url)}"
+                  alt="追加予定の写真"
+                />
+                <div class="photo-preview-body">
+                  <div class="photo-preview-name">
+                    ${escapeHtml(entry.original_name)}
+                  </div>
+
+                  <select
+                    data-photo-index="${index}"
+                    data-photo-field="type"
+                  >
+                    ${photoTypeOptions(entry.photo_type)}
+                  </select>
+
+                  <label class="check-line">
+                    <input
+                      type="checkbox"
+                      data-photo-index="${index}"
+                      data-photo-field="visibility"
+                      ${entry.visibility === "customer_visible" ? "checked" : ""}
+                    />
+                    <span>お客様画面にも表示</span>
+                  </label>
+
+                  <input
+                    type="text"
+                    maxlength="2000"
+                    placeholder="写真メモ（任意）"
+                    value="${escapeAttribute(entry.comment || "")}"
+                    data-photo-index="${index}"
+                    data-photo-field="comment"
+                  />
+
+                  <button
+                    class="btn btn-danger-soft"
+                    type="button"
+                    data-remove-intake-photo="${index}"
+                  >
+                    この写真を外す
+                  </button>
+                </div>
+              </article>
+            `;
+          })
+          .join("");
+
+      el.intakePhotoPreviews
+        .querySelectorAll(
+          "[data-photo-field]"
+        )
+        .forEach((input) => {
+          input.addEventListener(
+            "change",
+            updateIntakePhotoEntry
+          );
+          input.addEventListener(
+            "input",
+            updateIntakePhotoEntry
+          );
+        });
+    }
+
+    function updateIntakePhotoEntry(event) {
+      const index = Number(
+        event.target.dataset.photoIndex
+      );
+      const entry =
+        state.intakePhotoFiles[index];
+
+      if (!entry) return;
+
+      const field =
+        event.target.dataset.photoField;
+
+      if (field === "type") {
+        entry.photo_type =
+          event.target.value;
+      } else if (field === "visibility") {
+        entry.visibility =
+          event.target.checked
+            ? "customer_visible"
+            : "internal";
+      } else if (field === "comment") {
+        entry.comment =
+          event.target.value;
+      }
+    }
+
+    function removeIntakePhoto(index) {
+      if (
+        !Number.isInteger(index) ||
+        index < 0 ||
+        index >= state.intakePhotoFiles.length
+      ) {
+        return;
+      }
+
+      state.intakePhotoFiles.splice(index, 1);
+      renderIntakePhotoPreviews();
+    }
+
+    function clearIntakePhotoFiles() {
+      state.intakePreviewUrls.forEach(
+        (url) => URL.revokeObjectURL(url)
+      );
+      state.intakePreviewUrls = [];
+      state.intakePhotoFiles = [];
+      el.intakeCameraInput.value = "";
+      el.intakePhotoInput.value = "";
+      if (el.intakePhotoPreviews) {
+        el.intakePhotoPreviews.innerHTML =
+          '<div class="field-note">追加予定の写真はありません。</div>';
+      }
+    }
+
+    function renderExistingIntakePhotos(photos) {
+      const available =
+        Array.isArray(photos)
+          ? photos.filter(
+              (photo) => photo.signed_url
+            )
+          : [];
+
+      el.existingPhotosSection.classList.toggle(
+        "hidden",
+        available.length === 0
+      );
+
+      el.existingPhotosGrid.innerHTML =
+        available
+          .map(
+            (photo) => `
+              <a
+                class="existing-photo"
+                href="${escapeHtml(photo.signed_url)}"
+                target="_blank"
+                rel="noopener"
+              >
+                <img
+                  src="${escapeHtml(photo.signed_url)}"
+                  alt="登録済み写真"
+                />
+                <div>
+                  ${escapeHtml(photoTypeLabel(photo.photo_type))}
+                  ${photo.visibility === "customer_visible" ? "｜共有" : "｜店舗のみ"}
+                </div>
+              </a>
+            `
+          )
+          .join("");
+    }
+
+    async function saveIntakeConfirmation() {
+      if (!state.intakeOrderId) {
+        el.intakeError.textContent =
+          "対象案件を確認できません。";
+        return;
+      }
+
+      if (!el.intakeCustomerConfirmed.checked) {
+        el.intakeError.textContent =
+          "お客様との確認チェックが必要です。";
+        return;
+      }
+
+      const accessories =
+        collectIntakeAccessories();
+
+      for (const accessory of accessories) {
+        if (
+          !Number.isInteger(accessory.quantity) ||
+          accessory.quantity < 1 ||
+          accessory.quantity > 999
+        ) {
+          el.intakeError.textContent =
+            "付属品の数量は1〜999で入力してください。";
+          return;
+        }
+      }
+
+      el.intakeError.textContent = "";
+      state.loading = true;
+      el.intakeSaveButton.disabled = true;
+      el.intakeSaveButton.textContent =
+        "保存中…";
+      setLoading(
+        true,
+        "お預かり確認を保存しています…"
+      );
+
+      try {
+        await fetchJson(
+          `${API_BASE}/api/orders/${encodeURIComponent(state.intakeOrderId)}/intake-confirm`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
+            body: JSON.stringify({
+              shop_code: state.shopCode,
+              admin_key: state.adminKey,
+              power_state:
+                el.intakePowerState.value,
+              received_exterior_condition:
+                el.intakeExterior.value.trim() ||
+                null,
+              received_damage_note:
+                el.intakeDamage.value.trim() ||
+                null,
+              received_operation_note:
+                el.intakeOperation.value.trim() ||
+                null,
+              intake_customer_confirmed: true,
+              replace_accessories: true,
+              accessories,
+              source_screen:
+                "owner-ipad.html",
+            }),
+          }
+        );
+
+        for (
+          let index = 0;
+          index <
+          state.intakePhotoFiles.length;
+          index += 1
+        ) {
+          const entry =
+            state.intakePhotoFiles[index];
+
+          setLoading(
+            true,
+            `写真を保存しています ${index + 1}/${state.intakePhotoFiles.length}`
+          );
+
+          const form = new FormData();
+          form.append(
+            "file",
+            entry.file,
+            entry.file.name
+          );
+          form.append(
+            "photo_type",
+            entry.photo_type
+          );
+          form.append(
+            "visibility",
+            entry.visibility
+          );
+          if (entry.comment) {
+            form.append(
+              "comment",
+              entry.comment
+            );
+          }
+
+          await fetchJson(
+            `${API_BASE}/api/orders/${encodeURIComponent(state.intakeOrderId)}/photos?shop_code=${encodeURIComponent(state.shopCode)}`,
+            {
+              method: "POST",
+              headers: {
+                "X-Admin-Key":
+                  state.adminKey,
+              },
+              body: form,
+            }
+          );
+        }
+
+        const savedOrderId =
+          state.intakeOrderId;
+
+        state.loading = false;
+        closeIntakeModal(true);
+        showToast(
+          "お預かり内容・付属品・写真を保存しました。"
+        );
+
+        await loadDashboard();
+        await openOrder(savedOrderId);
+      } catch (error) {
+        state.loading = false;
+        el.intakeError.textContent =
+          error.message ||
+          "お預かり確認の保存に失敗しました。";
+      } finally {
+        setLoading(false);
+        el.intakeSaveButton.disabled = false;
+        el.intakeSaveButton.textContent =
+          "お預かり確認を保存";
+      }
+    }
+
+    async function compressImageFile(file) {
+      if (
+        !file.type.startsWith("image/")
+      ) {
+        return file;
+      }
+
+      const image = await loadImageFromFile(
+        file
+      );
+      const maxSide = 1600;
+      const ratio = Math.min(
+        1,
+        maxSide /
+          Math.max(
+            image.naturalWidth,
+            image.naturalHeight
+          )
+      );
+
+      const width = Math.max(
+        1,
+        Math.round(
+          image.naturalWidth * ratio
+        )
+      );
+      const height = Math.max(
+        1,
+        Math.round(
+          image.naturalHeight * ratio
+        )
+      );
+
+      const canvas =
+        document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+
+      const context =
+        canvas.getContext("2d", {
+          alpha: false,
+        });
+
+      context.drawImage(
+        image,
+        0,
+        0,
+        width,
+        height
+      );
+
+      const blob = await new Promise(
+        (resolve) =>
+          canvas.toBlob(
+            resolve,
+            "image/jpeg",
+            0.82
+          )
+      );
+
+      if (!blob) return file;
+
+      const baseName =
+        file.name.replace(/\.[^.]+$/, "") ||
+        "repair-photo";
+
+      return new File(
+        [blob],
+        `${baseName}.jpg`,
+        {
+          type: "image/jpeg",
+          lastModified: Date.now(),
+        }
+      );
+    }
+
+    function loadImageFromFile(file) {
+      return new Promise(
+        (resolve, reject) => {
+          const image = new Image();
+          const url =
+            URL.createObjectURL(file);
+
+          image.onload = () => {
+            URL.revokeObjectURL(url);
+            resolve(image);
+          };
+          image.onerror = () => {
+            URL.revokeObjectURL(url);
+            reject(
+              new Error(
+                "写真を読み込めませんでした。"
+              )
+            );
+          };
+          image.src = url;
+        }
+      );
+    }
+
+    function photoTypeOptions(selected) {
+      const options = [
+        ["received_overview", "受付時・全体"],
+        ["received_damage", "傷・破損箇所"],
+        ["received_accessory", "付属品"],
+        ["diagnosis", "診断"],
+        ["repair_process", "修理中"],
+        ["repair_completed", "修理完了"],
+        ["delivery", "引き渡し"],
+        ["other", "その他"],
+      ];
+
+      return options
+        .map(
+          ([value, label]) => `
+            <option
+              value="${value}"
+              ${selected === value ? "selected" : ""}
+            >
+              ${label}
+            </option>
+          `
+        )
+        .join("");
+    }
+
+    function photoTypeLabel(value) {
+      return {
+        customer_before_visit:
+          "来店前",
+        received_overview:
+          "受付時・全体",
+        received_damage:
+          "傷・破損箇所",
+        received_accessory:
+          "付属品",
+        diagnosis:
+          "診断",
+        repair_process:
+          "修理中",
+        repair_completed:
+          "修理完了",
+        delivery:
+          "引き渡し",
+        warranty_claim:
+          "保証対応",
+        other:
+          "その他",
+      }[value] || value || "写真";
     }
 
     async function copyOrderMessage(order) {
@@ -2519,6 +3656,11 @@
     function cssEscape(value) {
       if (window.CSS?.escape) return CSS.escape(value);
       return String(value).replace(/["\\]/g, "\\$&");
+    }
+
+    function escapeAttribute(value) {
+      return escapeHtml(value)
+        .replaceAll("`", "&#096;");
     }
 
     function escapeHtml(value) {

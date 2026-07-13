@@ -637,6 +637,68 @@
       align-items: end;
     }
 
+    .owner-photo-grid {
+      display: grid;
+      grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+      gap: 9px;
+    }
+
+    .owner-photo-card {
+      min-width: 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #f8fbfa;
+    }
+
+    .owner-photo-card img {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+      display: block;
+      background: #e5ece9;
+    }
+
+    .owner-photo-body {
+      display: grid;
+      gap: 6px;
+      padding: 8px;
+    }
+
+    .owner-photo-label {
+      color: var(--muted);
+      font-size: 9px;
+      font-weight: 800;
+    }
+
+    .owner-photo-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    .accessory-table {
+      display: grid;
+      gap: 7px;
+    }
+
+    .accessory-admin-row {
+      display: grid;
+      grid-template-columns:
+        minmax(150px, 1fr)
+        70px
+        minmax(140px, 1fr)
+        auto;
+      gap: 8px;
+      align-items: center;
+      padding: 9px;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      background: #f8fbfa;
+      font-size: 11px;
+    }
+
     .estimate-list {
       display: grid;
       gap: 9px;
@@ -970,6 +1032,8 @@
         padding: 12px;
       }
       .estimate-summary { grid-template-columns: repeat(2,1fr); }
+      .owner-photo-grid { grid-template-columns: repeat(2,1fr); }
+      .accessory-admin-row { grid-template-columns: 1fr; }
       .form-grid { grid-template-columns: 1fr; }
       .form-grid .full { grid-column: auto; }
       .modal-actions { grid-template-columns: 1fr; }
@@ -1058,8 +1122,8 @@
       </nav>
 
       <div class="sidebar-footer">
-        STEP REPAIR-7-R1<br />
-        REPAIR-7-R1-ADMIN-CODE-INPUT-20260712
+        STEP REPAIR-9<br />
+        REPAIR-9-INTAKE-PHOTO-ACCESSORY-20260712
       </div>
     </aside>
 
@@ -1131,7 +1195,7 @@
       </section>
 
       <div class="version">
-        DPRO 修理受付 LINE｜STEP REPAIR-7-R1｜REPAIR-7-R1-ADMIN-CODE-INPUT-20260712
+        DPRO 修理受付 LINE｜STEP REPAIR-9｜REPAIR-9-INTAKE-PHOTO-ACCESSORY-20260712
       </div>
     </main>
   </div>
@@ -1844,6 +1908,91 @@
           </section>
 
           <section class="detail-card full">
+            <div class="detail-title">お預かり写真・付属品</div>
+
+            ${
+              Array.isArray(detail.photos) && detail.photos.length
+                ? `<div class="owner-photo-grid">
+                    ${detail.photos.map((photo) => `
+                      <article class="owner-photo-card">
+                        ${
+                          photo.signed_url
+                            ? `<a href="${escapeHtml(photo.signed_url)}" target="_blank" rel="noopener">
+                                <img src="${escapeHtml(photo.signed_url)}" alt="修理写真" />
+                              </a>`
+                            : ""
+                        }
+                        <div class="owner-photo-body">
+                          <div class="owner-photo-label">
+                            ${escapeHtml(photoTypeLabel(photo.photo_type))}
+                            ｜${photo.visibility === "customer_visible" ? "お客様共有" : "店舗のみ"}
+                          </div>
+                          ${
+                            photo.comment
+                              ? `<div class="muted">${escapeHtml(photo.comment)}</div>`
+                              : ""
+                          }
+                          <div class="owner-photo-actions">
+                            <button
+                              class="small-button btn-soft"
+                              type="button"
+                              data-detail-action="toggle-photo-visibility"
+                              data-photo-id="${escapeHtml(photo.id)}"
+                              data-photo-visibility="${escapeHtml(photo.visibility)}"
+                            >
+                              ${photo.visibility === "customer_visible" ? "店舗のみにする" : "お客様へ共有"}
+                            </button>
+                            <button
+                              class="small-button btn-danger-soft"
+                              type="button"
+                              data-detail-action="delete-photo"
+                              data-photo-id="${escapeHtml(photo.id)}"
+                            >
+                              削除
+                            </button>
+                          </div>
+                        </div>
+                      </article>
+                    `).join("")}
+                  </div>`
+                : '<div class="empty">写真はまだ登録されていません。</div>'
+            }
+
+            <div class="accessory-table" style="margin-top:11px">
+              ${
+                Array.isArray(detail.accessories) && detail.accessories.length
+                  ? detail.accessories.map((accessory) => `
+                      <div class="accessory-admin-row">
+                        <strong>${escapeHtml(accessory.accessory_name)}</strong>
+                        <span>${escapeHtml(String(accessory.quantity))}点</span>
+                        <span>${escapeHtml(accessory.condition_text || "状態メモなし")}</span>
+                        <span style="display:flex;gap:6px;flex-wrap:wrap">
+                          <button
+                            class="small-button ${accessory.delivered_confirmed ? "btn-light" : "btn-primary"}"
+                            type="button"
+                            data-detail-action="toggle-accessory-delivered"
+                            data-accessory-id="${escapeHtml(accessory.id)}"
+                            data-accessory-delivered="${accessory.delivered_confirmed ? "true" : "false"}"
+                          >
+                            ${accessory.delivered_confirmed ? "未返却に戻す" : "返却済みにする"}
+                          </button>
+                          <button
+                            class="small-button btn-danger-soft"
+                            type="button"
+                            data-detail-action="delete-accessory"
+                            data-accessory-id="${escapeHtml(accessory.id)}"
+                          >
+                            削除
+                          </button>
+                        </span>
+                      </div>
+                    `).join("")
+                  : '<div class="empty">付属品は登録されていません。</div>'
+              }
+            </div>
+          </section>
+
+          <section class="detail-card full">
             <div class="detail-title">見積もり</div>
             <button
               class="btn btn-primary"
@@ -1929,12 +2078,216 @@
         openEstimateModal();
       } else if (action === "issue-estimate") {
         await issueEstimate(button.dataset.estimateId);
+      } else if (action === "toggle-photo-visibility") {
+        await togglePhotoVisibility(
+          button.dataset.photoId,
+          button.dataset.photoVisibility
+        );
+      } else if (action === "delete-photo") {
+        await deletePhoto(
+          button.dataset.photoId
+        );
+      } else if (action === "toggle-accessory-delivered") {
+        await toggleAccessoryDelivered(
+          button.dataset.accessoryId,
+          button.dataset.accessoryDelivered === "true"
+        );
+      } else if (action === "delete-accessory") {
+        await deleteAccessory(
+          button.dataset.accessoryId
+        );
       } else if (action === "copy-message") {
         await copyStatusMessage();
       } else if (action === "open-member") {
         openMemberPage();
       } else if (action === "reload-detail") {
         await openOrder(state.selectedOrderId);
+      }
+    }
+
+    async function togglePhotoVisibility(
+      photoId,
+      currentVisibility
+    ) {
+      if (!photoId) return;
+
+      const nextVisibility =
+        currentVisibility ===
+        "customer_visible"
+          ? "internal"
+          : "customer_visible";
+
+      setLoading(
+        true,
+        "写真の共有設定を更新しています…"
+      );
+
+      try {
+        await fetchJson(
+          `${API_BASE}/api/photos/${encodeURIComponent(photoId)}`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
+            body: JSON.stringify({
+              shop_code: state.shopCode,
+              admin_key: state.adminKey,
+              visibility: nextVisibility,
+            }),
+          }
+        );
+
+        showToast(
+          nextVisibility ===
+            "customer_visible"
+            ? "写真をお客様画面へ共有しました。"
+            : "写真を店舗のみの表示へ変更しました。"
+        );
+        await openOrder(
+          state.selectedOrderId
+        );
+      } catch (error) {
+        showToast(
+          error.message ||
+            "写真の共有設定を更新できませんでした。",
+          true
+        );
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    async function deletePhoto(photoId) {
+      if (!photoId) return;
+
+      if (
+        !window.confirm(
+          "この写真を削除しますか？"
+        )
+      ) {
+        return;
+      }
+
+      setLoading(
+        true,
+        "写真を削除しています…"
+      );
+
+      try {
+        await fetchJson(
+          `${API_BASE}/api/photos/${encodeURIComponent(photoId)}` +
+          `?shop_code=${encodeURIComponent(state.shopCode)}` +
+          `&admin_key=${encodeURIComponent(state.adminKey)}`,
+          {
+            method: "DELETE",
+          }
+        );
+
+        showToast("写真を削除しました。");
+        await openOrder(
+          state.selectedOrderId
+        );
+      } catch (error) {
+        showToast(
+          error.message ||
+            "写真を削除できませんでした。",
+          true
+        );
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    async function toggleAccessoryDelivered(
+      accessoryId,
+      delivered
+    ) {
+      if (!accessoryId) return;
+
+      setLoading(
+        true,
+        "付属品の返却状態を更新しています…"
+      );
+
+      try {
+        await fetchJson(
+          `${API_BASE}/api/accessories/${encodeURIComponent(accessoryId)}`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
+            body: JSON.stringify({
+              shop_code: state.shopCode,
+              admin_key: state.adminKey,
+              delivered_confirmed:
+                !delivered,
+            }),
+          }
+        );
+
+        showToast(
+          !delivered
+            ? "付属品を返却済みにしました。"
+            : "付属品を未返却へ戻しました。"
+        );
+        await openOrder(
+          state.selectedOrderId
+        );
+      } catch (error) {
+        showToast(
+          error.message ||
+            "付属品の返却状態を更新できませんでした。",
+          true
+        );
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    async function deleteAccessory(
+      accessoryId
+    ) {
+      if (!accessoryId) return;
+
+      if (
+        !window.confirm(
+          "この付属品を削除しますか？"
+        )
+      ) {
+        return;
+      }
+
+      setLoading(
+        true,
+        "付属品を削除しています…"
+      );
+
+      try {
+        await fetchJson(
+          `${API_BASE}/api/accessories/${encodeURIComponent(accessoryId)}` +
+          `?shop_code=${encodeURIComponent(state.shopCode)}` +
+          `&admin_key=${encodeURIComponent(state.adminKey)}`,
+          {
+            method: "DELETE",
+          }
+        );
+
+        showToast("付属品を削除しました。");
+        await openOrder(
+          state.selectedOrderId
+        );
+      } catch (error) {
+        showToast(
+          error.message ||
+            "付属品を削除できませんでした。",
+          true
+        );
+      } finally {
+        setLoading(false);
       }
     }
 
@@ -2418,6 +2771,21 @@
         email: "メール",
         in_person: "対面",
       }[value] || value || "未設定";
+    }
+
+    function photoTypeLabel(value) {
+      return {
+        customer_before_visit: "来店前",
+        received_overview: "受付時・全体",
+        received_damage: "傷・破損箇所",
+        received_accessory: "付属品",
+        diagnosis: "診断",
+        repair_process: "修理中",
+        repair_completed: "修理完了",
+        delivery: "引き渡し",
+        warranty_claim: "保証対応",
+        other: "その他",
+      }[value] || value || "写真";
     }
 
     function estimateStatusLabel(status) {
