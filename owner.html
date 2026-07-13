@@ -699,6 +699,35 @@
       font-size: 11px;
     }
 
+    .finance-summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .finance-summary-card {
+      padding: 11px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #f8fbfa;
+    }
+
+    .finance-summary-label { color: var(--muted); font-size: 9px; font-weight: 900; }
+    .finance-summary-value { margin-top: 3px; font-size: 17px; font-weight: 950; }
+    .finance-summary-card.balance { color: var(--primary-dark); border-color: #b6ddd5; background: var(--primary-soft); }
+
+    .pickup-payment-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 9px;
+      margin-top: 10px;
+    }
+
+    .pickup-payment-box { padding: 12px; border: 1px solid var(--line); border-radius: 12px; background: #fbfdfc; }
+    .pickup-payment-title { color: var(--primary-dark); font-size: 12px; font-weight: 950; }
+    .payment-history { display: grid; gap: 7px; margin-top: 9px; }
+    .payment-row { display: grid; grid-template-columns: minmax(110px,1fr) auto auto; gap: 8px; align-items: center; padding: 8px; border: 1px solid var(--line); border-radius: 10px; background: #f8fbfa; font-size: 10px; }
+
     .operation-list {
       display: grid;
       gap: 8px;
@@ -1127,6 +1156,9 @@
       .accessory-admin-row { grid-template-columns: 1fr; }
       .part-main { grid-template-columns: 1fr; }
       .part-details { grid-template-columns: 1fr; }
+      .finance-summary-grid { grid-template-columns: repeat(2, 1fr); }
+      .pickup-payment-grid { grid-template-columns: 1fr; }
+      .payment-row { grid-template-columns: 1fr; }
       .form-grid { grid-template-columns: 1fr; }
       .form-grid .full { grid-column: auto; }
       .modal-actions { grid-template-columns: 1fr; }
@@ -1215,8 +1247,8 @@
       </nav>
 
       <div class="sidebar-footer">
-        STEP REPAIR-10<br />
-        REPAIR-10-WORKLOG-PARTS-20260713
+        STEP REPAIR-11<br />
+        REPAIR-11-PICKUP-PAYMENT-WARRANTY-20260713
       </div>
     </aside>
 
@@ -1288,7 +1320,7 @@
       </section>
 
       <div class="version">
-        DPRO 修理受付 LINE｜STEP REPAIR-10｜REPAIR-10-WORKLOG-PARTS-20260713
+        DPRO 修理受付 LINE｜STEP REPAIR-11｜REPAIR-11-PICKUP-PAYMENT-WARRANTY-20260713
       </div>
     </main>
   </div>
@@ -1553,6 +1585,78 @@
     </section>
   </div>
 
+
+  <div id="pickupModalBackdrop" class="modal-backdrop hidden">
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="pickupModalTitle">
+      <header class="modal-head"><div><h2 id="pickupModalTitle">引き取り予約を登録</h2><p id="pickupModalSubtitle">お客様の引き取り予定を登録・変更します。</p></div><button id="pickupModalCloseButton" class="icon-button" type="button">×</button></header>
+      <div class="form-grid">
+        <div><label for="pickupScheduledAt">引き取り日時</label><input id="pickupScheduledAt" type="datetime-local" /></div>
+        <div><label for="pickupStatus">予約状態</label><select id="pickupStatus"><option value="scheduled">予約済み</option><option value="confirmed">店舗確認済み</option></select></div>
+        <label class="check-line"><input id="pickupProxy" type="checkbox" /><span>代理の方が引き取る</span></label>
+        <div><label for="pickupProxyName">代理人のお名前</label><input id="pickupProxyName" type="text" maxlength="200" /></div>
+        <div class="full"><label for="pickupCustomerNote">お客様メモ</label><textarea id="pickupCustomerNote" maxlength="2000"></textarea></div>
+        <div class="full"><label for="pickupStaffNote">店舗メモ</label><textarea id="pickupStaffNote" maxlength="2000"></textarea></div>
+        <label class="check-line full"><input id="pickupOverrideSchedule" type="checkbox" /><span>営業時間・予約枠を確認済みとして例外登録する</span></label>
+      </div>
+      <div id="pickupError" class="field-error"></div>
+      <div class="modal-actions"><button id="pickupCancelButton" class="btn btn-light" type="button">閉じる</button><button id="pickupSaveButton" class="btn btn-primary" type="button">引き取り予約を保存</button></div>
+    </section>
+  </div>
+
+  <div id="paymentModalBackdrop" class="modal-backdrop hidden">
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="paymentModalTitle">
+      <header class="modal-head"><div><h2 id="paymentModalTitle">支払いを記録</h2><p id="paymentModalSubtitle">預かり金・一部入金・最終支払い・返金を記録します。</p></div><button id="paymentModalCloseButton" class="icon-button" type="button">×</button></header>
+      <div class="form-grid">
+        <div><label for="paymentType">支払い区分</label><select id="paymentType"><option value="deposit">預かり金</option><option value="partial">一部入金</option><option value="final">最終支払い</option><option value="refund">返金</option><option value="adjustment">調整</option></select></div>
+        <div><label for="paymentMethod">支払い方法</label><select id="paymentMethod"><option value="cash">現金</option><option value="credit_card">クレジットカード</option><option value="qr_payment">QR決済</option><option value="bank_transfer">銀行振込</option><option value="online">オンライン</option><option value="other">その他</option></select></div>
+        <div><label for="paymentAmount">金額</label><input id="paymentAmount" type="number" min="0" step="1" /></div>
+        <div><label for="paymentStatusRecord">記録状態</label><select id="paymentStatusRecord"><option value="completed">支払い完了</option><option value="recorded">記録済み</option><option value="pending">確認待ち</option><option value="refunded">返金済み</option><option value="cancelled">取消</option></select></div>
+        <div><label for="paymentPaidAt">支払い日時</label><input id="paymentPaidAt" type="datetime-local" /></div>
+        <div><label for="paymentStaff">担当スタッフ</label><select id="paymentStaff"><option value="">未設定</option></select></div>
+        <div class="full"><label for="paymentNote">支払いメモ</label><textarea id="paymentNote" maxlength="3000"></textarea></div>
+      </div>
+      <div id="paymentError" class="field-error"></div>
+      <div class="modal-actions"><button id="paymentCancelButton" class="btn btn-light" type="button">キャンセル</button><button id="paymentSaveButton" class="btn btn-primary" type="button">支払いを保存</button></div>
+    </section>
+  </div>
+
+  <div id="warrantyModalBackdrop" class="modal-backdrop hidden">
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="warrantyModalTitle">
+      <header class="modal-head"><div><h2 id="warrantyModalTitle">修理保証を設定</h2><p id="warrantyModalSubtitle">保証期間・対象範囲・対象外条件を設定します。</p></div><button id="warrantyModalCloseButton" class="icon-button" type="button">×</button></header>
+      <div class="form-grid">
+        <div><label for="warrantyStatus">保証状態</label><select id="warrantyStatus"><option value="active">保証期間内</option><option value="not_applicable">保証対象外</option><option value="expired">保証期間終了</option><option value="claimed">保証対応受付中</option><option value="closed">保証対応完了</option></select></div>
+        <div><label for="warrantyDays">保証日数</label><input id="warrantyDays" type="number" min="0" step="1" value="90" /></div>
+        <div><label for="warrantyStartDate">保証開始日</label><input id="warrantyStartDate" type="date" /></div>
+        <div><label for="warrantyEndDate">保証終了日</label><input id="warrantyEndDate" type="date" /></div>
+        <div class="full"><label for="warrantyCovered">保証対象</label><textarea id="warrantyCovered" maxlength="5000"></textarea></div>
+        <div class="full"><label for="warrantyExcluded">保証対象外</label><textarea id="warrantyExcluded" maxlength="5000"></textarea></div>
+        <div class="full"><label for="warrantyNote">店舗内部メモ</label><textarea id="warrantyNote" maxlength="5000"></textarea></div>
+      </div>
+      <div id="warrantyError" class="field-error"></div>
+      <div class="modal-actions"><button id="warrantyCancelButton" class="btn btn-light" type="button">キャンセル</button><button id="warrantySaveButton" class="btn btn-primary" type="button">保証を保存</button></div>
+    </section>
+  </div>
+
+  <div id="deliveryModalBackdrop" class="modal-backdrop hidden">
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="deliveryModalTitle">
+      <header class="modal-head"><div><h2 id="deliveryModalTitle">お渡し完了処理</h2><p id="deliveryModalSubtitle">支払い・付属品返却・保証をまとめて確定します。</p></div><button id="deliveryModalCloseButton" class="icon-button" type="button">×</button></header>
+      <div id="deliverySummary" class="finance-summary-grid"></div>
+      <div class="form-grid" style="margin-top:13px">
+        <label class="check-line full"><input id="deliveryAccessoriesConfirmed" type="checkbox" /><span>本体とすべての付属品をお客様へ返却しました</span></label>
+        <label class="check-line full"><input id="deliveryRecordPayment" type="checkbox" /><span>残額をこの画面で支払い記録する</span></label>
+        <div><label for="deliveryPaymentMethod">支払い方法</label><select id="deliveryPaymentMethod"><option value="cash">現金</option><option value="credit_card">クレジットカード</option><option value="qr_payment">QR決済</option><option value="bank_transfer">銀行振込</option><option value="online">オンライン</option><option value="other">その他</option></select></div>
+        <div><label for="deliveryPaymentAmount">支払い金額</label><input id="deliveryPaymentAmount" type="number" min="0" step="1" /></div>
+        <label class="check-line full"><input id="deliveryAllowUnpaid" type="checkbox" /><span>未払い残額がある状態で引き渡す</span></label>
+        <label class="check-line full"><input id="deliveryCreateWarranty" type="checkbox" checked /><span>引き渡しと同時に修理保証を開始</span></label>
+        <div><label for="deliveryWarrantyDays">保証日数</label><input id="deliveryWarrantyDays" type="number" min="0" step="1" value="90" /></div>
+        <div><label for="deliveryStaff">担当スタッフ</label><select id="deliveryStaff"><option value="">未設定</option></select></div>
+        <div class="full"><label for="deliveryComment">引き渡しメモ</label><textarea id="deliveryComment" maxlength="2000"></textarea></div>
+      </div>
+      <div id="deliveryError" class="field-error"></div>
+      <div class="modal-actions"><button id="deliveryCancelButton" class="btn btn-light" type="button">キャンセル</button><button id="deliverySaveButton" class="btn btn-primary" type="button">お渡し完了を確定</button></div>
+    </section>
+  </div>
+
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <div id="loadingOverlay" class="loading hidden">
@@ -1667,6 +1771,7 @@
       estimateOrderId: null,
       editingWorkLogId: null,
       editingPartId: null,
+      editingPickupId: null,
     };
 
     const el = {
@@ -1792,6 +1897,62 @@
         document.getElementById("partCancelButton"),
       partSaveButton:
         document.getElementById("partSaveButton"),
+      pickupModalBackdrop: document.getElementById("pickupModalBackdrop"),
+      pickupModalTitle: document.getElementById("pickupModalTitle"),
+      pickupModalSubtitle: document.getElementById("pickupModalSubtitle"),
+      pickupModalCloseButton: document.getElementById("pickupModalCloseButton"),
+      pickupScheduledAt: document.getElementById("pickupScheduledAt"),
+      pickupStatus: document.getElementById("pickupStatus"),
+      pickupProxy: document.getElementById("pickupProxy"),
+      pickupProxyName: document.getElementById("pickupProxyName"),
+      pickupCustomerNote: document.getElementById("pickupCustomerNote"),
+      pickupStaffNote: document.getElementById("pickupStaffNote"),
+      pickupOverrideSchedule: document.getElementById("pickupOverrideSchedule"),
+      pickupError: document.getElementById("pickupError"),
+      pickupCancelButton: document.getElementById("pickupCancelButton"),
+      pickupSaveButton: document.getElementById("pickupSaveButton"),
+      paymentModalBackdrop: document.getElementById("paymentModalBackdrop"),
+      paymentModalSubtitle: document.getElementById("paymentModalSubtitle"),
+      paymentModalCloseButton: document.getElementById("paymentModalCloseButton"),
+      paymentType: document.getElementById("paymentType"),
+      paymentMethod: document.getElementById("paymentMethod"),
+      paymentAmount: document.getElementById("paymentAmount"),
+      paymentStatusRecord: document.getElementById("paymentStatusRecord"),
+      paymentPaidAt: document.getElementById("paymentPaidAt"),
+      paymentStaff: document.getElementById("paymentStaff"),
+      paymentNote: document.getElementById("paymentNote"),
+      paymentError: document.getElementById("paymentError"),
+      paymentCancelButton: document.getElementById("paymentCancelButton"),
+      paymentSaveButton: document.getElementById("paymentSaveButton"),
+      warrantyModalBackdrop: document.getElementById("warrantyModalBackdrop"),
+      warrantyModalSubtitle: document.getElementById("warrantyModalSubtitle"),
+      warrantyModalCloseButton: document.getElementById("warrantyModalCloseButton"),
+      warrantyStatus: document.getElementById("warrantyStatus"),
+      warrantyDays: document.getElementById("warrantyDays"),
+      warrantyStartDate: document.getElementById("warrantyStartDate"),
+      warrantyEndDate: document.getElementById("warrantyEndDate"),
+      warrantyCovered: document.getElementById("warrantyCovered"),
+      warrantyExcluded: document.getElementById("warrantyExcluded"),
+      warrantyNote: document.getElementById("warrantyNote"),
+      warrantyError: document.getElementById("warrantyError"),
+      warrantyCancelButton: document.getElementById("warrantyCancelButton"),
+      warrantySaveButton: document.getElementById("warrantySaveButton"),
+      deliveryModalBackdrop: document.getElementById("deliveryModalBackdrop"),
+      deliveryModalSubtitle: document.getElementById("deliveryModalSubtitle"),
+      deliveryModalCloseButton: document.getElementById("deliveryModalCloseButton"),
+      deliverySummary: document.getElementById("deliverySummary"),
+      deliveryAccessoriesConfirmed: document.getElementById("deliveryAccessoriesConfirmed"),
+      deliveryRecordPayment: document.getElementById("deliveryRecordPayment"),
+      deliveryPaymentMethod: document.getElementById("deliveryPaymentMethod"),
+      deliveryPaymentAmount: document.getElementById("deliveryPaymentAmount"),
+      deliveryAllowUnpaid: document.getElementById("deliveryAllowUnpaid"),
+      deliveryCreateWarranty: document.getElementById("deliveryCreateWarranty"),
+      deliveryWarrantyDays: document.getElementById("deliveryWarrantyDays"),
+      deliveryStaff: document.getElementById("deliveryStaff"),
+      deliveryComment: document.getElementById("deliveryComment"),
+      deliveryError: document.getElementById("deliveryError"),
+      deliveryCancelButton: document.getElementById("deliveryCancelButton"),
+      deliverySaveButton: document.getElementById("deliverySaveButton"),
       toast: document.getElementById("toast"),
       loadingOverlay: document.getElementById("loadingOverlay"),
       loadingText: document.getElementById("loadingText"),
@@ -1913,6 +2074,23 @@
       });
       el.partSaveButton.addEventListener("click", savePart);
       el.partStatus.addEventListener("change", applySuggestedPartDates);
+      el.pickupModalCloseButton.addEventListener("click", closePickupModal);
+      el.pickupCancelButton.addEventListener("click", closePickupModal);
+      el.pickupModalBackdrop.addEventListener("click", e => { if (e.target === el.pickupModalBackdrop) closePickupModal(); });
+      el.pickupSaveButton.addEventListener("click", savePickupAppointment);
+      el.paymentModalCloseButton.addEventListener("click", closePaymentModal);
+      el.paymentCancelButton.addEventListener("click", closePaymentModal);
+      el.paymentModalBackdrop.addEventListener("click", e => { if (e.target === el.paymentModalBackdrop) closePaymentModal(); });
+      el.paymentSaveButton.addEventListener("click", savePayment);
+      el.warrantyModalCloseButton.addEventListener("click", closeWarrantyModal);
+      el.warrantyCancelButton.addEventListener("click", closeWarrantyModal);
+      el.warrantyModalBackdrop.addEventListener("click", e => { if (e.target === el.warrantyModalBackdrop) closeWarrantyModal(); });
+      el.warrantySaveButton.addEventListener("click", saveWarranty);
+      el.deliveryModalCloseButton.addEventListener("click", closeDeliveryModal);
+      el.deliveryCancelButton.addEventListener("click", closeDeliveryModal);
+      el.deliveryModalBackdrop.addEventListener("click", e => { if (e.target === el.deliveryModalBackdrop) closeDeliveryModal(); });
+      el.deliverySaveButton.addEventListener("click", saveDelivery);
+      el.deliveryRecordPayment.addEventListener("change", updateDeliveryPaymentFields);
     }
 
     async function verifyAndOpen(showErrors) {
@@ -2382,6 +2560,22 @@
           </section>
 
           <section class="detail-card full">
+            <div class="detail-title">引き取り・支払い・保証</div>
+            ${renderFinanceSummary(detail.payment_summary || {})}
+            <div class="pickup-payment-grid">
+              <div class="pickup-payment-box"><div class="pickup-payment-title">引き取り予約</div>${renderPickupAppointment(detail.pickup_appointments || [])}</div>
+              <div class="pickup-payment-box"><div class="pickup-payment-title">修理保証</div>${renderWarrantySummary(detail.warranty)}</div>
+            </div>
+            <div class="payment-history">${renderPaymentHistory(detail.payments || [])}</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:11px">
+              <button class="btn btn-soft" type="button" data-detail-action="pickup">引き取り予約</button>
+              <button class="btn btn-soft" type="button" data-detail-action="payment">支払いを記録</button>
+              <button class="btn btn-soft" type="button" data-detail-action="warranty">保証を設定</button>
+              <button class="btn btn-primary" type="button" data-detail-action="deliver">お渡し完了処理</button>
+            </div>
+          </section>
+
+          <section class="detail-card full">
             <div class="detail-title">連絡・確認</div>
             <div style="display:flex;gap:8px;flex-wrap:wrap">
               <button class="btn btn-soft" type="button" data-detail-action="copy-message">
@@ -2461,6 +2655,18 @@
         openPartModal(button.dataset.partId);
       } else if (action === "delete-part") {
         await deletePart(button.dataset.partId);
+      } else if (action === "pickup") {
+        openPickupModal();
+      } else if (action === "cancel-pickup") {
+        await cancelPickupAppointment(button.dataset.pickupId);
+      } else if (action === "payment") {
+        openPaymentModal();
+      } else if (action === "cancel-payment") {
+        await cancelPayment(button.dataset.paymentId);
+      } else if (action === "warranty") {
+        openWarrantyModal();
+      } else if (action === "deliver") {
+        openDeliveryModal();
       } else if (action === "create-estimate") {
         openEstimateModal();
       } else if (action === "issue-estimate") {
@@ -2491,6 +2697,48 @@
         await openOrder(state.selectedOrderId);
       }
     }
+
+
+    function financeSummaryCards(s) {
+      return `
+        <div class="finance-summary-card"><div class="finance-summary-label">見積もり合計</div><div class="finance-summary-value">${formatMoney(s.estimate_total||0)}</div></div>
+        <div class="finance-summary-card"><div class="finance-summary-label">入金済み</div><div class="finance-summary-value">${formatMoney(s.net_paid||0)}</div></div>
+        <div class="finance-summary-card"><div class="finance-summary-label">返金</div><div class="finance-summary-value">${formatMoney(s.refund_total||0)}</div></div>
+        <div class="finance-summary-card balance"><div class="finance-summary-label">未払い残額</div><div class="finance-summary-value">${formatMoney(s.balance_due||0)}</div></div>`;
+    }
+    function renderFinanceSummary(s) { return `<div class="finance-summary-grid">${financeSummaryCards(s)}</div>`; }
+    function latestActivePickup(a){return (Array.isArray(a)?a:[]).find(x=>["scheduled","confirmed"].includes(x.status))||null;}
+    function renderPickupAppointment(a){const x=latestActivePickup(a);if(!x)return '<div class="muted" style="margin-top:8px">引き取り予約はまだありません。</div>';return `<dl class="detail-list" style="margin-top:8px">${detailRows([["予定日時",formatDateTime(x.scheduled_at)],["状態",pickupStatusLabel(x.status)],["代理受取",x.proxy_pickup?(x.proxy_name||"代理人"):"なし"],["お客様メモ",x.customer_note||"なし"],["店舗メモ",x.staff_note||"なし"]])}</dl><button class="small-button btn-danger-soft" type="button" data-detail-action="cancel-pickup" data-pickup-id="${escapeHtml(x.id)}" style="margin-top:8px">予約をキャンセル</button>`;}
+    function renderWarrantySummary(w){if(!w)return '<div class="muted" style="margin-top:8px">保証はまだ設定されていません。</div>';return `<dl class="detail-list" style="margin-top:8px">${detailRows([["保証状態",warrantyLabel(w.status)],["保証開始",w.warranty_start_date?formatDate(w.warranty_start_date):"未定"],["保証期限",w.warranty_end_date?formatDate(w.warranty_end_date):"未定"],["保証対象",w.covered_text||"未設定"],["対象外",w.excluded_text||"未設定"]])}</dl>`;}
+    function renderPaymentHistory(a){if(!Array.isArray(a)||!a.length)return '<div class="empty">支払い記録はまだありません。</div>';return a.map(x=>`<div class="payment-row"><div><strong>${escapeHtml(paymentTypeLabel(x.payment_type))}</strong><div class="muted">${escapeHtml(paymentMethodLabel(x.payment_method))}｜${escapeHtml(paymentRecordStatusLabel(x.status))}｜${escapeHtml(formatDateTimeShort(x.paid_at||x.created_at))}</div></div><strong>${formatMoney(x.amount)}</strong>${x.status!=="cancelled"?`<button class="small-button btn-danger-soft" type="button" data-detail-action="cancel-payment" data-payment-id="${escapeHtml(x.id)}">取消</button>`:'<span class="muted">取消済み</span>'}</div>`).join("");}
+
+    function openPickupModal(){if(!state.selectedDetail?.order)return;const x=latestActivePickup(state.selectedDetail.pickup_appointments||[]);state.editingPickupId=x?.id||null;el.pickupModalTitle.textContent=x?"引き取り予約を変更":"引き取り予約を登録";el.pickupModalSubtitle.textContent=`${state.selectedDetail.order.order_number}｜${state.selectedDetail.customer.customer_name}`;el.pickupScheduledAt.value=toDateTimeLocalValue(x?.scheduled_at||nextHalfHourIso());el.pickupStatus.value=x?.status==="confirmed"?"confirmed":"scheduled";el.pickupProxy.checked=x?.proxy_pickup===true;el.pickupProxyName.value=x?.proxy_name||"";el.pickupCustomerNote.value=x?.customer_note||"";el.pickupStaffNote.value=x?.staff_note||"";el.pickupOverrideSchedule.checked=false;el.pickupError.textContent="";el.pickupModalBackdrop.classList.remove("hidden");document.body.style.overflow="hidden";}
+    function closePickupModal(force=false){if(state.loading&&!force)return;state.editingPickupId=null;el.pickupModalBackdrop.classList.add("hidden");document.body.style.overflow="";}
+    async function savePickupAppointment(){const at=fromDateTimeLocal(el.pickupScheduledAt.value);if(!at){el.pickupError.textContent="引き取り日時を選択してください。";return;}if(el.pickupProxy.checked&&!el.pickupProxyName.value.trim()){el.pickupError.textContent="代理人のお名前を入力してください。";return;}state.loading=true;setLoading(true,"引き取り予約を保存しています…");try{const payload={shop_code:state.shopCode,admin_key:state.adminKey,scheduled_at:at,status:el.pickupStatus.value,proxy_pickup:el.pickupProxy.checked,proxy_name:el.pickupProxyName.value.trim()||null,customer_note:el.pickupCustomerNote.value.trim()||null,staff_note:el.pickupStaffNote.value.trim()||null,override_schedule:el.pickupOverrideSchedule.checked};const url=state.editingPickupId?`${API_BASE}/api/pickup-appointments/${encodeURIComponent(state.editingPickupId)}`:`${API_BASE}/api/orders/${encodeURIComponent(state.selectedOrderId)}/pickup-appointments`;await fetchJson(url,{method:state.editingPickupId?"PATCH":"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});const id=state.selectedOrderId;state.loading=false;closePickupModal(true);showToast("引き取り予約を保存しました。");await loadDashboard();await openOrder(id);}catch(e){state.loading=false;el.pickupError.textContent=e.message||"引き取り予約を保存できませんでした。";}finally{setLoading(false);}}
+    async function cancelPickupAppointment(id){if(!id||!confirm("この引き取り予約をキャンセルしますか？"))return;setLoading(true,"引き取り予約をキャンセルしています…");try{await fetchJson(`${API_BASE}/api/pickup-appointments/${encodeURIComponent(id)}`,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify({shop_code:state.shopCode,admin_key:state.adminKey,status:"cancelled"})});const oid=state.selectedOrderId;showToast("引き取り予約をキャンセルしました。");await loadDashboard();await openOrder(oid);}catch(e){showToast(e.message||"引き取り予約をキャンセルできませんでした。",true);}finally{setLoading(false);}}
+
+    function openPaymentModal(){const s=state.selectedDetail?.payment_summary||{};el.paymentModalSubtitle.textContent=`${state.selectedDetail.order.order_number}｜残額 ${formatMoney(s.balance_due||0)}`;el.paymentType.value=Number(s.net_paid||0)>0?"partial":"deposit";el.paymentMethod.value="cash";el.paymentAmount.value=Number(s.balance_due||0)>0?String(s.balance_due):"";el.paymentStatusRecord.value="completed";el.paymentPaidAt.value=toDateTimeLocalValue(new Date().toISOString());el.paymentStaff.value="";el.paymentNote.value="";el.paymentError.textContent="";el.paymentModalBackdrop.classList.remove("hidden");document.body.style.overflow="hidden";}
+    function closePaymentModal(force=false){if(state.loading&&!force)return;el.paymentModalBackdrop.classList.add("hidden");document.body.style.overflow="";}
+    async function savePayment(){const amount=Number(el.paymentAmount.value);if(!Number.isFinite(amount)||amount<0){el.paymentError.textContent="金額を正しく入力してください。";return;}state.loading=true;setLoading(true,"支払いを保存しています…");try{await fetchJson(`${API_BASE}/api/orders/${encodeURIComponent(state.selectedOrderId)}/payments`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({shop_code:state.shopCode,admin_key:state.adminKey,payment_type:el.paymentType.value,payment_method:el.paymentMethod.value,amount,status:el.paymentStatusRecord.value,paid_at:fromDateTimeLocal(el.paymentPaidAt.value),handled_by_staff_id:el.paymentStaff.value||null,note:el.paymentNote.value.trim()||null})});const id=state.selectedOrderId;state.loading=false;closePaymentModal(true);showToast("支払いを記録しました。");await loadDashboard();await openOrder(id);}catch(e){state.loading=false;el.paymentError.textContent=e.message||"支払いを保存できませんでした。";}finally{setLoading(false);}}
+    async function cancelPayment(id){if(!id||!confirm("この支払い記録を取消にしますか？"))return;setLoading(true,"支払い記録を取り消しています…");try{await fetchJson(`${API_BASE}/api/payments/${encodeURIComponent(id)}`,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify({shop_code:state.shopCode,admin_key:state.adminKey,status:"cancelled"})});const oid=state.selectedOrderId;showToast("支払い記録を取消にしました。");await loadDashboard();await openOrder(oid);}catch(e){showToast(e.message||"支払い記録を取り消せませんでした。",true);}finally{setLoading(false);}}
+
+    function openWarrantyModal(){const w=state.selectedDetail?.warranty;el.warrantyModalSubtitle.textContent=`${state.selectedDetail.order.order_number}｜${state.selectedDetail.customer.customer_name}`;el.warrantyStatus.value=w?.status||"active";el.warrantyDays.value=w?calculateWarrantyDays(w.warranty_start_date,w.warranty_end_date):90;el.warrantyStartDate.value=w?.warranty_start_date||localDateString(new Date());el.warrantyEndDate.value=w?.warranty_end_date||"";el.warrantyCovered.value=w?.covered_text||"";el.warrantyExcluded.value=w?.excluded_text||"";el.warrantyNote.value=w?.note||"";el.warrantyError.textContent="";el.warrantyModalBackdrop.classList.remove("hidden");document.body.style.overflow="hidden";}
+    function closeWarrantyModal(force=false){if(state.loading&&!force)return;el.warrantyModalBackdrop.classList.add("hidden");document.body.style.overflow="";}
+    async function saveWarranty(){state.loading=true;setLoading(true,"保証を保存しています…");try{await fetchJson(`${API_BASE}/api/orders/${encodeURIComponent(state.selectedOrderId)}/warranty`,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify({shop_code:state.shopCode,admin_key:state.adminKey,status:el.warrantyStatus.value,warranty_days:Number(el.warrantyDays.value||0),warranty_start_date:el.warrantyStartDate.value||null,warranty_end_date:el.warrantyEndDate.value||null,covered_text:el.warrantyCovered.value.trim()||null,excluded_text:el.warrantyExcluded.value.trim()||null,note:el.warrantyNote.value.trim()||null})});const id=state.selectedOrderId;state.loading=false;closeWarrantyModal(true);showToast("修理保証を保存しました。");await openOrder(id);}catch(e){state.loading=false;el.warrantyError.textContent=e.message||"保証を保存できませんでした。";}finally{setLoading(false);}}
+
+    function openDeliveryModal(){const s=state.selectedDetail?.payment_summary||{},a=state.selectedDetail?.accessories||[],u=a.filter(x=>x.received_confirmed===true&&x.delivered_confirmed!==true);el.deliveryModalSubtitle.textContent=`${state.selectedDetail.order.order_number}｜${state.selectedDetail.customer.customer_name}`;el.deliverySummary.innerHTML=financeSummaryCards(s);el.deliveryAccessoriesConfirmed.checked=u.length===0;el.deliveryRecordPayment.checked=Number(s.balance_due||0)>0;el.deliveryPaymentMethod.value="cash";el.deliveryPaymentAmount.value=String(Number(s.balance_due||0));el.deliveryAllowUnpaid.checked=false;el.deliveryCreateWarranty.checked=true;el.deliveryWarrantyDays.value="90";el.deliveryStaff.value="";el.deliveryComment.value="";el.deliveryError.textContent="";updateDeliveryPaymentFields();el.deliveryModalBackdrop.classList.remove("hidden");document.body.style.overflow="hidden";}
+    function closeDeliveryModal(force=false){if(state.loading&&!force)return;el.deliveryModalBackdrop.classList.add("hidden");document.body.style.overflow="";}
+    function updateDeliveryPaymentFields(){const x=el.deliveryRecordPayment.checked;el.deliveryPaymentMethod.disabled=!x;el.deliveryPaymentAmount.disabled=!x;}
+    async function saveDelivery(){state.loading=true;setLoading(true,"お渡し完了を保存しています…");try{await fetchJson(`${API_BASE}/api/orders/${encodeURIComponent(state.selectedOrderId)}/deliver`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({shop_code:state.shopCode,admin_key:state.adminKey,confirm_accessories_returned:el.deliveryAccessoriesConfirmed.checked,record_payment:el.deliveryRecordPayment.checked,payment_method:el.deliveryPaymentMethod.value,payment_amount:el.deliveryPaymentAmount.value,allow_unpaid_delivery:el.deliveryAllowUnpaid.checked,create_warranty:el.deliveryCreateWarranty.checked,warranty_days:Number(el.deliveryWarrantyDays.value||0),handled_by_staff_id:el.deliveryStaff.value||null,comment:el.deliveryComment.value.trim()||null,source_screen:"owner.html"})});const id=state.selectedOrderId;state.loading=false;closeDeliveryModal(true);showToast("お渡し完了・支払い・保証を保存しました。");await loadDashboard();await openOrder(id);}catch(e){state.loading=false;el.deliveryError.textContent=e.message||"お渡し完了を保存できませんでした。";}finally{setLoading(false);}}
+
+    function pickupStatusLabel(v){return {scheduled:"予約済み",confirmed:"店舗確認済み",completed:"引き取り完了",cancelled:"キャンセル",no_show:"来店なし"}[v]||v||"未設定";}
+    function paymentTypeLabel(v){return {deposit:"預かり金",partial:"一部入金",final:"最終支払い",refund:"返金",adjustment:"調整"}[v]||v||"支払い";}
+    function paymentMethodLabel(v){return {cash:"現金",credit_card:"クレジットカード",qr_payment:"QR決済",bank_transfer:"銀行振込",online:"オンライン",other:"その他"}[v]||"方法未設定";}
+    function paymentRecordStatusLabel(v){return {pending:"確認待ち",recorded:"記録済み",completed:"完了",cancelled:"取消",refunded:"返金済み"}[v]||v||"未設定";}
+    function warrantyLabel(v){return {not_applicable:"保証対象外",active:"保証期間内",expired:"保証期間終了",claimed:"保証対応受付中",closed:"保証対応完了"}[v]||v||"未設定";}
+    function nextHalfHourIso(){const d=new Date();d.setSeconds(0,0);d.setMinutes(d.getMinutes()<30?30:60);return d.toISOString();}
+    function localDateString(v){const d=new Date(v),l=new Date(d.getTime()-d.getTimezoneOffset()*60000);return l.toISOString().slice(0,10);}
+    function calculateWarrantyDays(a,b){if(!a||!b)return 0;const x=new Date(`${a}T12:00:00`),y=new Date(`${b}T12:00:00`);return Number.isNaN(x.getTime())||Number.isNaN(y.getTime())?0:Math.max(0,Math.round((y-x)/86400000));}
 
     function renderWorkLogs(logs) {
       if (!Array.isArray(logs) || !logs.length) {
@@ -2867,20 +3115,14 @@
 
     function populateWorkLogStaff() {
       const current = el.workLogStaff.value;
-      el.workLogStaff.innerHTML =
-        '<option value="">未設定</option>' +
+      const options = '<option value="">未設定</option>' +
         state.staff.map((staff) => `
-          <option value="${escapeHtml(staff.id)}">
-            ${escapeHtml(staff.display_name)}
-          </option>
+          <option value="${escapeHtml(staff.id)}">${escapeHtml(staff.display_name)}</option>
         `).join("");
-
-      if (
-        current &&
-        Array.from(el.workLogStaff.options).some((option) => option.value === current)
-      ) {
-        el.workLogStaff.value = current;
-      }
+      el.workLogStaff.innerHTML = options;
+      el.paymentStaff.innerHTML = options;
+      el.deliveryStaff.innerHTML = options;
+      if (current && Array.from(el.workLogStaff.options).some((option) => option.value === current)) el.workLogStaff.value = current;
     }
 
     function staffName(staffId) {

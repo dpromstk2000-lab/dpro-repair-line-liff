@@ -862,6 +862,10 @@
       font-size: 9px;
     }
 
+    .delivery-summary-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; margin-bottom:13px; }
+    .delivery-summary-box { padding:11px; border:1px solid var(--line); border-radius:12px; background:#f8fbfa; }
+    .delivery-summary-box strong { display:block; margin-top:3px; color:var(--primary-dark); font-size:18px; }
+
     .toast {
       position: fixed;
       z-index: 180;
@@ -961,6 +965,7 @@
       .existing-photo-grid {
         grid-template-columns: repeat(2, 1fr);
       }
+      .delivery-summary-grid { grid-template-columns:1fr; }
     }
 
     @media (max-width: 390px) {
@@ -1111,7 +1116,7 @@
     </section>
 
     <div class="version">
-      DPRO 修理受付 LINE｜STEP REPAIR-9｜REPAIR-9-INTAKE-PHOTO-ACCESSORY-20260712
+      DPRO 修理受付 LINE｜STEP REPAIR-11｜REPAIR-11-PICKUP-PAYMENT-WARRANTY-20260713
     </div>
   </main>
 
@@ -1386,6 +1391,26 @@
     </section>
   </div>
 
+  <div id="deliveryModalBackdrop" class="modal-backdrop hidden">
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="deliveryModalTitle">
+      <header class="modal-head"><div><h2 id="deliveryModalTitle">お渡し・お会計</h2><p id="deliveryModalSubtitle">付属品・支払い・保証を確認して引き渡します。</p></div><button id="deliveryModalCloseButton" class="icon-button" type="button">×</button></header>
+      <div id="deliverySummary" class="delivery-summary-grid"></div>
+      <div id="deliveryAccessories" class="detail-card"></div>
+      <div class="form-grid" style="margin-top:13px">
+        <label class="check-line full"><input id="deliveryAccessoriesConfirmed" type="checkbox" /><span>本体とすべての付属品を返却しました</span></label>
+        <label class="check-line full"><input id="deliveryRecordPayment" type="checkbox" /><span>残額をこの画面で支払い記録する</span></label>
+        <div><label for="deliveryPaymentMethod">支払い方法</label><select id="deliveryPaymentMethod"><option value="cash">現金</option><option value="credit_card">クレジットカード</option><option value="qr_payment">QR決済</option><option value="bank_transfer">銀行振込</option><option value="online">オンライン</option><option value="other">その他</option></select></div>
+        <div><label for="deliveryPaymentAmount">支払い金額</label><input id="deliveryPaymentAmount" type="number" min="0" step="1" /></div>
+        <label class="check-line full"><input id="deliveryAllowUnpaid" type="checkbox" /><span>未払い残額がある状態で引き渡す</span></label>
+        <label class="check-line full"><input id="deliveryCreateWarranty" type="checkbox" checked /><span>修理保証を開始する</span></label>
+        <div><label for="deliveryWarrantyDays">保証日数</label><input id="deliveryWarrantyDays" type="number" min="0" step="1" value="90" /></div>
+        <div class="full"><label for="deliveryComment">お渡しメモ</label><textarea id="deliveryComment" maxlength="2000"></textarea></div>
+      </div>
+      <div id="deliveryError" class="field-error"></div>
+      <div class="modal-actions"><button id="deliveryCancelButton" class="btn btn-light" type="button">キャンセル</button><button id="deliverySaveButton" class="btn btn-primary" type="button">お渡し完了を確定</button></div>
+    </section>
+  </div>
+
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <div id="loadingOverlay" class="loading hidden">
@@ -1494,6 +1519,8 @@
       intakeDetail: null,
       intakePhotoFiles: [],
       intakePreviewUrls: [],
+      deliveryOrderId: null,
+      deliveryDetail: null,
       loading: false,
     };
 
@@ -1614,6 +1641,22 @@
         document.getElementById("intakeCancelButton"),
       intakeSaveButton:
         document.getElementById("intakeSaveButton"),
+      deliveryModalBackdrop: document.getElementById("deliveryModalBackdrop"),
+      deliveryModalSubtitle: document.getElementById("deliveryModalSubtitle"),
+      deliveryModalCloseButton: document.getElementById("deliveryModalCloseButton"),
+      deliverySummary: document.getElementById("deliverySummary"),
+      deliveryAccessories: document.getElementById("deliveryAccessories"),
+      deliveryAccessoriesConfirmed: document.getElementById("deliveryAccessoriesConfirmed"),
+      deliveryRecordPayment: document.getElementById("deliveryRecordPayment"),
+      deliveryPaymentMethod: document.getElementById("deliveryPaymentMethod"),
+      deliveryPaymentAmount: document.getElementById("deliveryPaymentAmount"),
+      deliveryAllowUnpaid: document.getElementById("deliveryAllowUnpaid"),
+      deliveryCreateWarranty: document.getElementById("deliveryCreateWarranty"),
+      deliveryWarrantyDays: document.getElementById("deliveryWarrantyDays"),
+      deliveryComment: document.getElementById("deliveryComment"),
+      deliveryError: document.getElementById("deliveryError"),
+      deliveryCancelButton: document.getElementById("deliveryCancelButton"),
+      deliverySaveButton: document.getElementById("deliverySaveButton"),
       toast: document.getElementById("toast"),
       loadingOverlay: document.getElementById("loadingOverlay"),
       loadingText: document.getElementById("loadingText"),
@@ -1786,6 +1829,11 @@
         "click",
         saveIntakeConfirmation
       );
+      el.deliveryModalCloseButton.addEventListener("click", closeDeliveryModal);
+      el.deliveryCancelButton.addEventListener("click", closeDeliveryModal);
+      el.deliveryModalBackdrop.addEventListener("click", e => { if (e.target === el.deliveryModalBackdrop) closeDeliveryModal(); });
+      el.deliverySaveButton.addEventListener("click", saveDelivery);
+      el.deliveryRecordPayment.addEventListener("change", updateDeliveryPaymentFields);
     }
 
     async function verifyAndOpen(showError) {
@@ -1964,11 +2012,19 @@
               </button>
               ${
                 [
-                  "consultation_received",
-                  "provisional_received",
-                  "visit_scheduled",
+                  "repair_completed",
+                  "completion_notified",
+                  "pickup_scheduled",
+                  "awaiting_pickup",
+                  "return_waiting",
                 ].includes(order.status)
-                  ? `<button
+                  ? `<button class="btn btn-primary" type="button" data-order-action="delivery">お渡し・お会計</button>`
+                  : [
+                      "consultation_received",
+                      "provisional_received",
+                      "visit_scheduled",
+                    ].includes(order.status)
+                    ? `<button
                       class="btn btn-primary"
                       type="button"
                       data-order-action="intake"
@@ -2032,6 +2088,8 @@
 
       if (action === "detail") {
         await openOrder(orderId);
+      } else if (action === "delivery") {
+        await openDeliveryModal(orderId);
       } else if (action === "intake") {
         await openIntakeModal(orderId);
       } else if (action === "quick-status") {
@@ -2178,6 +2236,7 @@
                 ${escapeHtml(STATUS_LABELS[status] || status)}
               </button>
             `).join("")}
+            ${["repair_completed","completion_notified","pickup_scheduled","awaiting_pickup","return_waiting"].includes(order.status) ? `<button class="btn btn-primary" type="button" data-drawer-action="delivery">お渡し・お会計</button>` : ""}
             <button class="btn btn-soft" type="button" data-drawer-action="copy">
               状況連絡文をコピー
             </button>
@@ -2201,6 +2260,8 @@
           button.dataset.nextStatus,
           STATUS_LABELS[button.dataset.nextStatus] || "状態更新"
         );
+      } else if (action === "delivery") {
+        await openDeliveryModal(state.selectedDetail.order.id);
       } else if (action === "intake") {
         await openIntakeModal(
           state.selectedDetail.order.id
@@ -2594,6 +2655,14 @@
             : "電話受付を保存";
       }
     }
+
+    async function openDeliveryModal(orderId) {
+      if(!orderId)return;setLoading(true,"お渡し情報を読み込んでいます…");
+      try{const d=await fetchJson(`${API_BASE}/api/orders/${encodeURIComponent(orderId)}?shop_code=${encodeURIComponent(state.shopCode)}&admin_key=${encodeURIComponent(state.adminKey)}`);state.deliveryOrderId=orderId;state.deliveryDetail=d;const s=d.payment_summary||{},a=d.accessories||[],u=a.filter(x=>x.received_confirmed===true&&x.delivered_confirmed!==true);el.deliveryModalSubtitle.textContent=`${d.order.order_number}｜${d.customer.customer_name}`;el.deliverySummary.innerHTML=`<div class="delivery-summary-box"><span class="field-note">お見積もり</span><strong>${formatMoney(s.estimate_total||0)}</strong></div><div class="delivery-summary-box"><span class="field-note">入金済み</span><strong>${formatMoney(s.net_paid||0)}</strong></div><div class="delivery-summary-box"><span class="field-note">未払い残額</span><strong>${formatMoney(s.balance_due||0)}</strong></div>`;el.deliveryAccessories.innerHTML=`<div class="detail-title">返却する付属品</div>${a.length?`<dl class="detail-list">${a.map(x=>`<dt>${escapeHtml(x.accessory_name)}</dt><dd>${escapeHtml(String(x.quantity))}点｜${x.delivered_confirmed?"返却済み":"今回返却"}</dd>`).join("")}</dl>`:'<div class="field-note">付属品登録はありません。</div>'}`;el.deliveryAccessoriesConfirmed.checked=u.length===0;el.deliveryRecordPayment.checked=Number(s.balance_due||0)>0;el.deliveryPaymentMethod.value="cash";el.deliveryPaymentAmount.value=String(Number(s.balance_due||0));el.deliveryAllowUnpaid.checked=false;el.deliveryCreateWarranty.checked=true;el.deliveryWarrantyDays.value="90";el.deliveryComment.value="";el.deliveryError.textContent="";updateDeliveryPaymentFields();el.deliveryModalBackdrop.classList.remove("hidden");document.body.style.overflow="hidden";}catch(e){showToast(e.message||"お渡し情報を取得できませんでした。",true);}finally{setLoading(false);}}
+    function closeDeliveryModal(force=false){if(state.loading&&!force)return;state.deliveryOrderId=null;state.deliveryDetail=null;el.deliveryModalBackdrop.classList.add("hidden");document.body.style.overflow="";}
+    function updateDeliveryPaymentFields(){const x=el.deliveryRecordPayment.checked;el.deliveryPaymentMethod.disabled=!x;el.deliveryPaymentAmount.disabled=!x;}
+    async function saveDelivery(){if(!state.deliveryOrderId)return;state.loading=true;setLoading(true,"お渡し完了を保存しています…");try{await fetchJson(`${API_BASE}/api/orders/${encodeURIComponent(state.deliveryOrderId)}/deliver`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({shop_code:state.shopCode,admin_key:state.adminKey,confirm_accessories_returned:el.deliveryAccessoriesConfirmed.checked,record_payment:el.deliveryRecordPayment.checked,payment_method:el.deliveryPaymentMethod.value,payment_amount:el.deliveryPaymentAmount.value,allow_unpaid_delivery:el.deliveryAllowUnpaid.checked,create_warranty:el.deliveryCreateWarranty.checked,warranty_days:Number(el.deliveryWarrantyDays.value||0),comment:el.deliveryComment.value.trim()||null,source_screen:"owner-ipad.html"})});const id=state.deliveryOrderId;state.loading=false;closeDeliveryModal(true);closeDrawer();showToast("お渡し・お会計・保証を完了しました。");await loadDashboard();await openOrder(id);}catch(e){state.loading=false;el.deliveryError.textContent=e.message||"お渡し完了を保存できませんでした。";}finally{setLoading(false);}}
+    function formatMoney(v){const n=Number(v||0);return new Intl.NumberFormat("ja-JP",{style:"currency",currency:"JPY",maximumFractionDigits:0}).format(Number.isFinite(n)?n:0);}
 
     async function openIntakeModal(orderId) {
       if (!orderId) return;

@@ -660,6 +660,13 @@
       margin-top: 14px;
     }
 
+    .pickup-booking-form { display:grid; gap:10px; margin-top:14px; padding-top:14px; border-top:1px solid var(--line); }
+    .pickup-form-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+    .pickup-form-grid .full { grid-column:1 / -1; }
+    .payment-summary-public { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; margin-top:14px; }
+    .payment-summary-public > div { padding:10px; border:1px solid var(--line); border-radius:11px; background:#f8fbfa; }
+    .payment-summary-public strong { display:block; color:var(--primary-dark); margin-top:2px; font-size:16px; }
+
     .action-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0,1fr));
@@ -748,6 +755,9 @@
     @media (max-width: 390px) {
       .tabs { grid-template-columns: 1fr; }
       .action-grid { grid-template-columns: 1fr; }
+      .pickup-form-grid { grid-template-columns:1fr; }
+      .pickup-form-grid .full { grid-column:auto; }
+      .payment-summary-public { grid-template-columns:1fr; }
     }
   </style>
 </head>
@@ -950,7 +960,7 @@
     </section>
 
     <div class="version">
-      DPRO 修理受付 LINE｜STEP REPAIR-10｜REPAIR-10-WORKLOG-PARTS-20260713
+      DPRO 修理受付 LINE｜STEP REPAIR-11｜REPAIR-11-PICKUP-PAYMENT-WARRANTY-20260713
     </div>
   </main>
 
@@ -1096,6 +1106,8 @@
       el.newRequestButton.addEventListener("click", () => {
         location.href = `index.html?shop_code=${encodeURIComponent(state.shopCode)}`;
       });
+      el.pickupContent.addEventListener("click", handlePickupContentClick);
+      el.pickupContent.addEventListener("change", handlePickupContentChange);
       el.responseCancelButton.addEventListener(
         "click",
         closeEstimateResponseModal
@@ -1298,7 +1310,7 @@
       renderWorkReports(data.work_logs || []);
       renderAccessories(data.accessories || []);
       renderEstimate(estimate);
-      renderPickup(order);
+      renderPickup(data);
       renderWarranty(warranty);
     }
 
@@ -1639,19 +1651,41 @@
       `;
     }
 
-    function renderPickup(order) {
-      const rows = [
-        ["修理完了日", order.completed_at ? formatDateTime(order.completed_at) : "未定"],
-        ["引き取り予定", order.pickup_due_at ? formatDateTime(order.pickup_due_at) : "未定"],
-        ["支払い状況", paymentLabel(order.payment_status)],
-        ["保管期限", order.storage_deadline ? formatDate(order.storage_deadline) : "未定"],
+    function renderPickup(data) {
+      const order=data.order||{};
+      const appointments=Array.isArray(data.pickup_appointments)?data.pickup_appointments:[];
+      const active=appointments.find(x=>["scheduled","confirmed"].includes(x.status))||null;
+      const summary=data.payment_summary||{};
+      const payments=(Array.isArray(data.payments)?data.payments:[]).filter(x=>["recorded","completed","refunded"].includes(x.status));
+      const booking=data.pickup_booking||{};
+      const rows=[
+        ["修理完了日",order.completed_at?formatDateTime(order.completed_at):"未定"],
+        ["引き取り予定",active?.scheduled_at?formatDateTime(active.scheduled_at):order.pickup_due_at?formatDateTime(order.pickup_due_at):"未定"],
+        ["予約状態",active?pickupStatusLabel(active.status):"予約なし"],
+        ["代理受取",active?.proxy_pickup?(active.proxy_name||"代理人"):"なし"],
+        ["支払い状況",paymentLabel(order.payment_status)],
+        ["保管期限",order.storage_deadline?formatDate(order.storage_deadline):"未定"],
       ];
-
-      el.pickupContent.innerHTML = `
+      el.pickupContent.innerHTML=`
         <dl class="info-list">${infoRows(rows)}</dl>
-        <div class="alert alert-soft" style="margin-top:14px">
-          引き取り日時の登録機能は、店舗から修理完了案内が届いた後に使用できるようになります。
+        <div class="payment-summary-public">
+          <div><span class="meta-label">お見積もり</span><strong>${formatMoney(summary.estimate_total||0)}</strong></div>
+          <div><span class="meta-label">入金済み</span><strong>${formatMoney(summary.net_paid||0)}</strong></div>
+          <div><span class="meta-label">未払い残額</span><strong>${formatMoney(summary.balance_due||0)}</strong></div>
         </div>
+        ${payments.length?`<div class="alert alert-soft" style="margin-top:12px">${payments.map(x=>`${escapeHtml(paymentTypeLabel(x.payment_type))} ${formatMoney(x.amount)} ／${escapeHtml(paymentMethodLabel(x.payment_method))} ／${escapeHtml(formatDateTime(x.paid_at||x.created_at))}`).join("<br />")}</div>`:""}
+        ${booking.enabled&&booking.can_book?`<div class="pickup-booking-form">
+          <div class="estimate-response-title">引き取り日時を予約</div>
+          <div class="estimate-response-note">営業時間内の${Number(booking.time_slot_minutes||30)}分単位で選択してください。</div>
+          <div class="pickup-form-grid">
+            <div class="full"><label for="memberPickupAt">引き取り日時</label><input id="memberPickupAt" type="datetime-local" value="${escapeAttribute(toDateTimeLocalValue(active?.scheduled_at||nextPickupDefault(booking)))}" /></div>
+            <label class="check-line full"><input id="memberPickupProxy" type="checkbox" ${active?.proxy_pickup?"checked":""} /><span>代理の方が引き取る</span></label>
+            <div class="full"><label for="memberPickupProxyName">代理人のお名前</label><input id="memberPickupProxyName" type="text" maxlength="200" value="${escapeAttribute(active?.proxy_name||"")}" ${active?.proxy_pickup?"":"disabled"} /></div>
+            <div class="full"><label for="memberPickupNote">店舗へのメモ</label><textarea id="memberPickupNote" maxlength="2000">${escapeHtml(active?.customer_note||"")}</textarea></div>
+          </div>
+          <button class="btn btn-primary" type="button" data-pickup-action="save" data-pickup-id="${escapeHtml(active?.id||"")}">${active?"引き取り予約を変更":"引き取り予約を登録"}</button>
+          ${active?`<button class="btn btn-danger-soft" type="button" data-pickup-action="cancel" data-pickup-id="${escapeHtml(active.id)}">引き取り予約をキャンセル</button>`:""}
+        </div>`:`<div class="alert alert-soft" style="margin-top:14px">${["delivered","closed"].includes(order.status)?"引き渡しは完了しています。":"引き取り予約が可能になると、ここから日時を選択できます。"}</div>`}
       `;
     }
 
@@ -1677,6 +1711,22 @@
         </dl>
       `;
     }
+
+    async function handlePickupContentClick(event) {
+      const b=event.target.closest("[data-pickup-action]"); if(!b)return;
+      if(b.dataset.pickupAction==="save") await saveMemberPickup(b.dataset.pickupId||null);
+      else if(b.dataset.pickupAction==="cancel") await cancelMemberPickup(b.dataset.pickupId);
+    }
+    function handlePickupContentChange(event){if(event.target.id==="memberPickupProxy"){const n=document.getElementById("memberPickupProxyName");if(n){n.disabled=!event.target.checked;if(!event.target.checked)n.value="";}}}
+    async function saveMemberPickup(id){const at=fromDateTimeLocal(document.getElementById("memberPickupAt")?.value||""),proxy=document.getElementById("memberPickupProxy"),name=document.getElementById("memberPickupProxyName"),note=document.getElementById("memberPickupNote");if(!at){showToast("引き取り日時を選択してください。",true);return;}if(proxy?.checked&&!name?.value.trim()){showToast("代理人のお名前を入力してください。",true);return;}setLoading(true,"引き取り予約を保存しています…");state.loading=true;try{const url=id?`${API_BASE}/api/pickup-appointments/${encodeURIComponent(id)}`:`${API_BASE}/api/orders/${encodeURIComponent(state.access.order_id)}/pickup-appointments`;await fetchJson(url,{method:id?"PATCH":"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({shop_code:state.shopCode,public_token:state.access.public_token,scheduled_at:at,proxy_pickup:proxy?.checked===true,proxy_name:name?.value.trim()||null,customer_note:note?.value.trim()||null})});state.loading=false;await loadMemberData();openTab("pickup");showToast("引き取り予約を保存しました。");}catch(e){state.loading=false;showToast(e.message||"引き取り予約を保存できませんでした。",true);}finally{setLoading(false);}}
+    async function cancelMemberPickup(id){if(!id||!confirm("引き取り予約をキャンセルしますか？"))return;setLoading(true,"予約をキャンセルしています…");state.loading=true;try{await fetchJson(`${API_BASE}/api/pickup-appointments/${encodeURIComponent(id)}`,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify({shop_code:state.shopCode,public_token:state.access.public_token,status:"cancelled"})});state.loading=false;await loadMemberData();openTab("pickup");showToast("引き取り予約をキャンセルしました。");}catch(e){state.loading=false;showToast(e.message||"予約をキャンセルできませんでした。",true);}finally{setLoading(false);}}
+    function pickupStatusLabel(v){return {scheduled:"予約済み",confirmed:"店舗確認済み",completed:"引き取り完了",cancelled:"キャンセル",no_show:"来店なし"}[v]||v||"未設定";}
+    function paymentTypeLabel(v){return {deposit:"預かり金",partial:"一部入金",final:"最終支払い",refund:"返金",adjustment:"調整"}[v]||v||"支払い";}
+    function paymentMethodLabel(v){return {cash:"現金",credit_card:"クレジットカード",qr_payment:"QR決済",bank_transfer:"銀行振込",online:"オンライン",other:"その他"}[v]||"方法未設定";}
+    function nextPickupDefault(booking={}){const hours=booking.business_hours||{},closed=(booking.closed_weekdays||[]).map(Number),temp=(booking.temporary_closed_dates||[]).map(String),keys=["sunday","monday","tuesday","wednesday","thursday","friday","saturday"],limit=Math.max(1,Number(booking.booking_horizon_days||60));for(let i=1;i<=limit;i+=1){const d=new Date();d.setDate(d.getDate()+i);const local=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`,day=d.getDay(),setting=hours[keys[day]];if(closed.includes(day)||temp.includes(local)||!setting||setting.enabled!==true||!setting.open)continue;const [h,min]=String(setting.open).split(":").map(Number);d.setHours(h,min,0,0);return d.toISOString();}const d=new Date();d.setDate(d.getDate()+1);d.setHours(10,0,0,0);return d.toISOString();}
+    function toDateTimeLocalValue(v){if(!v)return"";const d=new Date(v);if(Number.isNaN(d.getTime()))return"";const l=new Date(d.getTime()-d.getTimezoneOffset()*60000);return l.toISOString().slice(0,16);}
+    function fromDateTimeLocal(v){if(!v)return null;const d=new Date(v);return Number.isNaN(d.getTime())?null:d.toISOString();}
+    function escapeAttribute(v){return escapeHtml(v).replaceAll("`","&#096;");}
 
     function openEstimateResponseModal(responseValue) {
       const estimate = state.orderData?.estimate;
