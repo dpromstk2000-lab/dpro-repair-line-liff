@@ -699,6 +699,97 @@
       font-size: 11px;
     }
 
+    .operation-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .operation-card {
+      padding: 11px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #f9fcfb;
+    }
+
+    .operation-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .operation-title {
+      font-size: 12px;
+      font-weight: 950;
+    }
+
+    .operation-content {
+      margin-top: 7px;
+      color: #34443f;
+      font-size: 11px;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .operation-meta {
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 9px;
+    }
+
+    .operation-actions {
+      display: flex;
+      gap: 6px;
+      margin-top: 9px;
+      flex-wrap: wrap;
+    }
+
+    .parts-grid {
+      display: grid;
+      gap: 8px;
+    }
+
+    .part-card {
+      padding: 11px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #f9fcfb;
+    }
+
+    .part-main {
+      display: grid;
+      grid-template-columns: minmax(160px,1fr) auto;
+      gap: 10px;
+      align-items: start;
+    }
+
+    .part-name {
+      font-size: 12px;
+      font-weight: 950;
+    }
+
+    .part-price {
+      color: var(--primary-dark);
+      font-size: 14px;
+      font-weight: 950;
+      white-space: nowrap;
+    }
+
+    .part-details {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 4px 10px;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .modal-section {
+      margin-top: 13px;
+      padding-top: 13px;
+      border-top: 1px solid var(--line);
+    }
+
     .estimate-list {
       display: grid;
       gap: 9px;
@@ -1034,6 +1125,8 @@
       .estimate-summary { grid-template-columns: repeat(2,1fr); }
       .owner-photo-grid { grid-template-columns: repeat(2,1fr); }
       .accessory-admin-row { grid-template-columns: 1fr; }
+      .part-main { grid-template-columns: 1fr; }
+      .part-details { grid-template-columns: 1fr; }
       .form-grid { grid-template-columns: 1fr; }
       .form-grid .full { grid-column: auto; }
       .modal-actions { grid-template-columns: 1fr; }
@@ -1122,8 +1215,8 @@
       </nav>
 
       <div class="sidebar-footer">
-        STEP REPAIR-9<br />
-        REPAIR-9-INTAKE-PHOTO-ACCESSORY-20260712
+        STEP REPAIR-10<br />
+        REPAIR-10-WORKLOG-PARTS-20260713
       </div>
     </aside>
 
@@ -1195,7 +1288,7 @@
       </section>
 
       <div class="version">
-        DPRO 修理受付 LINE｜STEP REPAIR-9｜REPAIR-9-INTAKE-PHOTO-ACCESSORY-20260712
+        DPRO 修理受付 LINE｜STEP REPAIR-10｜REPAIR-10-WORKLOG-PARTS-20260713
       </div>
     </main>
   </div>
@@ -1297,6 +1390,165 @@
         <button id="estimateSaveButton" class="btn btn-primary" type="button">
           見積もりを保存
         </button>
+      </div>
+    </section>
+  </div>
+
+  <div id="workLogModalBackdrop" class="modal-backdrop hidden">
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="workLogModalTitle">
+      <header class="modal-head">
+        <div>
+          <h2 id="workLogModalTitle">診断・作業記録を追加</h2>
+          <p id="workLogModalSubtitle">店舗内部の記録と、お客様へ共有する報告を保存します。</p>
+        </div>
+        <button id="workLogModalCloseButton" class="icon-button" type="button" aria-label="閉じる">×</button>
+      </header>
+
+      <div class="form-grid">
+        <div>
+          <label for="workLogType">記録区分</label>
+          <select id="workLogType">
+            <option value="diagnosis">診断</option>
+            <option value="repair">修理作業</option>
+            <option value="test">動作テスト</option>
+            <option value="customer_contact">お客様連絡</option>
+            <option value="internal_note">内部メモ</option>
+            <option value="handover">引き継ぎ</option>
+            <option value="other">その他</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="workLogStaff">担当スタッフ</label>
+          <select id="workLogStaff">
+            <option value="">未設定</option>
+          </select>
+        </div>
+
+        <div class="full">
+          <label for="workLogTitle">タイトル</label>
+          <input id="workLogTitle" type="text" maxlength="300" placeholder="例：初期診断、画面交換、最終動作確認" />
+        </div>
+
+        <div class="full">
+          <label for="workLogContent">記録内容</label>
+          <textarea id="workLogContent" maxlength="10000" placeholder="診断結果・作業内容・テスト結果などを入力"></textarea>
+        </div>
+
+        <div>
+          <label for="workLogStartedAt">開始日時</label>
+          <input id="workLogStartedAt" type="datetime-local" />
+        </div>
+
+        <div>
+          <label for="workLogEndedAt">終了日時</label>
+          <input id="workLogEndedAt" type="datetime-local" />
+        </div>
+
+        <label class="check-line">
+          <input id="workLogCustomerVisible" type="checkbox" />
+          <span>お客様画面にも作業報告として表示</span>
+        </label>
+
+        <label class="check-line">
+          <input id="workLogSyncStatus" type="checkbox" checked />
+          <span>記録区分に合わせて案件状態も更新</span>
+        </label>
+      </div>
+
+      <div id="workLogError" class="field-error"></div>
+
+      <div class="modal-actions">
+        <button id="workLogCancelButton" class="btn btn-light" type="button">キャンセル</button>
+        <button id="workLogSaveButton" class="btn btn-primary" type="button">作業記録を保存</button>
+      </div>
+    </section>
+  </div>
+
+  <div id="partModalBackdrop" class="modal-backdrop hidden">
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="partModalTitle">
+      <header class="modal-head">
+        <div>
+          <h2 id="partModalTitle">使用部品を追加</h2>
+          <p id="partModalSubtitle">部品の発注・入荷・使用状況を管理します。</p>
+        </div>
+        <button id="partModalCloseButton" class="icon-button" type="button" aria-label="閉じる">×</button>
+      </header>
+
+      <div class="form-grid">
+        <div>
+          <label for="partName">部品名</label>
+          <input id="partName" type="text" maxlength="300" placeholder="例：液晶パネル、バッテリー" />
+        </div>
+
+        <div>
+          <label for="partNumber">品番</label>
+          <input id="partNumber" type="text" maxlength="200" placeholder="メーカー品番・仕入れ品番" />
+        </div>
+
+        <div>
+          <label for="partSupplier">仕入先</label>
+          <input id="partSupplier" type="text" maxlength="200" placeholder="例：〇〇パーツ" />
+        </div>
+
+        <div>
+          <label for="partStatus">状況</label>
+          <select id="partStatus">
+            <option value="planned">使用予定</option>
+            <option value="ordered">発注済み</option>
+            <option value="arrived">入荷済み</option>
+            <option value="used">使用済み</option>
+            <option value="returned">返品済み</option>
+            <option value="cancelled">取消</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="partQuantity">数量</label>
+          <input id="partQuantity" type="number" min="0.01" step="0.01" value="1" />
+        </div>
+
+        <div>
+          <label for="partUnitCost">仕入単価</label>
+          <input id="partUnitCost" type="number" min="0" step="1" placeholder="店舗内部のみ" />
+        </div>
+
+        <div>
+          <label for="partSalePrice">販売単価</label>
+          <input id="partSalePrice" type="number" min="0" step="1" placeholder="見積もり・売価参考" />
+        </div>
+
+        <div>
+          <label for="partOrderedAt">発注日時</label>
+          <input id="partOrderedAt" type="datetime-local" />
+        </div>
+
+        <div>
+          <label for="partArrivedAt">入荷日時</label>
+          <input id="partArrivedAt" type="datetime-local" />
+        </div>
+
+        <div>
+          <label for="partUsedAt">使用日時</label>
+          <input id="partUsedAt" type="datetime-local" />
+        </div>
+
+        <div class="full">
+          <label for="partNote">部品メモ</label>
+          <textarea id="partNote" maxlength="3000" placeholder="納期・互換性・返品条件など"></textarea>
+        </div>
+
+        <label class="check-line full">
+          <input id="partSyncStatus" type="checkbox" checked />
+          <span>部品状況に合わせて案件状態も更新</span>
+        </label>
+      </div>
+
+      <div id="partError" class="field-error"></div>
+
+      <div class="modal-actions">
+        <button id="partCancelButton" class="btn btn-light" type="button">キャンセル</button>
+        <button id="partSaveButton" class="btn btn-primary" type="button">部品情報を保存</button>
       </div>
     </section>
   </div>
@@ -1410,8 +1662,11 @@
       selectedOrderId: null,
       selectedDetail: null,
       selectedEstimates: [],
+      staff: [],
       loading: false,
       estimateOrderId: null,
+      editingWorkLogId: null,
+      editingPartId: null,
     };
 
     const el = {
@@ -1469,6 +1724,74 @@
       estimateError: document.getElementById("estimateError"),
       estimateCancelButton: document.getElementById("estimateCancelButton"),
       estimateSaveButton: document.getElementById("estimateSaveButton"),
+      workLogModalBackdrop:
+        document.getElementById("workLogModalBackdrop"),
+      workLogModalTitle:
+        document.getElementById("workLogModalTitle"),
+      workLogModalSubtitle:
+        document.getElementById("workLogModalSubtitle"),
+      workLogModalCloseButton:
+        document.getElementById("workLogModalCloseButton"),
+      workLogType:
+        document.getElementById("workLogType"),
+      workLogStaff:
+        document.getElementById("workLogStaff"),
+      workLogTitle:
+        document.getElementById("workLogTitle"),
+      workLogContent:
+        document.getElementById("workLogContent"),
+      workLogStartedAt:
+        document.getElementById("workLogStartedAt"),
+      workLogEndedAt:
+        document.getElementById("workLogEndedAt"),
+      workLogCustomerVisible:
+        document.getElementById("workLogCustomerVisible"),
+      workLogSyncStatus:
+        document.getElementById("workLogSyncStatus"),
+      workLogError:
+        document.getElementById("workLogError"),
+      workLogCancelButton:
+        document.getElementById("workLogCancelButton"),
+      workLogSaveButton:
+        document.getElementById("workLogSaveButton"),
+      partModalBackdrop:
+        document.getElementById("partModalBackdrop"),
+      partModalTitle:
+        document.getElementById("partModalTitle"),
+      partModalSubtitle:
+        document.getElementById("partModalSubtitle"),
+      partModalCloseButton:
+        document.getElementById("partModalCloseButton"),
+      partName:
+        document.getElementById("partName"),
+      partNumber:
+        document.getElementById("partNumber"),
+      partSupplier:
+        document.getElementById("partSupplier"),
+      partStatus:
+        document.getElementById("partStatus"),
+      partQuantity:
+        document.getElementById("partQuantity"),
+      partUnitCost:
+        document.getElementById("partUnitCost"),
+      partSalePrice:
+        document.getElementById("partSalePrice"),
+      partOrderedAt:
+        document.getElementById("partOrderedAt"),
+      partArrivedAt:
+        document.getElementById("partArrivedAt"),
+      partUsedAt:
+        document.getElementById("partUsedAt"),
+      partNote:
+        document.getElementById("partNote"),
+      partSyncStatus:
+        document.getElementById("partSyncStatus"),
+      partError:
+        document.getElementById("partError"),
+      partCancelButton:
+        document.getElementById("partCancelButton"),
+      partSaveButton:
+        document.getElementById("partSaveButton"),
       toast: document.getElementById("toast"),
       loadingOverlay: document.getElementById("loadingOverlay"),
       loadingText: document.getElementById("loadingText"),
@@ -1575,6 +1898,21 @@
       });
       el.estimateDiscount.addEventListener("input", calculateEstimate);
       el.estimateSaveButton.addEventListener("click", saveEstimate);
+
+      el.workLogModalCloseButton.addEventListener("click", closeWorkLogModal);
+      el.workLogCancelButton.addEventListener("click", closeWorkLogModal);
+      el.workLogModalBackdrop.addEventListener("click", (event) => {
+        if (event.target === el.workLogModalBackdrop) closeWorkLogModal();
+      });
+      el.workLogSaveButton.addEventListener("click", saveWorkLog);
+
+      el.partModalCloseButton.addEventListener("click", closePartModal);
+      el.partCancelButton.addEventListener("click", closePartModal);
+      el.partModalBackdrop.addEventListener("click", (event) => {
+        if (event.target === el.partModalBackdrop) closePartModal();
+      });
+      el.partSaveButton.addEventListener("click", savePart);
+      el.partStatus.addEventListener("change", applySuggestedPartDates);
     }
 
     async function verifyAndOpen(showErrors) {
@@ -1628,12 +1966,19 @@
       el.refreshButton.textContent = "更新中…";
 
       try {
-        const response = await fetchJson(
-          `${API_BASE}/api/admin/dashboard?shop_code=${encodeURIComponent(state.shopCode)}&admin_key=${encodeURIComponent(state.adminKey)}`
-        );
+        const [response, staffResponse] = await Promise.all([
+          fetchJson(
+            `${API_BASE}/api/admin/dashboard?shop_code=${encodeURIComponent(state.shopCode)}&admin_key=${encodeURIComponent(state.adminKey)}`
+          ),
+          fetchJson(
+            `${API_BASE}/api/admin/staff?shop_code=${encodeURIComponent(state.shopCode)}&admin_key=${encodeURIComponent(state.adminKey)}`
+          ),
+        ]);
 
         state.dashboard = response;
         state.orders = Array.isArray(response.orders) ? response.orders : [];
+        state.staff = Array.isArray(staffResponse.staff) ? staffResponse.staff : [];
+        populateWorkLogStaff();
 
         el.sideShopName.textContent = response.shop?.shop_name || "修理受付管理";
         renderCounts();
@@ -1908,6 +2253,36 @@
           </section>
 
           <section class="detail-card full">
+            <div class="detail-title">診断・作業記録</div>
+            <button
+              class="btn btn-primary"
+              type="button"
+              data-detail-action="create-work-log"
+            >
+              診断・作業記録を追加
+            </button>
+
+            <div class="operation-list" style="margin-top:10px">
+              ${renderWorkLogs(detail.work_logs || [])}
+            </div>
+          </section>
+
+          <section class="detail-card full">
+            <div class="detail-title">使用部品・発注管理</div>
+            <button
+              class="btn btn-primary"
+              type="button"
+              data-detail-action="create-part"
+            >
+              使用部品を追加
+            </button>
+
+            <div class="parts-grid" style="margin-top:10px">
+              ${renderParts(detail.parts || [])}
+            </div>
+          </section>
+
+          <section class="detail-card full">
             <div class="detail-title">お預かり写真・付属品</div>
 
             ${
@@ -2074,6 +2449,18 @@
 
       if (action === "update-status") {
         await updateStatus();
+      } else if (action === "create-work-log") {
+        openWorkLogModal();
+      } else if (action === "edit-work-log") {
+        openWorkLogModal(button.dataset.workLogId);
+      } else if (action === "delete-work-log") {
+        await deleteWorkLog(button.dataset.workLogId);
+      } else if (action === "create-part") {
+        openPartModal();
+      } else if (action === "edit-part") {
+        openPartModal(button.dataset.partId);
+      } else if (action === "delete-part") {
+        await deletePart(button.dataset.partId);
       } else if (action === "create-estimate") {
         openEstimateModal();
       } else if (action === "issue-estimate") {
@@ -2103,6 +2490,452 @@
       } else if (action === "reload-detail") {
         await openOrder(state.selectedOrderId);
       }
+    }
+
+    function renderWorkLogs(logs) {
+      if (!Array.isArray(logs) || !logs.length) {
+        return '<div class="empty">診断・作業記録はまだありません。</div>';
+      }
+
+      return logs.map((log) => `
+        <article class="operation-card">
+          <div class="operation-head">
+            <div>
+              <div class="operation-title">
+                ${escapeHtml(log.title || workLogTypeLabel(log.log_type))}
+              </div>
+              <div class="muted">
+                ${escapeHtml(workLogTypeLabel(log.log_type))}
+                ｜${escapeHtml(staffName(log.staff_id))}
+                ｜${log.customer_visible ? "お客様共有" : "店舗内部"}
+              </div>
+            </div>
+            <span class="badge ${log.customer_visible ? "badge-success" : "badge-gray"}">
+              ${log.customer_visible ? "共有" : "内部"}
+            </span>
+          </div>
+
+          <div class="operation-content">${escapeHtml(log.content || "")}</div>
+
+          <div class="operation-meta">
+            ${log.work_started_at ? `開始 ${escapeHtml(formatDateTime(log.work_started_at))}` : ""}
+            ${log.work_ended_at ? `｜終了 ${escapeHtml(formatDateTime(log.work_ended_at))}` : ""}
+            ${!log.work_started_at && !log.work_ended_at ? `登録 ${escapeHtml(formatDateTime(log.created_at))}` : ""}
+          </div>
+
+          <div class="operation-actions">
+            <button
+              class="small-button btn-soft"
+              type="button"
+              data-detail-action="edit-work-log"
+              data-work-log-id="${escapeHtml(log.id)}"
+            >
+              編集
+            </button>
+            <button
+              class="small-button btn-danger-soft"
+              type="button"
+              data-detail-action="delete-work-log"
+              data-work-log-id="${escapeHtml(log.id)}"
+            >
+              削除
+            </button>
+          </div>
+        </article>
+      `).join("");
+    }
+
+    function renderParts(parts) {
+      if (!Array.isArray(parts) || !parts.length) {
+        return '<div class="empty">使用部品はまだ登録されていません。</div>';
+      }
+
+      return parts.map((part) => {
+        const quantity = Number(part.quantity || 0);
+        const sale = part.sale_unit_price === null || part.sale_unit_price === undefined
+          ? null
+          : Number(part.sale_unit_price);
+        const total = sale === null ? null : quantity * sale;
+
+        return `
+          <article class="part-card">
+            <div class="part-main">
+              <div>
+                <div class="part-name">${escapeHtml(part.part_name)}</div>
+                <div class="muted">
+                  ${part.part_number ? `品番 ${escapeHtml(part.part_number)}｜` : ""}
+                  ${escapeHtml(partStatusLabel(part.status))}
+                </div>
+              </div>
+              <div class="part-price">
+                ${total === null ? "売価未設定" : formatMoney(total)}
+              </div>
+            </div>
+
+            <div class="part-details">
+              <span>数量：${escapeHtml(String(part.quantity))}</span>
+              <span>仕入先：${escapeHtml(part.supplier_name || "未設定")}</span>
+              <span>仕入単価：${part.unit_cost === null || part.unit_cost === undefined ? "未設定" : formatMoney(part.unit_cost)}</span>
+              <span>販売単価：${part.sale_unit_price === null || part.sale_unit_price === undefined ? "未設定" : formatMoney(part.sale_unit_price)}</span>
+              <span>発注：${part.ordered_at ? escapeHtml(formatDateTimeShort(part.ordered_at)) : "未発注"}</span>
+              <span>入荷：${part.arrived_at ? escapeHtml(formatDateTimeShort(part.arrived_at)) : "未入荷"}</span>
+            </div>
+
+            ${part.note ? `<div class="operation-content">${escapeHtml(part.note)}</div>` : ""}
+
+            <div class="operation-actions">
+              <button
+                class="small-button btn-soft"
+                type="button"
+                data-detail-action="edit-part"
+                data-part-id="${escapeHtml(part.id)}"
+              >
+                編集・状況更新
+              </button>
+              <button
+                class="small-button btn-danger-soft"
+                type="button"
+                data-detail-action="delete-part"
+                data-part-id="${escapeHtml(part.id)}"
+              >
+                削除
+              </button>
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function openWorkLogModal(workLogId = null) {
+      if (!state.selectedDetail?.order) return;
+
+      const log = workLogId
+        ? (state.selectedDetail.work_logs || []).find((item) => item.id === workLogId)
+        : null;
+
+      state.editingWorkLogId = log?.id || null;
+      el.workLogModalTitle.textContent =
+        log ? "診断・作業記録を編集" : "診断・作業記録を追加";
+      el.workLogModalSubtitle.textContent =
+        `${state.selectedDetail.order.order_number}｜${state.selectedDetail.customer.customer_name}`;
+
+      el.workLogType.value = log?.log_type || defaultWorkLogType(state.selectedDetail.order.status);
+      el.workLogStaff.value = log?.staff_id || "";
+      el.workLogTitle.value = log?.title || "";
+      el.workLogContent.value = log?.content || "";
+      el.workLogStartedAt.value = toDateTimeLocalValue(log?.work_started_at || new Date().toISOString());
+      el.workLogEndedAt.value = toDateTimeLocalValue(log?.work_ended_at || "");
+      el.workLogCustomerVisible.checked = log?.customer_visible === true;
+      el.workLogSyncStatus.checked = !log;
+      el.workLogError.textContent = "";
+      el.workLogSaveButton.textContent = log ? "作業記録を更新" : "作業記録を保存";
+
+      el.workLogModalBackdrop.classList.remove("hidden");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeWorkLogModal(force = false) {
+      if (state.loading && !force) return;
+      state.editingWorkLogId = null;
+      el.workLogModalBackdrop.classList.add("hidden");
+      document.body.style.overflow = "";
+    }
+
+    async function saveWorkLog() {
+      if (!state.selectedOrderId) return;
+
+      const content = el.workLogContent.value.trim();
+      if (!content) {
+        el.workLogError.textContent = "記録内容を入力してください。";
+        return;
+      }
+
+      const startedAt = fromDateTimeLocal(el.workLogStartedAt.value);
+      const endedAt = fromDateTimeLocal(el.workLogEndedAt.value);
+
+      if (startedAt && endedAt && new Date(endedAt) < new Date(startedAt)) {
+        el.workLogError.textContent = "終了日時は開始日時以降にしてください。";
+        return;
+      }
+
+      state.loading = true;
+      setLoading(true, "作業記録を保存しています…");
+      el.workLogSaveButton.disabled = true;
+      el.workLogError.textContent = "";
+
+      try {
+        const payload = {
+          shop_code: state.shopCode,
+          admin_key: state.adminKey,
+          log_type: el.workLogType.value,
+          staff_id: el.workLogStaff.value || null,
+          title: el.workLogTitle.value.trim() || null,
+          content,
+          customer_visible: el.workLogCustomerVisible.checked,
+          work_started_at: startedAt,
+          work_ended_at: endedAt,
+          sync_order_status: el.workLogSyncStatus.checked,
+          source_screen: "owner.html",
+        };
+
+        const url = state.editingWorkLogId
+          ? `${API_BASE}/api/work-logs/${encodeURIComponent(state.editingWorkLogId)}`
+          : `${API_BASE}/api/orders/${encodeURIComponent(state.selectedOrderId)}/work-logs`;
+
+        await fetchJson(url, {
+          method: state.editingWorkLogId ? "PATCH" : "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        const wasEditing = Boolean(state.editingWorkLogId);
+        const orderId = state.selectedOrderId;
+        state.loading = false;
+        closeWorkLogModal(true);
+        showToast(wasEditing ? "作業記録を更新しました。" : "作業記録を追加しました。");
+        await loadDashboard();
+        await openOrder(orderId);
+      } catch (error) {
+        state.loading = false;
+        el.workLogError.textContent =
+          error.message || "作業記録を保存できませんでした。";
+      } finally {
+        setLoading(false);
+        el.workLogSaveButton.disabled = false;
+      }
+    }
+
+    async function deleteWorkLog(workLogId) {
+      if (!workLogId) return;
+      if (!window.confirm("この作業記録を削除しますか？")) return;
+
+      setLoading(true, "作業記録を削除しています…");
+
+      try {
+        await fetchJson(
+          `${API_BASE}/api/work-logs/${encodeURIComponent(workLogId)}?shop_code=${encodeURIComponent(state.shopCode)}&admin_key=${encodeURIComponent(state.adminKey)}`,
+          { method: "DELETE" }
+        );
+        showToast("作業記録を削除しました。");
+        await openOrder(state.selectedOrderId);
+      } catch (error) {
+        showToast(error.message || "作業記録を削除できませんでした。", true);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    function openPartModal(partId = null) {
+      if (!state.selectedDetail?.order) return;
+
+      const part = partId
+        ? (state.selectedDetail.parts || []).find((item) => item.id === partId)
+        : null;
+
+      state.editingPartId = part?.id || null;
+      el.partModalTitle.textContent =
+        part ? "使用部品を編集" : "使用部品を追加";
+      el.partModalSubtitle.textContent =
+        `${state.selectedDetail.order.order_number}｜${state.selectedDetail.customer.customer_name}`;
+
+      el.partName.value = part?.part_name || "";
+      el.partNumber.value = part?.part_number || "";
+      el.partSupplier.value = part?.supplier_name || "";
+      el.partStatus.value = part?.status || "planned";
+      el.partQuantity.value = part?.quantity ?? 1;
+      el.partUnitCost.value = part?.unit_cost ?? "";
+      el.partSalePrice.value = part?.sale_unit_price ?? "";
+      el.partOrderedAt.value = toDateTimeLocalValue(part?.ordered_at || "");
+      el.partArrivedAt.value = toDateTimeLocalValue(part?.arrived_at || "");
+      el.partUsedAt.value = toDateTimeLocalValue(part?.used_at || "");
+      el.partNote.value = part?.note || "";
+      el.partSyncStatus.checked = !part;
+      el.partError.textContent = "";
+      el.partSaveButton.textContent = part ? "部品情報を更新" : "部品情報を保存";
+
+      el.partModalBackdrop.classList.remove("hidden");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closePartModal(force = false) {
+      if (state.loading && !force) return;
+      state.editingPartId = null;
+      el.partModalBackdrop.classList.add("hidden");
+      document.body.style.overflow = "";
+    }
+
+    function applySuggestedPartDates() {
+      const status = el.partStatus.value;
+      const now = toDateTimeLocalValue(new Date().toISOString());
+
+      if (["ordered", "arrived", "used"].includes(status) && !el.partOrderedAt.value) {
+        el.partOrderedAt.value = now;
+      }
+      if (["arrived", "used"].includes(status) && !el.partArrivedAt.value) {
+        el.partArrivedAt.value = now;
+      }
+      if (status === "used" && !el.partUsedAt.value) {
+        el.partUsedAt.value = now;
+      }
+    }
+
+    async function savePart() {
+      if (!state.selectedOrderId) return;
+
+      const partName = el.partName.value.trim();
+      const quantity = Number(el.partQuantity.value);
+
+      if (!partName) {
+        el.partError.textContent = "部品名を入力してください。";
+        return;
+      }
+      if (!Number.isFinite(quantity) || quantity <= 0) {
+        el.partError.textContent = "数量を正しく入力してください。";
+        return;
+      }
+
+      state.loading = true;
+      setLoading(true, "部品情報を保存しています…");
+      el.partSaveButton.disabled = true;
+      el.partError.textContent = "";
+
+      try {
+        const payload = {
+          shop_code: state.shopCode,
+          admin_key: state.adminKey,
+          part_name: partName,
+          part_number: el.partNumber.value.trim() || null,
+          supplier_name: el.partSupplier.value.trim() || null,
+          quantity,
+          unit_cost: nullableNumber(el.partUnitCost.value),
+          sale_unit_price: nullableNumber(el.partSalePrice.value),
+          status: el.partStatus.value,
+          ordered_at: fromDateTimeLocal(el.partOrderedAt.value),
+          arrived_at: fromDateTimeLocal(el.partArrivedAt.value),
+          used_at: fromDateTimeLocal(el.partUsedAt.value),
+          note: el.partNote.value.trim() || null,
+          sync_order_status: el.partSyncStatus.checked,
+          source_screen: "owner.html",
+        };
+
+        const url = state.editingPartId
+          ? `${API_BASE}/api/parts/${encodeURIComponent(state.editingPartId)}`
+          : `${API_BASE}/api/orders/${encodeURIComponent(state.selectedOrderId)}/parts`;
+
+        await fetchJson(url, {
+          method: state.editingPartId ? "PATCH" : "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        const wasEditing = Boolean(state.editingPartId);
+        const orderId = state.selectedOrderId;
+        state.loading = false;
+        closePartModal(true);
+        showToast(wasEditing ? "部品情報を更新しました。" : "部品を追加しました。");
+        await loadDashboard();
+        await openOrder(orderId);
+      } catch (error) {
+        state.loading = false;
+        el.partError.textContent =
+          error.message || "部品情報を保存できませんでした。";
+      } finally {
+        setLoading(false);
+        el.partSaveButton.disabled = false;
+      }
+    }
+
+    async function deletePart(partId) {
+      if (!partId) return;
+      if (!window.confirm("この部品情報を削除しますか？")) return;
+
+      setLoading(true, "部品情報を削除しています…");
+
+      try {
+        await fetchJson(
+          `${API_BASE}/api/parts/${encodeURIComponent(partId)}?shop_code=${encodeURIComponent(state.shopCode)}&admin_key=${encodeURIComponent(state.adminKey)}`,
+          { method: "DELETE" }
+        );
+        showToast("部品情報を削除しました。");
+        await openOrder(state.selectedOrderId);
+      } catch (error) {
+        showToast(error.message || "部品情報を削除できませんでした。", true);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    function populateWorkLogStaff() {
+      const current = el.workLogStaff.value;
+      el.workLogStaff.innerHTML =
+        '<option value="">未設定</option>' +
+        state.staff.map((staff) => `
+          <option value="${escapeHtml(staff.id)}">
+            ${escapeHtml(staff.display_name)}
+          </option>
+        `).join("");
+
+      if (
+        current &&
+        Array.from(el.workLogStaff.options).some((option) => option.value === current)
+      ) {
+        el.workLogStaff.value = current;
+      }
+    }
+
+    function staffName(staffId) {
+      if (!staffId) return "担当未設定";
+      return state.staff.find((staff) => staff.id === staffId)?.display_name || "担当スタッフ";
+    }
+
+    function defaultWorkLogType(status) {
+      if (status === "diagnosing" || status === "item_received") return "diagnosis";
+      if (status === "repairing" || status === "estimate_approved" || status === "parts_waiting") return "repair";
+      if (status === "final_check") return "test";
+      return "internal_note";
+    }
+
+    function workLogTypeLabel(value) {
+      return {
+        diagnosis: "診断",
+        repair: "修理作業",
+        test: "動作テスト",
+        customer_contact: "お客様連絡",
+        internal_note: "内部メモ",
+        handover: "引き継ぎ",
+        other: "その他",
+      }[value] || value || "作業記録";
+    }
+
+    function partStatusLabel(value) {
+      return {
+        planned: "使用予定",
+        ordered: "発注済み",
+        arrived: "入荷済み",
+        used: "使用済み",
+        returned: "返品済み",
+        cancelled: "取消",
+      }[value] || value || "未設定";
+    }
+
+    function toDateTimeLocalValue(value) {
+      if (!value) return "";
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return "";
+      const local = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+      return local.toISOString().slice(0, 16);
+    }
+
+    function fromDateTimeLocal(value) {
+      if (!value) return null;
+      const date = new Date(value);
+      return Number.isNaN(date.getTime()) ? null : date.toISOString();
+    }
+
+    function nullableNumber(value) {
+      if (value === "" || value === null || value === undefined) return null;
+      const number = Number(value);
+      return Number.isFinite(number) ? number : null;
     }
 
     async function togglePhotoVisibility(
@@ -2320,11 +3153,10 @@
           }
         );
 
+        const orderId = state.selectedOrderId;
         showToast(`状態を「${STATUS_LABELS[status]}」へ更新しました。`);
-        await Promise.all([
-          loadDashboard(),
-          openOrder(state.selectedOrderId),
-        ]);
+        await loadDashboard();
+        await openOrder(orderId);
       } catch (error) {
         showToast(error.message || "状態の更新に失敗しました。", true);
       } finally {
@@ -2350,11 +3182,10 @@
           }
         );
 
+        const orderId = state.selectedOrderId;
         showToast("見積もりをお客様へ発行しました。");
-        await Promise.all([
-          loadDashboard(),
-          openOrder(state.selectedOrderId),
-        ]);
+        await loadDashboard();
+        await openOrder(orderId);
       } catch (error) {
         showToast(error.message || "見積もりの発行に失敗しました。", true);
       } finally {
@@ -2558,10 +3389,9 @@
             : "見積もりを下書き保存しました。"
         );
 
-        await Promise.all([
-          loadDashboard(),
-          openOrder(state.selectedOrderId),
-        ]);
+        const orderId = state.selectedOrderId;
+        await loadDashboard();
+        await openOrder(orderId);
       } catch (error) {
         state.loading = false;
         el.estimateError.textContent =
