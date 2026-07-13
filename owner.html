@@ -1247,8 +1247,8 @@
       </nav>
 
       <div class="sidebar-footer">
-        STEP REPAIR-11<br />
-        REPAIR-11-PICKUP-PAYMENT-WARRANTY-20260713
+        STEP REPAIR-12<br />
+        REPAIR-12-OWNER-SETTINGS-20260713
       </div>
     </aside>
 
@@ -1264,6 +1264,9 @@
             <span class="dot"></span>
             <span id="connectionText">読み込み中…</span>
           </div>
+          <button id="settingsButton" class="btn btn-soft" type="button">
+            設定
+          </button>
           <button id="refreshButton" class="btn btn-soft" type="button">
             更新
           </button>
@@ -1320,7 +1323,7 @@
       </section>
 
       <div class="version">
-        DPRO 修理受付 LINE｜STEP REPAIR-11｜REPAIR-11-PICKUP-PAYMENT-WARRANTY-20260713
+        DPRO 修理受付 LINE｜STEP REPAIR-12｜REPAIR-12-OWNER-SETTINGS-20260713
       </div>
     </main>
   </div>
@@ -1767,6 +1770,7 @@
       selectedDetail: null,
       selectedEstimates: [],
       staff: [],
+      settings: null,
       loading: false,
       estimateOrderId: null,
       editingWorkLogId: null,
@@ -1795,6 +1799,7 @@
       todayLabel: document.getElementById("todayLabel"),
       connection: document.getElementById("connection"),
       connectionText: document.getElementById("connectionText"),
+      settingsButton: document.getElementById("settingsButton"),
       refreshButton: document.getElementById("refreshButton"),
       logoutButton: document.getElementById("logoutButton"),
       taskGrid: document.getElementById("taskGrid"),
@@ -2009,6 +2014,10 @@
         el.adminCode.focus();
       });
 
+      el.settingsButton.addEventListener("click", () => {
+        location.href =
+          `owner-settings.html?shop_code=${encodeURIComponent(state.shopCode)}&v=repair-12`;
+      });
       el.refreshButton.addEventListener("click", loadDashboard);
       el.logoutButton.addEventListener("click", logout);
       el.searchInput.addEventListener("input", () => {
@@ -2116,7 +2125,10 @@
         saveAdminSession();
         el.loginPage.classList.add("hidden");
         el.appShell.classList.remove("hidden");
-        await loadDashboard();
+        await Promise.all([
+          loadDashboard(),
+          loadOwnerSettings(),
+        ]);
 
         const orderId = new URLSearchParams(location.search).get("order_id");
         if (orderId) await openOrder(orderId);
@@ -2131,6 +2143,18 @@
       } finally {
         setLoading(false);
         el.loginButton.disabled = false;
+      }
+    }
+
+    async function loadOwnerSettings() {
+      try {
+        const response = await fetchJson(
+          `${API_BASE}/api/settings?shop_code=${encodeURIComponent(state.shopCode)}`
+        );
+        state.settings = response.settings || null;
+      } catch (error) {
+        console.error(error);
+        state.settings = null;
       }
     }
 
@@ -3649,7 +3673,11 @@
       const detail = state.selectedDetail;
       if (!detail) return;
 
-      const text = [
+      const templateKey = messageTemplateKeyForOrder(detail.order);
+      const template =
+        state.settings?.message_templates?.[templateKey];
+
+      const fallback = [
         `${detail.customer.customer_name}様`,
         "",
         "修理受付の状況をご案内します。",
@@ -3666,8 +3694,82 @@
         "変更がありましたら改めてご案内します。",
       ].filter(Boolean).join("\n");
 
+      const text = template
+        ? applyMessageTemplate(template, detail)
+        : fallback;
+
       await copyText(text);
-      showToast("状況連絡文をコピーしました。");
+      showToast(
+        template
+          ? "店舗設定の案内文をコピーしました。"
+          : "状況連絡文をコピーしました。"
+      );
+    }
+
+    function messageTemplateKeyForOrder(order) {
+      if (
+        order.storage_deadline &&
+        new Date(`${order.storage_deadline}T23:59:59+09:00`).getTime() <
+          Date.now() &&
+        !["delivered", "closed"].includes(order.status)
+      ) {
+        return "storage_overdue";
+      }
+
+      return {
+        consultation_received: "provisional_received",
+        provisional_received: "provisional_received",
+        visit_scheduled: "visit_reminder",
+        item_received: "item_received",
+        diagnosing: "item_received",
+        estimate_preparing: "estimate_ready",
+        estimate_waiting_customer: "estimate_ready",
+        customer_consultation_requested: "estimate_ready",
+        estimate_approved: "estimate_approved",
+        parts_ordering: "parts_waiting",
+        parts_waiting: "parts_waiting",
+        repairing: "repair_started",
+        final_check: "repair_started",
+        repair_completed: "repair_completed",
+        completion_notified: "repair_completed",
+        pickup_scheduled: "pickup_reminder",
+        awaiting_pickup: "repair_completed",
+        return_waiting: "unrepairable",
+        unrepairable: "unrepairable",
+      }[order.status] || "provisional_received";
+    }
+
+    function applyMessageTemplate(template, detail) {
+      const replacements = {
+        customer_name: detail.customer.customer_name || "お客様",
+        order_number: detail.order.order_number || "",
+        item_name: itemName(detail.item),
+        status: STATUS_LABELS[detail.order.status] || detail.order.status || "",
+        visit_datetime: detail.order.visit_requested_at
+          ? formatDateTime(detail.order.visit_requested_at)
+          : "未定",
+        pickup_datetime: detail.order.pickup_due_at
+          ? formatDateTime(detail.order.pickup_due_at)
+          : "未定",
+        warranty_end_date:
+          detail.warranty?.warranty_end_date
+            ? formatDate(detail.warranty.warranty_end_date)
+            : "未定",
+        shop_name:
+          state.dashboard?.shop?.shop_name ||
+          "修理受付店",
+        shop_phone:
+          state.dashboard?.shop?.phone ||
+          "",
+      };
+
+      return String(template).replace(
+        /\{([a-z0-9_]+)\}/gi,
+        (match, key) =>
+          Object.hasOwn(replacements, key)
+            ? replacements[key]
+            : match
+      );
     }
 
     function openMemberPage() {

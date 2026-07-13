@@ -1116,7 +1116,7 @@
     </section>
 
     <div class="version">
-      DPRO 修理受付 LINE｜STEP REPAIR-11｜REPAIR-11-PICKUP-PAYMENT-WARRANTY-20260713
+      DPRO 修理受付 LINE｜STEP REPAIR-12｜REPAIR-12-OWNER-SETTINGS-20260713
     </div>
   </main>
 
@@ -3397,7 +3397,11 @@
     }
 
     async function copyOrderMessage(order) {
-      const text = [
+      const templateKey = messageTemplateKeyForOrder(order);
+      const template =
+        state.settings?.message_templates?.[templateKey];
+
+      const fallback = [
         `${order.customer_name || "お客様"}様`,
         "",
         "修理受付についてご案内します。",
@@ -3408,8 +3412,82 @@
         "変更がある場合は店舗までご連絡ください。",
       ].join("\n");
 
+      const text = template
+        ? applyMessageTemplate(template, order)
+        : fallback;
+
       await copyText(text);
-      showToast("状況連絡文をコピーしました。");
+      showToast(
+        template
+          ? "店舗設定の案内文をコピーしました。"
+          : "状況連絡文をコピーしました。"
+      );
+    }
+
+    function messageTemplateKeyForOrder(order) {
+      if (
+        order.storage_deadline &&
+        new Date(`${order.storage_deadline}T23:59:59+09:00`).getTime() <
+          Date.now() &&
+        !["delivered", "closed"].includes(order.status)
+      ) {
+        return "storage_overdue";
+      }
+
+      return {
+        consultation_received: "provisional_received",
+        provisional_received: "provisional_received",
+        visit_scheduled: "visit_reminder",
+        item_received: "item_received",
+        diagnosing: "item_received",
+        estimate_preparing: "estimate_ready",
+        estimate_waiting_customer: "estimate_ready",
+        customer_consultation_requested: "estimate_ready",
+        estimate_approved: "estimate_approved",
+        parts_ordering: "parts_waiting",
+        parts_waiting: "parts_waiting",
+        repairing: "repair_started",
+        final_check: "repair_started",
+        repair_completed: "repair_completed",
+        completion_notified: "repair_completed",
+        pickup_scheduled: "pickup_reminder",
+        awaiting_pickup: "repair_completed",
+        return_waiting: "unrepairable",
+        unrepairable: "unrepairable",
+      }[order.status] || "provisional_received";
+    }
+
+    function applyMessageTemplate(template, order) {
+      const replacements = {
+        customer_name: order.customer_name || "お客様",
+        order_number: order.order_number || "",
+        item_name: itemName(order),
+        status: STATUS_LABELS[order.status] || order.status || "",
+        visit_datetime: order.visit_requested_at
+          ? formatDateTime(order.visit_requested_at)
+          : "未定",
+        pickup_datetime: order.pickup_due_at
+          ? formatDateTime(order.pickup_due_at)
+          : "未定",
+        warranty_end_date:
+          order.warranty_end_date
+            ? formatDate(order.warranty_end_date)
+            : "未定",
+        shop_name:
+          state.dashboard?.shop?.shop_name ||
+          "修理受付店",
+        shop_phone:
+          state.dashboard?.shop?.phone ||
+          "",
+      };
+
+      return String(template).replace(
+        /\{([a-z0-9_]+)\}/gi,
+        (match, key) =>
+          Object.hasOwn(replacements, key)
+            ? replacements[key]
+            : match
+      );
     }
 
     async function copyDetailMessage() {
