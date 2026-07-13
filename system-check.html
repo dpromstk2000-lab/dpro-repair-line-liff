@@ -891,7 +891,7 @@
     </section>
 
     <div class="footer">
-      DPRO 修理受付 LINE｜STEP REPAIR-13｜REPAIR-13-SYSTEM-CHECK-DEMO-PREPARE-20260713
+      DPRO 修理受付 LINE｜STEP REPAIR-13-R1｜REPAIR-13-R1-DEMO-PARTS-BULK-FIX-20260713
     </div>
   </main>
 
@@ -1197,22 +1197,22 @@
         {
           title: "お客様の修理相談",
           note: "LINEから新しい修理相談を送信",
-          url: `${PAGES_BASE}/index.html?v=repair-13`,
+          url: `${PAGES_BASE}/index.html?v=repair-13-r1`,
         },
         {
           title: "PC管理画面",
           note: "全案件・見積もり・作業・支払いを管理",
-          url: `${PAGES_BASE}/owner.html?v=repair-13`,
+          url: `${PAGES_BASE}/owner.html?v=repair-13-r1`,
         },
         {
           title: "受付iPad",
           note: "電話・来店受付、写真撮影、お渡し",
-          url: `${PAGES_BASE}/owner-ipad.html?v=repair-13`,
+          url: `${PAGES_BASE}/owner-ipad.html?v=repair-13-r1`,
         },
         {
           title: "オーナー簡単設定",
           note: "営業時間・保証・カテゴリー・案内文",
-          url: `${PAGES_BASE}/owner-settings.html?v=repair-13`,
+          url: `${PAGES_BASE}/owner-settings.html?v=repair-13-r1`,
         },
         {
           title: "Workerヘルス",
@@ -1419,9 +1419,17 @@
         }
 
         if (!response.ok || data?.ok === false) {
-          const error = new Error(
+          const baseMessage =
             data?.error?.message ||
-              `通信に失敗しました（${response.status}）`
+            `通信に失敗しました（${response.status}）`;
+          const detailMessage =
+            data?.error?.details?.message ||
+            data?.error?.details?.code ||
+            "";
+          const error = new Error(
+            detailMessage
+              ? `${baseMessage}：${detailMessage}`
+              : baseMessage
           );
           error.status = response.status;
           error.code = data?.error?.code || null;
