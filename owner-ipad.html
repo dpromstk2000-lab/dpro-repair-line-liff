@@ -463,7 +463,8 @@
 
     .card-actions {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns:
+        repeat(3, minmax(0, 1fr));
       gap: 7px;
       margin-top: 12px;
     }
@@ -752,6 +753,203 @@
       margin-top: 15px;
     }
 
+    .photo-focus {
+      border-color: #8dcec1 !important;
+      box-shadow:
+        0 0 0 5px rgba(15,118,110,.10),
+        0 14px 32px rgba(15,118,110,.13);
+      animation: photoFocusPulse 1.25s ease 2;
+    }
+
+    @keyframes photoFocusPulse {
+      0%, 100% {
+        box-shadow:
+          0 0 0 4px rgba(15,118,110,.08),
+          0 12px 28px rgba(15,118,110,.10);
+      }
+      50% {
+        box-shadow:
+          0 0 0 9px rgba(15,118,110,.16),
+          0 16px 36px rgba(15,118,110,.15);
+      }
+    }
+
+    .photo-guide {
+      margin-top: 10px;
+      padding: 12px;
+      border: 1px solid #b8ddd4;
+      border-radius: 14px;
+      background:
+        linear-gradient(135deg, #effaf7 0, #e3f4ef 100%);
+    }
+
+    .photo-guide-title {
+      color: var(--primary-dark);
+      font-size: 12px;
+      font-weight: 950;
+    }
+
+    .photo-guide-note {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 9px;
+    }
+
+    .photo-guide-steps {
+      display: grid;
+      grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+      gap: 7px;
+      margin-top: 10px;
+    }
+
+    .photo-step-button {
+      min-height: 65px;
+      padding: 9px;
+      color: var(--primary-dark);
+      border: 1px solid #bdded6;
+      border-radius: 12px;
+      background: #fff;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .photo-step-button strong {
+      display: block;
+      font-size: 12px;
+    }
+
+    .photo-step-button span {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 9px;
+    }
+
+    .photo-step-button.done {
+      color: var(--success);
+      border-color: #a9d8ca;
+      background: var(--success-soft);
+    }
+
+    .photo-step-button.next {
+      color: #fff;
+      border-color: var(--primary);
+      background:
+        linear-gradient(135deg, var(--primary-dark), var(--primary));
+      box-shadow: 0 8px 18px rgba(15,118,110,.18);
+    }
+
+    .photo-step-button.next span {
+      color: rgba(255,255,255,.82);
+    }
+
+    .photo-guide-status {
+      margin-top: 8px;
+      color: var(--primary-dark);
+      font-size: 10px;
+      font-weight: 900;
+    }
+
+    .photo-phase-actions {
+      display: grid;
+      grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+      gap: 7px;
+      margin-top: 9px;
+    }
+
+    .photo-phase-button {
+      min-height: 42px;
+      padding: 7px 8px;
+      color: #40504b;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #f7faf9;
+      font-size: 9px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .photo-phase-button:hover,
+    .photo-phase-button.active {
+      color: var(--primary-dark);
+      border-color: #acd8ce;
+      background: var(--primary-soft);
+    }
+
+    .photo-comparison {
+      display: grid;
+      grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+      gap: 9px;
+      margin: 10px 0 13px;
+    }
+
+    .comparison-card {
+      min-width: 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #f8fbfa;
+    }
+
+    .comparison-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 7px;
+      padding: 7px 9px;
+      color: var(--primary-dark);
+      background: var(--primary-soft);
+      font-size: 10px;
+      font-weight: 950;
+    }
+
+    .comparison-label span {
+      color: var(--muted);
+      font-size: 8px;
+    }
+
+    .comparison-card img {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      display: block;
+      object-fit: cover;
+      background: #e6ecea;
+    }
+
+    .comparison-empty {
+      display: grid;
+      place-items: center;
+      aspect-ratio: 4 / 3;
+      padding: 12px;
+      color: var(--muted);
+      background: #f3f7f5;
+      text-align: center;
+      font-size: 9px;
+      font-weight: 800;
+    }
+
+    .comparison-meta {
+      padding: 7px 9px;
+      color: var(--muted);
+      font-size: 8px;
+      overflow-wrap: anywhere;
+    }
+
+    .photo-count-badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 23px;
+      padding: 3px 7px;
+      color: var(--primary-dark);
+      border-radius: 999px;
+      background: var(--primary-soft);
+      font-size: 8px;
+      font-weight: 950;
+    }
+
     .intake-photo-grid {
       display: grid;
       grid-template-columns:
@@ -965,6 +1163,15 @@
       .existing-photo-grid {
         grid-template-columns: repeat(2, 1fr);
       }
+      .photo-guide-steps {
+        grid-template-columns: 1fr;
+      }
+      .photo-phase-actions {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .photo-comparison {
+        grid-template-columns: 1fr;
+      }
       .delivery-summary-grid { grid-template-columns:1fr; }
     }
 
@@ -1063,6 +1270,13 @@
         <div class="action-sub">お渡し予定を確認</div>
       </button>
 
+      <button class="main-action" type="button" data-filter="photo_intake">
+        <span class="count-badge">写</span>
+        <span class="action-icon">撮</span>
+        <div class="action-title">写真・お預かり</div>
+        <div class="action-sub">全体→傷→付属品を撮影</div>
+      </button>
+
       <button class="main-action" type="button" data-action="customer_search">
         <span class="count-badge">⌕</span>
         <span class="action-icon">顧</span>
@@ -1116,7 +1330,7 @@
     </section>
 
     <div class="version">
-      DPRO 修理受付 LINE｜STEP REPAIR-12｜REPAIR-12-OWNER-SETTINGS-20260713
+      DPRO 修理受付 LINE｜STEP REPAIR-14｜REPAIR-14-IPAD-PHOTO-UX-20260713
     </div>
   </main>
 
@@ -1347,27 +1561,61 @@
         <datalist id="accessoryOptionsList"></datalist>
       </section>
 
-      <section class="form-section">
-        <h3>受付写真</h3>
+      <section id="photoCaptureSection" class="form-section">
+        <h3>写真撮影</h3>
         <p class="field-note">
-          iPadのカメラで撮影できます。保存前に写真の種類と、お客様画面への共有可否を選べます。
+          iPadの背面カメラで撮影します。写真は非公開Storageへ保存され、共有をONにした写真だけがお客様画面に表示されます。
         </p>
+
+        <div class="photo-guide">
+          <div class="photo-guide-title">受付時はこの順番で3種類を撮影</div>
+          <div class="photo-guide-note">各ボタンを押すと、写真の種類を自動設定してカメラを開きます。</div>
+
+          <div id="photoCaptureGuide" class="photo-guide-steps">
+            <button class="photo-step-button" type="button" data-capture-type="received_overview">
+              <strong>1　全体</strong>
+              <span>本体の表・裏・全体像</span>
+            </button>
+            <button class="photo-step-button" type="button" data-capture-type="received_damage">
+              <strong>2　傷・破損</strong>
+              <span>既存傷や割れを接写</span>
+            </button>
+            <button class="photo-step-button" type="button" data-capture-type="received_accessory">
+              <strong>3　付属品</strong>
+              <span>充電器・ケースなど</span>
+            </button>
+          </div>
+
+          <div id="photoGuideStatus" class="photo-guide-status">
+            まず「1 全体」を撮影してください。
+          </div>
+        </div>
+
+        <div class="photo-phase-actions">
+          <button class="photo-phase-button" type="button" data-capture-type="diagnosis">診断写真</button>
+          <button class="photo-phase-button" type="button" data-capture-type="repair_process">修理中</button>
+          <button class="photo-phase-button" type="button" data-capture-type="repair_completed">修理完了</button>
+          <button class="photo-phase-button" type="button" data-capture-type="delivery">引き渡し</button>
+        </div>
 
         <input id="intakeCameraInput" class="hidden" type="file" accept="image/*" capture="environment" />
         <input id="intakePhotoInput" class="hidden" type="file" accept="image/jpeg,image/png,image/webp" multiple />
 
         <div class="photo-upload-actions">
           <button id="takeIntakePhotoButton" class="btn btn-primary" type="button">
-            写真を撮る
+            次のおすすめ写真を撮る
           </button>
           <button id="selectIntakePhotoButton" class="btn btn-soft" type="button">
-            写真を選ぶ
+            端末から写真を選ぶ
           </button>
         </div>
 
         <div id="intakePhotoPreviews" class="intake-photo-grid"></div>
 
         <div id="existingPhotosSection" class="hidden" style="margin-top:13px">
+          <label>修理前・修理後の比較</label>
+          <div id="photoComparison" class="photo-comparison"></div>
+
           <label>登録済み写真</label>
           <div id="existingPhotosGrid" class="existing-photo-grid"></div>
         </div>
@@ -1483,6 +1731,10 @@
       new_consultation: ["LINE仮受付", "新しく届いた修理相談を表示します。"],
       today_visit: ["本日の来店", "本日来店予定の受付を表示します。"],
       today_pickup: ["本日の引き取り", "本日お渡し予定の案件を表示します。"],
+      photo_intake: [
+        "写真・お預かり確認",
+        "案件を選び、全体・傷・付属品・修理前後の写真を撮影します。",
+      ],
       all: ["全案件", "対応中の修理案件をまとめて表示します。"],
     };
 
@@ -1519,6 +1771,8 @@
       intakeDetail: null,
       intakePhotoFiles: [],
       intakePreviewUrls: [],
+      nextPhotoType: "received_overview",
+      photoFocusRequested: false,
       deliveryOrderId: null,
       deliveryDetail: null,
       loading: false,
@@ -1627,10 +1881,18 @@
         document.getElementById("takeIntakePhotoButton"),
       selectIntakePhotoButton:
         document.getElementById("selectIntakePhotoButton"),
+      photoCaptureSection:
+        document.getElementById("photoCaptureSection"),
+      photoCaptureGuide:
+        document.getElementById("photoCaptureGuide"),
+      photoGuideStatus:
+        document.getElementById("photoGuideStatus"),
       intakePhotoPreviews:
         document.getElementById("intakePhotoPreviews"),
       existingPhotosSection:
         document.getElementById("existingPhotosSection"),
+      photoComparison:
+        document.getElementById("photoComparison"),
       existingPhotosGrid:
         document.getElementById("existingPhotosGrid"),
       intakeCustomerConfirmed:
@@ -1799,7 +2061,26 @@
       );
       el.takeIntakePhotoButton.addEventListener(
         "click",
-        () => el.intakeCameraInput.click()
+        () => {
+          state.nextPhotoType =
+            recommendedNextPhotoType();
+          openPhotoCamera();
+        }
+      );
+
+      el.photoCaptureSection.addEventListener(
+        "click",
+        (event) => {
+          const button = event.target.closest(
+            "[data-capture-type]"
+          );
+          if (!button) return;
+
+          state.nextPhotoType =
+            button.dataset.captureType;
+          renderPhotoCaptureGuide();
+          openPhotoCamera();
+        }
       );
       el.selectIntakePhotoButton.addEventListener(
         "click",
@@ -1864,6 +2145,24 @@
           loadDashboard(),
           loadSettings(),
         ]);
+
+        const params =
+          new URLSearchParams(location.search);
+        const directOrderId =
+          params.get("order_id");
+        const directMode =
+          params.get("mode");
+
+        if (directOrderId) {
+          if (directMode === "photo") {
+            await openIntakeModal(
+              directOrderId,
+              { focusPhoto: true }
+            );
+          } else {
+            await openOrder(directOrderId);
+          }
+        }
       } catch (error) {
         clearAdminSession();
         if (showError) {
@@ -1979,7 +2278,17 @@
       }
 
       el.orderList.innerHTML = filtered.map((order) => {
-        const nextStatus = getReceptionQuickStatus(order.status);
+        const nextStatus =
+          getReceptionQuickStatus(order.status);
+        const photoLabel =
+          [
+            "consultation_received",
+            "provisional_received",
+            "visit_scheduled",
+          ].includes(order.status)
+            ? "お預かり・写真"
+            : "写真を追加";
+
         return `
           <article class="order-card" data-order-id="${escapeHtml(order.order_id)}">
             <div class="order-head">
@@ -2008,50 +2317,67 @@
                 type="button"
                 data-order-action="detail"
               >
-                詳細を見る
+                詳細
               </button>
-              ${
-                [
-                  "repair_completed",
-                  "completion_notified",
-                  "pickup_scheduled",
-                  "awaiting_pickup",
-                  "return_waiting",
-                ].includes(order.status)
-                  ? `<button class="btn btn-primary" type="button" data-order-action="delivery">お渡し・お会計</button>`
-                  : [
-                      "consultation_received",
-                      "provisional_received",
-                      "visit_scheduled",
-                    ].includes(order.status)
-                    ? `<button
-                      class="btn btn-primary"
-                      type="button"
-                      data-order-action="intake"
-                    >
-                      お預かり確認
-                    </button>`
-                  : nextStatus
-                    ? `<button
-                        class="btn btn-primary"
-                        type="button"
-                        data-order-action="quick-status"
-                        data-next-status="${escapeHtml(nextStatus.value)}"
-                      >
-                        ${escapeHtml(nextStatus.label)}
-                      </button>`
-                    : `<button
-                        class="btn btn-soft"
-                        type="button"
-                        data-order-action="copy"
-                      >
-                        文面コピー
-                      </button>`
-              }
+
+              <button
+                class="btn btn-soft"
+                type="button"
+                data-order-action="photo"
+              >
+                ${escapeHtml(photoLabel)}
+              </button>
+
+              ${renderOrderMainAction(order, nextStatus)}
             </div>
           </article>
         `;
       }).join("");
+    }
+
+    function renderOrderMainAction(order, nextStatus) {
+      if (
+        [
+          "repair_completed",
+          "completion_notified",
+          "pickup_scheduled",
+          "awaiting_pickup",
+          "return_waiting",
+        ].includes(order.status)
+      ) {
+        return `
+          <button
+            class="btn btn-primary"
+            type="button"
+            data-order-action="delivery"
+          >
+            お渡し・会計
+          </button>
+        `;
+      }
+
+      if (nextStatus) {
+        return `
+          <button
+            class="btn btn-primary"
+            type="button"
+            data-order-action="quick-status"
+            data-next-status="${escapeHtml(nextStatus.value)}"
+          >
+            ${escapeHtml(nextStatus.label)}
+          </button>
+        `;
+      }
+
+      return `
+        <button
+          class="btn btn-soft"
+          type="button"
+          data-order-action="copy"
+        >
+          文面コピー
+        </button>
+      `;
     }
 
     function matchesFilter(order, filter) {
@@ -2061,6 +2387,13 @@
       if (filter === "new_consultation") return order.is_new_consultation === true;
       if (filter === "today_visit") return order.is_today_visit === true;
       if (filter === "today_pickup") return order.is_today_pickup === true;
+      if (filter === "photo_intake") {
+        return ![
+          "delivered",
+          "cancelled",
+          "closed",
+        ].includes(order.status);
+      }
       return true;
     }
 
@@ -2090,8 +2423,14 @@
         await openOrder(orderId);
       } else if (action === "delivery") {
         await openDeliveryModal(orderId);
-      } else if (action === "intake") {
-        await openIntakeModal(orderId);
+      } else if (
+        action === "intake" ||
+        action === "photo"
+      ) {
+        await openIntakeModal(
+          orderId,
+          { focusPhoto: action === "photo" }
+        );
       } else if (action === "quick-status") {
         await updateOrderStatus(
           orderId,
@@ -2172,7 +2511,15 @@
         </section>
 
         <section class="detail-card">
-          <div class="detail-title">写真・付属品</div>
+          <div class="detail-title">
+            写真・付属品
+            <span class="photo-count-badge">
+              写真 ${Array.isArray(detail.photos) ? detail.photos.length : 0}枚
+            </span>
+          </div>
+
+          ${photoComparisonMarkup(detail.photos || [])}
+
           ${
             Array.isArray(detail.photos) && detail.photos.length
               ? `<div class="existing-photo-grid">
@@ -2185,12 +2532,13 @@
                     >
                       ${
                         photo.signed_url
-                          ? `<img src="${escapeHtml(photo.signed_url)}" alt="受付写真" />`
+                          ? `<img src="${escapeHtml(photo.signed_url)}" alt="修理写真" />`
                           : ""
                       }
                       <div>
                         ${escapeHtml(photoTypeLabel(photo.photo_type))}
                         ${photo.visibility === "customer_visible" ? "｜お客様共有" : "｜店舗のみ"}
+                        ${photo.comment ? `｜${escapeHtml(photo.comment)}` : ""}
                       </div>
                     </a>
                   `).join("")}
@@ -2219,7 +2567,7 @@
             data-drawer-action="intake"
             style="width:100%;margin-top:11px"
           >
-            お預かり確認・写真を編集
+            写真を追加・お預かり確認
           </button>
         </section>
 
@@ -2638,7 +2986,10 @@
         await loadDashboard();
 
         if (state.receptionType === "walk_in") {
-          await openIntakeModal(response.order.id);
+          await openIntakeModal(
+            response.order.id,
+            { focusPhoto: true }
+          );
         } else {
           await openOrder(response.order.id);
         }
@@ -2664,7 +3015,10 @@
     async function saveDelivery(){if(!state.deliveryOrderId)return;state.loading=true;setLoading(true,"お渡し完了を保存しています…");try{await fetchJson(`${API_BASE}/api/orders/${encodeURIComponent(state.deliveryOrderId)}/deliver`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({shop_code:state.shopCode,admin_key:state.adminKey,confirm_accessories_returned:el.deliveryAccessoriesConfirmed.checked,record_payment:el.deliveryRecordPayment.checked,payment_method:el.deliveryPaymentMethod.value,payment_amount:el.deliveryPaymentAmount.value,allow_unpaid_delivery:el.deliveryAllowUnpaid.checked,create_warranty:el.deliveryCreateWarranty.checked,warranty_days:Number(el.deliveryWarrantyDays.value||0),comment:el.deliveryComment.value.trim()||null,source_screen:"owner-ipad.html"})});const id=state.deliveryOrderId;state.loading=false;closeDeliveryModal(true);closeDrawer();showToast("お渡し・お会計・保証を完了しました。");await loadDashboard();await openOrder(id);}catch(e){state.loading=false;el.deliveryError.textContent=e.message||"お渡し完了を保存できませんでした。";}finally{setLoading(false);}}
     function formatMoney(v){const n=Number(v||0);return new Intl.NumberFormat("ja-JP",{style:"currency",currency:"JPY",maximumFractionDigits:0}).format(Number.isFinite(n)?n:0);}
 
-    async function openIntakeModal(orderId) {
+    async function openIntakeModal(
+      orderId,
+      options = {}
+    ) {
       if (!orderId) return;
 
       setLoading(
@@ -2681,9 +3035,16 @@
 
         state.intakeOrderId = orderId;
         state.intakeDetail = detail;
+        state.photoFocusRequested =
+          options.focusPhoto === true;
         clearIntakePhotoFiles();
 
         const order = detail.order || {};
+        state.nextPhotoType =
+          recommendedPhotoTypeForOrder(
+            order,
+            detail.photos || []
+          );
         el.intakeModalTitle.textContent =
           "お預かり確認";
         el.intakeModalSubtitle.textContent =
@@ -2718,11 +3079,35 @@
         renderExistingIntakePhotos(
           detail.photos || []
         );
+        renderPhotoCaptureGuide();
 
         el.intakeModalBackdrop.classList.remove(
           "hidden"
         );
         document.body.style.overflow = "hidden";
+
+        if (state.photoFocusRequested) {
+          window.setTimeout(() => {
+            el.photoCaptureSection.classList.add(
+              "photo-focus"
+            );
+            el.photoCaptureSection.scrollIntoView({
+              behavior: "smooth",
+              block: "start",
+            });
+            showToast(
+              "続けて「全体 → 傷・破損 → 付属品」の順で撮影してください。"
+            );
+
+            window.setTimeout(
+              () =>
+                el.photoCaptureSection.classList.remove(
+                  "photo-focus"
+                ),
+              2800
+            );
+          }, 180);
+        }
       } catch (error) {
         showToast(
           error.message ||
@@ -2742,6 +3127,9 @@
       );
       state.intakeOrderId = null;
       state.intakeDetail = null;
+      state.photoFocusRequested = false;
+      state.nextPhotoType =
+        "received_overview";
       clearIntakePhotoFiles();
       el.intakeAccessories.innerHTML = "";
       el.intakeError.textContent = "";
@@ -2915,13 +3303,17 @@
             file: compressed,
             original_name: file.name,
             photo_type:
-              "received_overview",
+              state.nextPhotoType ||
+              recommendedNextPhotoType(),
             visibility: "internal",
             comment: "",
           });
         }
 
+        state.nextPhotoType =
+          recommendedNextPhotoType();
         renderIntakePhotoPreviews();
+        renderPhotoCaptureGuide();
       } finally {
         setLoading(false);
       }
@@ -2997,6 +3389,8 @@
           })
           .join("");
 
+      renderPhotoCaptureGuide();
+
       el.intakePhotoPreviews
         .querySelectorAll(
           "[data-photo-field]"
@@ -3028,6 +3422,9 @@
       if (field === "type") {
         entry.photo_type =
           event.target.value;
+        state.nextPhotoType =
+          recommendedNextPhotoType();
+        renderPhotoCaptureGuide();
       } else if (field === "visibility") {
         entry.visibility =
           event.target.checked
@@ -3049,7 +3446,10 @@
       }
 
       state.intakePhotoFiles.splice(index, 1);
+      state.nextPhotoType =
+        recommendedNextPhotoType();
       renderIntakePhotoPreviews();
+      renderPhotoCaptureGuide();
     }
 
     function clearIntakePhotoFiles() {
@@ -3066,6 +3466,290 @@
       }
     }
 
+    function openPhotoCamera() {
+      if (!state.intakeOrderId) {
+        showToast(
+          "先に案件を選択してください。",
+          true
+        );
+        return;
+      }
+      el.intakeCameraInput.click();
+    }
+
+    function allPhotoTypes() {
+      const existing =
+        Array.isArray(
+          state.intakeDetail?.photos
+        )
+          ? state.intakeDetail.photos.map(
+              (photo) =>
+                photo.photo_type
+            )
+          : [];
+
+      const pending =
+        state.intakePhotoFiles.map(
+          (entry) =>
+            entry.photo_type
+        );
+
+      return [
+        ...existing,
+        ...pending,
+      ];
+    }
+
+    function recommendedNextPhotoType() {
+      const types =
+        new Set(allPhotoTypes());
+
+      for (const type of [
+        "received_overview",
+        "received_damage",
+        "received_accessory",
+      ]) {
+        if (!types.has(type)) {
+          return type;
+        }
+      }
+
+      return recommendedPhotoTypeForOrder(
+        state.intakeDetail?.order || {},
+        state.intakeDetail?.photos || []
+      );
+    }
+
+    function recommendedPhotoTypeForOrder(
+      order,
+      photos
+    ) {
+      const existingTypes =
+        new Set(
+          (Array.isArray(photos) ? photos : [])
+            .map(
+              (photo) =>
+                photo.photo_type
+            )
+        );
+
+      for (const type of [
+        "received_overview",
+        "received_damage",
+        "received_accessory",
+      ]) {
+        if (!existingTypes.has(type)) {
+          return type;
+        }
+      }
+
+      if (
+        [
+          "repairing",
+          "parts_ordering",
+          "parts_waiting",
+        ].includes(order.status)
+      ) {
+        return "repair_process";
+      }
+
+      if (
+        [
+          "final_check",
+          "repair_completed",
+          "completion_notified",
+          "pickup_scheduled",
+          "awaiting_pickup",
+        ].includes(order.status)
+      ) {
+        return "repair_completed";
+      }
+
+      if (
+        [
+          "delivered",
+          "closed",
+        ].includes(order.status)
+      ) {
+        return "delivery";
+      }
+
+      if (
+        [
+          "diagnosing",
+          "estimate_preparing",
+          "estimate_waiting_customer",
+          "customer_consultation_requested",
+        ].includes(order.status)
+      ) {
+        return "diagnosis";
+      }
+
+      return "received_overview";
+    }
+
+    function renderPhotoCaptureGuide() {
+      if (
+        !el.photoCaptureGuide ||
+        !el.photoGuideStatus
+      ) {
+        return;
+      }
+
+      const types =
+        new Set(allPhotoTypes());
+      const steps = [
+        [
+          "received_overview",
+          "1 全体",
+        ],
+        [
+          "received_damage",
+          "2 傷・破損",
+        ],
+        [
+          "received_accessory",
+          "3 付属品",
+        ],
+      ];
+
+      el.photoCaptureGuide
+        .querySelectorAll(
+          "[data-capture-type]"
+        )
+        .forEach((button) => {
+          const type =
+            button.dataset.captureType;
+          const done =
+            types.has(type);
+          const next =
+            !done &&
+            type ===
+              state.nextPhotoType;
+
+          button.classList.toggle(
+            "done",
+            done
+          );
+          button.classList.toggle(
+            "next",
+            next
+          );
+        });
+
+      const missing =
+        steps.filter(
+          ([type]) =>
+            !types.has(type)
+        );
+
+      if (!missing.length) {
+        el.photoGuideStatus.textContent =
+          "受付時の基本写真3種類が揃いました。必要に応じて診断・修理中・修理完了も撮影してください。";
+      } else {
+        const next =
+          missing[0];
+        el.photoGuideStatus.textContent =
+          `次は「${next[1]}」を撮影してください。`;
+      }
+    }
+
+    function photoComparisonMarkup(
+      photos
+    ) {
+      const available =
+        Array.isArray(photos)
+          ? photos.filter(
+              (photo) =>
+                photo.signed_url
+            )
+          : [];
+
+      const beforeTypes =
+        new Set([
+          "customer_before_visit",
+          "received_overview",
+          "received_damage",
+          "received_accessory",
+        ]);
+      const afterTypes =
+        new Set([
+          "repair_completed",
+          "delivery",
+        ]);
+
+      const before =
+        available.find(
+          (photo) =>
+            beforeTypes.has(
+              photo.photo_type
+            )
+        ) || null;
+      const after =
+        available.find(
+          (photo) =>
+            afterTypes.has(
+              photo.photo_type
+            )
+        ) || null;
+
+      const card = (
+        label,
+        photo,
+        emptyText
+      ) => `
+        <article class="comparison-card">
+          <div class="comparison-label">
+            ${escapeHtml(label)}
+            <span>
+              ${
+                photo
+                  ? escapeHtml(
+                      photoTypeLabel(
+                        photo.photo_type
+                      )
+                    )
+                  : "未登録"
+              }
+            </span>
+          </div>
+          ${
+            photo
+              ? `<a
+                  href="${escapeHtml(photo.signed_url)}"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  <img
+                    src="${escapeHtml(photo.signed_url)}"
+                    alt="${escapeHtml(label)}"
+                  />
+                </a>
+                <div class="comparison-meta">
+                  ${photo.visibility === "customer_visible" ? "お客様共有" : "店舗のみ"}
+                  ${photo.comment ? `｜${escapeHtml(photo.comment)}` : ""}
+                </div>`
+              : `<div class="comparison-empty">${escapeHtml(emptyText)}</div>`
+          }
+        </article>
+      `;
+
+      return `
+        <div class="photo-comparison">
+          ${card(
+            "修理前",
+            before,
+            "受付時の全体・傷の写真を撮影すると表示されます。"
+          )}
+          ${card(
+            "修理後",
+            after,
+            "修理完了写真を撮影すると並べて比較できます。"
+          )}
+        </div>
+      `;
+    }
+
     function renderExistingIntakePhotos(photos) {
       const available =
         Array.isArray(photos)
@@ -3078,6 +3762,19 @@
         "hidden",
         available.length === 0
       );
+
+      el.photoComparison.innerHTML =
+        available.length
+          ? photoComparisonMarkup(
+              available
+            ).replace(
+              '<div class="photo-comparison">',
+              ""
+            ).replace(
+              /<\/div>\s*$/,
+              ""
+            )
+          : "";
 
       el.existingPhotosGrid.innerHTML =
         available
@@ -3095,12 +3792,15 @@
                 />
                 <div>
                   ${escapeHtml(photoTypeLabel(photo.photo_type))}
-                  ${photo.visibility === "customer_visible" ? "｜共有" : "｜店舗のみ"}
+                  ${photo.visibility === "customer_visible" ? "｜お客様共有" : "｜店舗のみ"}
+                  ${photo.comment ? `｜${escapeHtml(photo.comment)}` : ""}
                 </div>
               </a>
             `
           )
           .join("");
+
+      renderPhotoCaptureGuide();
     }
 
     async function saveIntakeConfirmation() {
