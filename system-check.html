@@ -1,0 +1,1508 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f766e" />
+  <meta name="format-detection" content="telephone=no" />
+  <title>DPRO 修理受付 LINE｜システム確認</title>
+  <style>
+    :root {
+      --bg: #edf4f2;
+      --card: #ffffff;
+      --text: #13231f;
+      --muted: #66756f;
+      --line: #d5e3df;
+      --primary: #0f766e;
+      --primary-dark: #075b54;
+      --primary-soft: #e3f4ef;
+      --success: #17765f;
+      --success-soft: #e8f7f0;
+      --warning: #9b6200;
+      --warning-soft: #fff5dc;
+      --danger: #b6423b;
+      --danger-soft: #ffefee;
+      --shadow: 0 16px 42px rgba(30, 69, 59, .10);
+      --radius-lg: 22px;
+      --radius-md: 14px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { background: var(--bg); }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 0 0, rgba(15,118,110,.11), transparent 28%),
+        linear-gradient(180deg, #eef8f5 0, var(--bg) 420px);
+      font-family:
+        -apple-system, BlinkMacSystemFont, "Segoe UI",
+        "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button, input { font: inherit; }
+    button { -webkit-tap-highlight-color: transparent; }
+    a { color: inherit; }
+    .hidden { display: none !important; }
+
+    .login-page {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+    }
+
+    .login-card {
+      width: min(100%, 500px);
+      padding: 29px 25px;
+      border: 1px solid var(--line);
+      border-radius: 27px;
+      background: rgba(255,255,255,.97);
+      box-shadow: 0 25px 68px rgba(29,67,58,.16);
+    }
+
+    .login-mark {
+      display: grid;
+      place-items: center;
+      width: 64px;
+      height: 64px;
+      color: #fff;
+      border-radius: 20px;
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+      font-size: 24px;
+      font-weight: 950;
+    }
+
+    .login-card h1 {
+      margin: 17px 0 0;
+      font-size: 27px;
+      line-height: 1.35;
+    }
+
+    .login-card p {
+      margin: 7px 0 20px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    input {
+      width: 100%;
+      min-height: 49px;
+      padding: 10px 12px;
+      color: var(--text);
+      border: 1px solid #c8d8d3;
+      border-radius: 12px;
+      outline: none;
+      background: #fff;
+    }
+
+    input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(15,118,110,.10);
+    }
+
+    .password-row {
+      display: grid;
+      grid-template-columns: minmax(0,1fr) auto auto;
+      gap: 8px;
+    }
+
+    .password-action {
+      min-width: 62px;
+      color: var(--primary-dark);
+      border: 1px solid #c8d8d3;
+      border-radius: 12px;
+      background: var(--primary-soft);
+      font-size: 12px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .field-error {
+      min-height: 18px;
+      margin-top: 5px;
+      color: var(--danger);
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .btn {
+      min-height: 47px;
+      padding: 10px 15px;
+      border: 0;
+      border-radius: 12px;
+      font-weight: 950;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .btn:disabled {
+      opacity: .52;
+      cursor: wait;
+    }
+
+    .btn-primary {
+      color: #fff;
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+      box-shadow: 0 10px 22px rgba(15,118,110,.20);
+    }
+
+    .btn-soft {
+      color: var(--primary-dark);
+      background: var(--primary-soft);
+    }
+
+    .btn-light {
+      color: #40504a;
+      background: #edf2f0;
+    }
+
+    .btn-warning {
+      color: #6f4800;
+      background: var(--warning-soft);
+    }
+
+    .btn-danger-soft {
+      color: #9f3934;
+      background: var(--danger-soft);
+    }
+
+    .login-button {
+      width: 100%;
+      min-height: 55px;
+      margin-top: 5px;
+    }
+
+    .app {
+      width: min(1500px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 16px 0 70px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 19px 21px;
+      border: 1px solid var(--line);
+      border-radius: 21px;
+      background: rgba(255,255,255,.97);
+      box-shadow: var(--shadow);
+    }
+
+    .topbar h1 {
+      margin: 0;
+      font-size: clamp(24px, 3.6vw, 34px);
+      line-height: 1.3;
+    }
+
+    .topbar p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .connection {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 900;
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #9aa8a3;
+    }
+
+    .connection[data-status="ok"] .dot { background: var(--success); }
+    .connection[data-status="warn"] .dot { background: #d38b10; }
+    .connection[data-status="error"] .dot { background: var(--danger); }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0,1.5fr) minmax(280px,.8fr);
+      gap: 13px;
+      margin-top: 14px;
+    }
+
+    .hero-card {
+      min-width: 0;
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: rgba(255,255,255,.97);
+      box-shadow: var(--shadow);
+    }
+
+    .ready-banner {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .ready-icon {
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      width: 64px;
+      height: 64px;
+      color: #fff;
+      border-radius: 20px;
+      background: #899893;
+      font-size: 26px;
+      font-weight: 950;
+    }
+
+    .ready-banner[data-state="ready"] .ready-icon {
+      background: linear-gradient(135deg, #116c59, #1d8b6e);
+    }
+
+    .ready-banner[data-state="warn"] .ready-icon {
+      background: linear-gradient(135deg, #9b6200, #d28a10);
+    }
+
+    .ready-banner[data-state="error"] .ready-icon {
+      background: linear-gradient(135deg, #9f3732, #c6554e);
+    }
+
+    .ready-banner h2 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    .ready-banner p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .version-box {
+      display: grid;
+      gap: 8px;
+    }
+
+    .version-row {
+      display: grid;
+      grid-template-columns: 108px minmax(0,1fr);
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid #edf2f0;
+      font-size: 10px;
+    }
+
+    .version-row:last-child { border-bottom: 0; }
+
+    .version-row dt {
+      color: var(--muted);
+      font-weight: 900;
+    }
+
+    .version-row dd {
+      margin: 0;
+      font-weight: 900;
+      overflow-wrap: anywhere;
+    }
+
+    .section {
+      margin-top: 14px;
+      padding: 19px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: rgba(255,255,255,.97);
+      box-shadow: var(--shadow);
+    }
+
+    .section-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 13px;
+      margin-bottom: 14px;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .section-head p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .section-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .check-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap: 10px;
+    }
+
+    .check-card {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fafcfb;
+    }
+
+    .check-card.ok {
+      border-color: #b9dfd4;
+      background: var(--success-soft);
+    }
+
+    .check-card.error {
+      border-color: #ebc4c0;
+      background: var(--danger-soft);
+    }
+
+    .check-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 950;
+    }
+
+    .check-result {
+      display: inline-grid;
+      place-items: center;
+      min-width: 34px;
+      height: 25px;
+      padding: 0 7px;
+      border-radius: 999px;
+      color: #fff;
+      background: #87958f;
+      font-size: 9px;
+      font-weight: 950;
+    }
+
+    .check-card.ok .check-result { background: var(--success); }
+    .check-card.error .check-result { background: var(--danger); }
+
+    .check-message {
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .prepare-box {
+      display: grid;
+      grid-template-columns: minmax(0,1fr) auto;
+      gap: 14px;
+      align-items: center;
+      padding: 17px;
+      border: 1px solid #e4d1a7;
+      border-radius: 15px;
+      background: var(--warning-soft);
+    }
+
+    .prepare-box strong {
+      display: block;
+      color: #6e4900;
+      font-size: 14px;
+    }
+
+    .prepare-box p {
+      margin: 4px 0 0;
+      color: #795d22;
+      font-size: 10px;
+    }
+
+    .coverage-list {
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
+      margin-top: 13px;
+    }
+
+    .coverage-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 31px;
+      padding: 6px 9px;
+      border: 1px solid #d4e0dd;
+      border-radius: 999px;
+      color: #53635d;
+      background: #f8fbfa;
+      font-size: 9px;
+      font-weight: 900;
+    }
+
+    .coverage-chip.ok {
+      color: var(--success);
+      border-color: #b9ded4;
+      background: var(--success-soft);
+    }
+
+    .coverage-chip.error {
+      color: var(--danger);
+      border-color: #ebc5c1;
+      background: var(--danger-soft);
+    }
+
+    .count-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0,1fr));
+      gap: 8px;
+      margin-top: 13px;
+    }
+
+    .count-card {
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #f8fbfa;
+    }
+
+    .count-card span {
+      display: block;
+      color: var(--muted);
+      font-size: 8px;
+      font-weight: 900;
+    }
+
+    .count-card strong {
+      display: block;
+      margin-top: 2px;
+      font-size: 17px;
+    }
+
+    .screen-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0,1fr));
+      gap: 9px;
+    }
+
+    .screen-card {
+      display: grid;
+      gap: 8px;
+      min-width: 0;
+      padding: 13px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fafcfb;
+    }
+
+    .screen-card h3 {
+      margin: 0;
+      font-size: 13px;
+    }
+
+    .screen-card p {
+      min-height: 32px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 9px;
+    }
+
+    .case-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap: 10px;
+    }
+
+    .case-card {
+      min-width: 0;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      background: #fafcfb;
+    }
+
+    .case-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .case-title {
+      font-size: 13px;
+      font-weight: 950;
+    }
+
+    .status-chip {
+      flex: 0 0 auto;
+      padding: 5px 8px;
+      color: var(--primary-dark);
+      border-radius: 999px;
+      background: var(--primary-soft);
+      font-size: 8px;
+      font-weight: 950;
+    }
+
+    .case-name {
+      margin-top: 7px;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .case-meta {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 9px;
+      line-height: 1.7;
+      overflow-wrap: anywhere;
+    }
+
+    .case-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 7px;
+      margin-top: 10px;
+    }
+
+    .case-actions .btn {
+      min-height: 39px;
+      padding: 7px 9px;
+      font-size: 9px;
+      text-align: center;
+    }
+
+    .copy-row {
+      display: grid;
+      grid-template-columns: minmax(0,1fr) auto;
+      gap: 7px;
+      margin-top: 8px;
+    }
+
+    .copy-value {
+      min-width: 0;
+      padding: 8px 9px;
+      border: 1px solid #d7e1de;
+      border-radius: 9px;
+      background: #fff;
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+      font-size: 8px;
+      overflow-wrap: anywhere;
+    }
+
+    .copy-button {
+      min-width: 52px;
+      border: 0;
+      border-radius: 9px;
+      color: var(--primary-dark);
+      background: var(--primary-soft);
+      font-size: 9px;
+      font-weight: 950;
+      cursor: pointer;
+    }
+
+    .empty {
+      padding: 27px 15px;
+      color: var(--muted);
+      border: 1px dashed #c8d8d3;
+      border-radius: 14px;
+      text-align: center;
+      font-size: 11px;
+    }
+
+    .footer {
+      margin-top: 18px;
+      color: #71817b;
+      text-align: center;
+      font-size: 8px;
+    }
+
+    .toast {
+      position: fixed;
+      z-index: 100;
+      left: 50%;
+      bottom: max(18px, env(safe-area-inset-bottom));
+      width: min(calc(100% - 28px), 720px);
+      padding: 12px 14px;
+      color: #fff;
+      border-radius: 13px;
+      background: rgba(31,45,41,.97);
+      box-shadow: 0 12px 30px rgba(0,0,0,.18);
+      text-align: center;
+      font-size: 12px;
+      font-weight: 900;
+      opacity: 0;
+      transform: translate(-50%, 12px);
+      pointer-events: none;
+      transition: .2s;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%,0);
+    }
+
+    .toast.error { background: rgba(155,45,40,.97); }
+
+    .loading {
+      position: fixed;
+      z-index: 120;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      background: rgba(244,248,247,.76);
+      backdrop-filter: blur(4px);
+    }
+
+    .loading-box {
+      display: grid;
+      justify-items: center;
+      gap: 11px;
+      min-width: 230px;
+      padding: 24px;
+      border-radius: 19px;
+      background: #fff;
+      box-shadow: var(--shadow);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .spinner {
+      width: 34px;
+      height: 34px;
+      border: 4px solid #dcebe7;
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 1080px) {
+      .check-grid,
+      .case-grid {
+        grid-template-columns: repeat(2, minmax(0,1fr));
+      }
+
+      .screen-grid {
+        grid-template-columns: repeat(3, minmax(0,1fr));
+      }
+
+      .count-grid {
+        grid-template-columns: repeat(3, minmax(0,1fr));
+      }
+    }
+
+    @media (max-width: 760px) {
+      .app {
+        width: min(100% - 18px, 1500px);
+        padding-top: 9px;
+      }
+
+      .topbar,
+      .section-head {
+        display: block;
+      }
+
+      .top-actions,
+      .section-actions {
+        justify-content: flex-start;
+        margin-top: 11px;
+      }
+
+      .hero {
+        grid-template-columns: 1fr;
+      }
+
+      .check-grid,
+      .case-grid,
+      .screen-grid,
+      .count-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .prepare-box {
+        grid-template-columns: 1fr;
+      }
+
+      .prepare-box .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <section id="loginPage" class="login-page">
+    <form id="loginForm" class="login-card" novalidate>
+      <div class="login-mark">確</div>
+      <h1>DPRO 修理受付 LINE<br />営業前システム確認</h1>
+      <p>管理コードを入力すると、API・DB・写真Storage・営業デモ案件を一括確認できます。</p>
+
+      <label for="adminCode">管理コード</label>
+      <div class="password-row">
+        <input
+          id="adminCode"
+          name="dpro_repair_system_check_admin_code"
+          type="password"
+          inputmode="numeric"
+          autocomplete="new-password"
+          autocapitalize="off"
+          autocorrect="off"
+          spellcheck="false"
+          maxlength="100"
+          placeholder="管理コードを入力"
+          data-lpignore="true"
+          data-1p-ignore="true"
+          readonly
+        />
+        <button id="clearAdminCodeButton" class="password-action" type="button">消去</button>
+        <button id="toggleAdminCodeButton" class="password-action" type="button">表示</button>
+      </div>
+      <div id="loginError" class="field-error"></div>
+
+      <button id="loginButton" class="btn btn-primary login-button" type="submit">
+        システム確認を開く
+      </button>
+    </form>
+  </section>
+
+  <main id="app" class="app hidden">
+    <header class="topbar">
+      <div>
+        <h1>DPRO 修理受付 LINE｜システム確認</h1>
+        <p>営業デモ準備・API・DB・写真・各画面をこのページから確認します。</p>
+      </div>
+
+      <div class="top-actions">
+        <div id="connection" class="connection" data-status="loading">
+          <span class="dot"></span>
+          <span id="connectionText">確認中…</span>
+        </div>
+        <button id="recheckButton" class="btn btn-soft" type="button">一括再チェック</button>
+        <button id="logoutButton" class="btn btn-light" type="button">ログアウト</button>
+      </div>
+    </header>
+
+    <section class="hero">
+      <article class="hero-card">
+        <div id="readyBanner" class="ready-banner" data-state="loading">
+          <div id="readyIcon" class="ready-icon">…</div>
+          <div>
+            <h2 id="readyTitle">確認しています</h2>
+            <p id="readyMessage">APIと営業デモ案件を確認しています。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="hero-card">
+        <dl class="version-box">
+          <div class="version-row">
+            <dt>Worker</dt>
+            <dd id="workerVersion">—</dd>
+          </div>
+          <div class="version-row">
+            <dt>店舗</dt>
+            <dd id="shopName">—</dd>
+          </div>
+          <div class="version-row">
+            <dt>確認時刻</dt>
+            <dd id="checkedAt">—</dd>
+          </div>
+        </dl>
+      </article>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <h2>自動システムチェック</h2>
+          <p>店舗情報・設定・スタッフ・電話番号・非公開写真Storageを自動確認します。</p>
+        </div>
+      </div>
+      <div id="checkGrid" class="check-grid"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <h2>営業デモ準備</h2>
+          <p>STEP REPAIR-13専用のデモ案件だけを安全に作り直します。本番データには触れません。</p>
+        </div>
+      </div>
+
+      <div class="prepare-box">
+        <div>
+          <strong>営業デモ案件を11種類まとめて準備</strong>
+          <p>
+            LINE相談・本日来店・診断・見積もり回答・部品待ち・修理中・最終確認・完了連絡・本日引き取り・保管期限超過・保証期間中を作成します。
+          </p>
+        </div>
+        <button id="prepareDemoButton" class="btn btn-primary" type="button">
+          営業デモを準備
+        </button>
+      </div>
+
+      <div id="coverageList" class="coverage-list"></div>
+      <div id="countGrid" class="count-grid"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <h2>確認画面</h2>
+          <p>営業前に必要な画面を直接開けます。</p>
+        </div>
+      </div>
+
+      <div id="screenGrid" class="screen-grid"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <h2>営業デモ案件</h2>
+          <p>お客様画面とPC管理画面を、案件ごとに直接開けます。</p>
+        </div>
+      </div>
+
+      <div id="caseGrid" class="case-grid">
+        <div class="empty">営業デモを準備すると案件が表示されます。</div>
+      </div>
+    </section>
+
+    <div class="footer">
+      DPRO 修理受付 LINE｜STEP REPAIR-13｜REPAIR-13-SYSTEM-CHECK-DEMO-PREPARE-20260713
+    </div>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <div id="loadingOverlay" class="loading hidden">
+    <div class="loading-box">
+      <div class="spinner"></div>
+      <div id="loadingText">確認しています…</div>
+    </div>
+  </div>
+
+  <script>
+    "use strict";
+
+    const API_BASE =
+      "https://dpro-repair-line-api.dpromstk2000.workers.dev";
+    const PAGES_BASE =
+      "https://dpromstk2000-lab.github.io/dpro-repair-line-liff";
+    const DEFAULT_SHOP_CODE = "repair_demo";
+    const ADMIN_SESSION_KEY =
+      "dpro_repair_owner_admin_session_v1";
+    const DEMO_CONFIRM =
+      "PREPARE_REPAIR_DEMO";
+
+    const state = {
+      shopCode:
+        new URLSearchParams(location.search).get("shop_code") ||
+        DEFAULT_SHOP_CODE,
+      adminKey: "",
+      health: null,
+      check: null,
+      loading: false,
+    };
+
+    const el = {
+      loginPage: document.getElementById("loginPage"),
+      loginForm: document.getElementById("loginForm"),
+      adminCode: document.getElementById("adminCode"),
+      clearAdminCodeButton:
+        document.getElementById("clearAdminCodeButton"),
+      toggleAdminCodeButton:
+        document.getElementById("toggleAdminCodeButton"),
+      loginError: document.getElementById("loginError"),
+      loginButton: document.getElementById("loginButton"),
+      app: document.getElementById("app"),
+      connection: document.getElementById("connection"),
+      connectionText: document.getElementById("connectionText"),
+      recheckButton: document.getElementById("recheckButton"),
+      logoutButton: document.getElementById("logoutButton"),
+      readyBanner: document.getElementById("readyBanner"),
+      readyIcon: document.getElementById("readyIcon"),
+      readyTitle: document.getElementById("readyTitle"),
+      readyMessage: document.getElementById("readyMessage"),
+      workerVersion: document.getElementById("workerVersion"),
+      shopName: document.getElementById("shopName"),
+      checkedAt: document.getElementById("checkedAt"),
+      checkGrid: document.getElementById("checkGrid"),
+      prepareDemoButton: document.getElementById("prepareDemoButton"),
+      coverageList: document.getElementById("coverageList"),
+      countGrid: document.getElementById("countGrid"),
+      screenGrid: document.getElementById("screenGrid"),
+      caseGrid: document.getElementById("caseGrid"),
+      toast: document.getElementById("toast"),
+      loadingOverlay: document.getElementById("loadingOverlay"),
+      loadingText: document.getElementById("loadingText"),
+    };
+
+    document.addEventListener("DOMContentLoaded", initialize);
+
+    async function initialize() {
+      bindEvents();
+      renderScreenLinks();
+
+      const session = readAdminSession();
+      if (session?.admin_key) {
+        state.adminKey = session.admin_key;
+        await verifyAndOpen(false);
+        return;
+      }
+
+      clearAdminCodeInput();
+      setTimeout(clearAdminCodeInput, 80);
+      setTimeout(clearAdminCodeInput, 350);
+    }
+
+    function bindEvents() {
+      el.loginForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        state.adminKey = el.adminCode.value.trim();
+        await verifyAndOpen(true);
+      });
+
+      const enableInput = () => {
+        el.adminCode.removeAttribute("readonly");
+      };
+
+      el.adminCode.addEventListener("focus", enableInput);
+      el.adminCode.addEventListener("pointerdown", enableInput);
+
+      el.clearAdminCodeButton.addEventListener("click", () => {
+        clearAdminCodeInput();
+        enableInput();
+        el.adminCode.focus();
+      });
+
+      el.toggleAdminCodeButton.addEventListener("click", () => {
+        const showing = el.adminCode.type === "text";
+        el.adminCode.type = showing ? "password" : "text";
+        el.toggleAdminCodeButton.textContent = showing ? "表示" : "隠す";
+        enableInput();
+        el.adminCode.focus();
+      });
+
+      el.recheckButton.addEventListener("click", runAllChecks);
+      el.logoutButton.addEventListener("click", logout);
+      el.prepareDemoButton.addEventListener("click", prepareDemo);
+
+      el.caseGrid.addEventListener("click", async (event) => {
+        const copyButton = event.target.closest("[data-copy-value]");
+        if (!copyButton) return;
+        await copyText(copyButton.dataset.copyValue);
+        showToast("コピーしました。");
+      });
+    }
+
+    async function verifyAndOpen(showError) {
+      if (!state.adminKey) {
+        if (showError) {
+          el.loginError.textContent = "管理コードを入力してください。";
+        }
+        return;
+      }
+
+      setLoading(true, "管理コードを確認しています…");
+      el.loginButton.disabled = true;
+      el.loginError.textContent = "";
+
+      try {
+        await fetchJson(`${API_BASE}/api/admin/verify`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            shop_code: state.shopCode,
+            admin_key: state.adminKey,
+          }),
+        });
+
+        saveAdminSession();
+        el.loginPage.classList.add("hidden");
+        el.app.classList.remove("hidden");
+        await runAllChecks();
+      } catch (error) {
+        clearAdminSession();
+        if (showError) {
+          el.loginError.textContent =
+            error.message || "管理コードが正しくありません。";
+        }
+      } finally {
+        setLoading(false);
+        el.loginButton.disabled = false;
+      }
+    }
+
+    async function runAllChecks() {
+      if (state.loading) return;
+
+      state.loading = true;
+      setLoading(true, "API・DB・営業デモ案件を確認しています…");
+      setConnection("loading", "確認中…");
+      el.recheckButton.disabled = true;
+
+      try {
+        const [health, check] = await Promise.all([
+          fetchJson(`${API_BASE}/api/health`),
+          fetchJson(
+            `${API_BASE}/api/admin/system-check` +
+            `?shop_code=${encodeURIComponent(state.shopCode)}` +
+            `&admin_key=${encodeURIComponent(state.adminKey)}`
+          ),
+        ]);
+
+        state.health = health;
+        state.check = check;
+        renderAll();
+
+        setConnection(
+          check.ready ? "ok" : check.system_ok ? "warn" : "error",
+          check.ready
+            ? "営業デモ準備OK"
+            : check.system_ok
+              ? "デモ準備待ち"
+              : "要確認"
+        );
+      } catch (error) {
+        setConnection("error", "確認失敗");
+        showToast(
+          error.message || "システム確認に失敗しました。",
+          true
+        );
+      } finally {
+        state.loading = false;
+        setLoading(false);
+        el.recheckButton.disabled = false;
+      }
+    }
+
+    function renderAll() {
+      const check = state.check;
+      const health = state.health;
+
+      el.workerVersion.textContent =
+        health?.version || check?.version || "—";
+      el.shopName.textContent =
+        check?.shop_name || state.shopCode;
+      el.checkedAt.textContent =
+        formatDateTime(check?.time || new Date().toISOString());
+
+      if (check?.ready) {
+        el.readyBanner.dataset.state = "ready";
+        el.readyIcon.textContent = "OK";
+        el.readyTitle.textContent = "営業デモ準備完了";
+        el.readyMessage.textContent =
+          "API・DB・写真Storage・11種類の営業デモ案件がすべて揃っています。";
+      } else if (check?.system_ok) {
+        el.readyBanner.dataset.state = "warn";
+        el.readyIcon.textContent = "準";
+        el.readyTitle.textContent = "システム正常・デモ準備待ち";
+        el.readyMessage.textContent =
+          "「営業デモを準備」を1回押すと、確認用案件が自動作成されます。";
+      } else {
+        el.readyBanner.dataset.state = "error";
+        el.readyIcon.textContent = "!";
+        el.readyTitle.textContent = "確認が必要です";
+        el.readyMessage.textContent =
+          "赤く表示された項目を確認してください。";
+      }
+
+      renderChecks(check?.checks || []);
+      renderCoverage(check?.demo?.coverage || []);
+      renderCounts(check?.demo || {});
+      renderCases(check?.demo?.cases || []);
+    }
+
+    function renderChecks(checks) {
+      if (!checks.length) {
+        el.checkGrid.innerHTML =
+          '<div class="empty">確認結果がありません。</div>';
+        return;
+      }
+
+      el.checkGrid.innerHTML = checks.map((check) => `
+        <article class="check-card ${check.ok ? "ok" : "error"}">
+          <div class="check-title">
+            <span>${escapeHtml(check.label || check.key)}</span>
+            <span class="check-result">${check.ok ? "OK" : "確認"}</span>
+          </div>
+          <div class="check-message">${escapeHtml(check.message || "")}</div>
+        </article>
+      `).join("");
+    }
+
+    function renderCoverage(coverage) {
+      if (!coverage.length) {
+        el.coverageList.innerHTML =
+          '<span class="coverage-chip error">デモ未準備</span>';
+        return;
+      }
+
+      el.coverageList.innerHTML = coverage.map((item) => `
+        <span class="coverage-chip ${item.ok ? "ok" : "error"}">
+          ${item.ok ? "✓" : "!"}
+          ${escapeHtml(item.label)}
+        </span>
+      `).join("");
+    }
+
+    function renderCounts(demo) {
+      const counts = demo.related_counts || {};
+      const values = [
+        ["案件", demo.order_count || 0],
+        ["写真", counts.photos || 0],
+        ["付属品", counts.accessories || 0],
+        ["作業記録", counts.work_logs || 0],
+        ["部品", counts.parts || 0],
+        ["見積もり", counts.estimates || 0],
+        ["引き取り", counts.pickups || 0],
+        ["支払い", counts.payments || 0],
+        ["保証", counts.warranties || 0],
+        ["お客様共有写真", counts.customer_visible_photos || 0],
+      ];
+
+      el.countGrid.innerHTML = values.map(([label, value]) => `
+        <div class="count-card">
+          <span>${escapeHtml(label)}</span>
+          <strong>${Number(value)}</strong>
+        </div>
+      `).join("");
+    }
+
+    function renderScreenLinks() {
+      const screens = [
+        {
+          title: "お客様の修理相談",
+          note: "LINEから新しい修理相談を送信",
+          url: `${PAGES_BASE}/index.html?v=repair-13`,
+        },
+        {
+          title: "PC管理画面",
+          note: "全案件・見積もり・作業・支払いを管理",
+          url: `${PAGES_BASE}/owner.html?v=repair-13`,
+        },
+        {
+          title: "受付iPad",
+          note: "電話・来店受付、写真撮影、お渡し",
+          url: `${PAGES_BASE}/owner-ipad.html?v=repair-13`,
+        },
+        {
+          title: "オーナー簡単設定",
+          note: "営業時間・保証・カテゴリー・案内文",
+          url: `${PAGES_BASE}/owner-settings.html?v=repair-13`,
+        },
+        {
+          title: "Workerヘルス",
+          note: "APIバージョンとDB接続を確認",
+          url: `${API_BASE}/api/health`,
+        },
+      ];
+
+      el.screenGrid.innerHTML = screens.map((screen) => `
+        <article class="screen-card">
+          <h3>${escapeHtml(screen.title)}</h3>
+          <p>${escapeHtml(screen.note)}</p>
+          <a
+            class="btn btn-soft"
+            href="${escapeAttribute(screen.url)}"
+            target="_blank"
+            rel="noopener"
+          >
+            画面を開く
+          </a>
+        </article>
+      `).join("");
+    }
+
+    function renderCases(cases) {
+      if (!cases.length) {
+        el.caseGrid.innerHTML =
+          '<div class="empty">「営業デモを準備」を押すと、11種類の案件が表示されます。</div>';
+        return;
+      }
+
+      el.caseGrid.innerHTML = cases.map((item) => `
+        <article class="case-card">
+          <div class="case-head">
+            <div class="case-title">${escapeHtml(item.label)}</div>
+            <span class="status-chip">${escapeHtml(item.status_label)}</span>
+          </div>
+
+          <div class="case-name">
+            ${escapeHtml(item.customer_name)}｜${escapeHtml(item.item_name)}
+          </div>
+
+          <div class="case-meta">
+            受付番号：${escapeHtml(item.order_number)}<br />
+            電話番号：${escapeHtml(item.phone)}
+          </div>
+
+          <div class="case-actions">
+            <a
+              class="btn btn-primary"
+              href="${escapeAttribute(item.member_url)}"
+              target="_blank"
+              rel="noopener"
+            >
+              お客様画面
+            </a>
+            <a
+              class="btn btn-soft"
+              href="${escapeAttribute(item.owner_url)}"
+              target="_blank"
+              rel="noopener"
+            >
+              PC管理
+            </a>
+          </div>
+
+          <div class="copy-row">
+            <div class="copy-value">${escapeHtml(item.order_number)} / ${escapeHtml(item.phone)}</div>
+            <button
+              class="copy-button"
+              type="button"
+              data-copy-value="${escapeAttribute(`${item.order_number}\n${item.phone}`)}"
+            >
+              コピー
+            </button>
+          </div>
+        </article>
+      `).join("");
+    }
+
+    async function prepareDemo() {
+      if (state.loading) return;
+
+      const confirmed = window.confirm(
+        "STEP REPAIR-13専用の営業デモ案件を作り直します。\n\n削除されるのは「repair_step13_demo_」で始まる営業デモ顧客・案件だけです。本番データには触れません。\n\n実行しますか？"
+      );
+
+      if (!confirmed) return;
+
+      state.loading = true;
+      setLoading(
+        true,
+        "写真・見積もり・作業・部品・引き取り・支払い・保証を準備しています…"
+      );
+      el.prepareDemoButton.disabled = true;
+      el.prepareDemoButton.textContent = "準備中…";
+
+      try {
+        const response = await fetchJson(
+          `${API_BASE}/api/admin/demo-prepare`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              shop_code: state.shopCode,
+              admin_key: state.adminKey,
+              confirm: DEMO_CONFIRM,
+            }),
+          }
+        );
+
+        showToast(
+          `${response.demo.order_count}件の営業デモ案件を準備しました。`
+        );
+
+        state.health = await fetchJson(`${API_BASE}/api/health`);
+        state.check = await fetchJson(
+          `${API_BASE}/api/admin/system-check` +
+          `?shop_code=${encodeURIComponent(state.shopCode)}` +
+          `&admin_key=${encodeURIComponent(state.adminKey)}`
+        );
+
+        renderAll();
+        setConnection(
+          state.check.ready ? "ok" : "warn",
+          state.check.ready ? "営業デモ準備OK" : "再確認してください"
+        );
+      } catch (error) {
+        showToast(
+          error.message || "営業デモの準備に失敗しました。",
+          true
+        );
+      } finally {
+        state.loading = false;
+        setLoading(false);
+        el.prepareDemoButton.disabled = false;
+        el.prepareDemoButton.textContent = "営業デモを準備";
+      }
+    }
+
+    function clearAdminCodeInput() {
+      el.adminCode.value = "";
+      el.adminCode.type = "password";
+      el.adminCode.setAttribute("readonly", "");
+      el.toggleAdminCodeButton.textContent = "表示";
+      el.loginError.textContent = "";
+    }
+
+    function logout() {
+      clearAdminSession();
+      state.adminKey = "";
+      state.health = null;
+      state.check = null;
+      el.app.classList.add("hidden");
+      el.loginPage.classList.remove("hidden");
+      clearAdminCodeInput();
+    }
+
+    function saveAdminSession() {
+      sessionStorage.setItem(
+        ADMIN_SESSION_KEY,
+        JSON.stringify({
+          shop_code: state.shopCode,
+          admin_key: state.adminKey,
+          saved_at: new Date().toISOString(),
+        })
+      );
+    }
+
+    function readAdminSession() {
+      try {
+        const raw = sessionStorage.getItem(ADMIN_SESSION_KEY);
+        if (!raw) return null;
+        const data = JSON.parse(raw);
+        if (data.shop_code !== state.shopCode) return null;
+        return data;
+      } catch {
+        return null;
+      }
+    }
+
+    function clearAdminSession() {
+      sessionStorage.removeItem(ADMIN_SESSION_KEY);
+    }
+
+    async function fetchJson(url, options = {}) {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 45000);
+
+      try {
+        const response = await fetch(url, {
+          cache: "no-store",
+          ...options,
+          signal: controller.signal,
+        });
+
+        const text = await response.text();
+        let data = null;
+
+        try {
+          data = text ? JSON.parse(text) : null;
+        } catch {
+          data = null;
+        }
+
+        if (!response.ok || data?.ok === false) {
+          const error = new Error(
+            data?.error?.message ||
+              `通信に失敗しました（${response.status}）`
+          );
+          error.status = response.status;
+          error.code = data?.error?.code || null;
+          error.details = data?.error?.details || null;
+          throw error;
+        }
+
+        return data;
+      } catch (error) {
+        if (error.name === "AbortError") {
+          throw new Error(
+            "処理がタイムアウトしました。もう一度お試しください。"
+          );
+        }
+        throw error;
+      } finally {
+        clearTimeout(timeout);
+      }
+    }
+
+    function setConnection(status, message) {
+      el.connection.dataset.status = status;
+      el.connectionText.textContent = message;
+    }
+
+    function setLoading(show, message = "処理しています…") {
+      el.loadingText.textContent = message;
+      el.loadingOverlay.classList.toggle("hidden", !show);
+    }
+
+    let toastTimer = null;
+    function showToast(message, isError = false) {
+      clearTimeout(toastTimer);
+      el.toast.textContent = message;
+      el.toast.classList.toggle("error", isError);
+      el.toast.classList.add("show");
+      toastTimer = setTimeout(
+        () => el.toast.classList.remove("show"),
+        4300
+      );
+    }
+
+    async function copyText(value) {
+      try {
+        await navigator.clipboard.writeText(String(value));
+      } catch {
+        const area = document.createElement("textarea");
+        area.value = String(value);
+        document.body.appendChild(area);
+        area.select();
+        document.execCommand("copy");
+        area.remove();
+      }
+    }
+
+    function formatDateTime(value) {
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return String(value || "");
+      return new Intl.DateTimeFormat("ja-JP", {
+        year: "numeric",
+        month: "numeric",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+        timeZone: "Asia/Tokyo",
+      }).format(date);
+    }
+
+    function escapeAttribute(value) {
+      return escapeHtml(value).replaceAll("`", "&#096;");
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+  </script>
+</body>
+</html>
